@@ -1,9 +1,8 @@
-import { baseProcedure, createTRPCRouter } from "../init";
+import { baseProcedure, createTRPCRouter, ProtectedProcedure } from "../init";
 export const appRouter = createTRPCRouter({
-  hello: baseProcedure
-    .query(() => {
+  hello: ProtectedProcedure.query(({ ctx }) => {
       return {
-        greeting: `hello world`,
+        greeting: `hello world ${ctx.auth.user.id}`,
       };
     }),
 });
