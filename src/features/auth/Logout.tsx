@@ -7,9 +7,13 @@ function Logout() {
     const router = useRouter();
     return (
             <Button onClick={() => {
-            authClient.signOut()
-            router.refresh();
-            router.push("/login")
+            authClient.signOut({
+                fetchOptions: {
+                    onSuccess: () => {
+                        router.push("/login")
+                    }
+                }
+            })
             }}>Logout</Button>
     )
 }

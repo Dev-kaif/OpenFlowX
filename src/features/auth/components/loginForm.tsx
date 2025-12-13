@@ -70,7 +70,7 @@ export default function LoginForm() {
     const isPending = form.formState.isSubmitting;
 
     return (
-        <div className="flex flex-col gap-6 min-w-sm">
+        <div className="flex flex-col gap-6">
             <Card>
                 <CardHeader className="text-center">
                     <CardTitle>Welcome Back to OpenFlowX</CardTitle>

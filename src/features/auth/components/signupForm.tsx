@@ -78,7 +78,7 @@ export default function SignUpForm() {
     const isPending = form.formState.isSubmitting;
 
     return (
-        <div className="flex flex-col gap-6 min-w-sm">
+        <div className="flex flex-col gap-6">
             <Card>
                 <CardHeader className="text-center">
                     <CardTitle>Create your OpenFlowX account</CardTitle>
