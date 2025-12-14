@@ -21,7 +21,7 @@ const NotRequiredAuth = async () => {
     })
 
     if (session) {
-        redirect("/")
+        redirect("/workflows")
     }
 }
 
