@@ -1,10 +1,19 @@
-import { baseProcedure, createTRPCRouter, ProtectedProcedure } from "../init";
+import { createTRPCRouter, ProtectedProcedure } from "../init";
+import { google } from "@ai-sdk/google";
+
+import { generateText } from "ai";
+
+
 export const appRouter = createTRPCRouter({
-  hello: ProtectedProcedure.query(({ ctx }) => {
-      return {
-        greeting: `hello world ${ctx.auth.user.id}`,
-      };
-    }),
+
+  testAi: ProtectedProcedure.query(async () => {
+    const { text } = await generateText({
+      model: google("gemini-2.5-flash"),
+      prompt: "Write a vegetarian lasagna recipe for 4 people.",
+    });
+
+    return text
+  })
 });
 // export type definition of API
 export type AppRouter = typeof appRouter;

@@ -20,6 +20,8 @@
     "inngest": "pnpm dlx inngest-cli@latest dev"
   },
   "dependencies": {
+    "@ai-sdk/google": "^2.0.46",
+    "@ai-sdk/openai": "^2.0.86",
     "@hookform/resolvers": "^5.2.2",
     "@prisma/adapter-pg": "^7.1.0",
     "@prisma/client": "^7.1.0",
@@ -55,6 +57,7 @@
     "@trpc/react-query": "^11.7.2",
     "@trpc/server": "^11.7.2",
     "@trpc/tanstack-react-query": "^11.7.2",
+    "ai": "^5.0.113",
     "better-auth": "^1.4.6",
     "class-variance-authority": "^0.7.1",
     "client-only": "^0.0.1",
