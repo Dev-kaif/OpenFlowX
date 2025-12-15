@@ -36,7 +36,7 @@ export const protectedProcedure = baseProcedure.use(async ({ ctx, next }) => {
     });
   }
 
-  return next({ ctx: { ...ctx, auth: session } });
+  return next({ ctx: { ...ctx, userId: session.user.id , auth: session } });
 });
 
 export const premiumProcedure = protectedProcedure.use(
