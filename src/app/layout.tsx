@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { TRPCReactProvider } from "@/trpc/client";
 import { Toaster } from "@/components/ui/sonner";
-
+import { NuqsAdapter } from 'nuqs/adapters/next/app'
 
 export const metadata: Metadata = {
   title: "N8N",
@@ -20,8 +20,10 @@ export default function RootLayout({
         className={`antialiased`}
       >
         <TRPCReactProvider>
-          <Toaster/>
-          {children}
+          <NuqsAdapter>
+            <Toaster />
+            {children}
+          </NuqsAdapter>
         </TRPCReactProvider>
       </body>
     </html>

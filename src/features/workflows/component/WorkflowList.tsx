@@ -8,8 +8,8 @@ import { useUpgradeModal } from '@/hooks/useUpgradeModal';
 export const WorkflowList = () => {
     const workflows = useSuspenseWorkflows()
   return (
-    <div>
-      {JSON.stringify(workflows.data)}
+    <div className=" px-10 flex flex-1 whitespace-pre-wrap">
+        {JSON.stringify(workflows.data, null, 2)}
     </div>
   )
 }
