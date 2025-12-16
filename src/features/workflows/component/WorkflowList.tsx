@@ -1,9 +1,11 @@
 "use client"
 import React from 'react'
 import { useCreateWorkflow, useSuspenseWorkflows } from '@/features/workflows/hooks/useWorkflows';
-import { EntityContainer, EntityHeader } from '@/components/entity/entityComponents';
+import { EntityContainer, EntityHeader, EntitySerach } from '@/components/entity/entityComponents';
 import { useRouter } from 'next/navigation';
 import { useUpgradeModal } from '@/hooks/useUpgradeModal';
+import { useWorkflowParams } from '../hooks/useWorkflowParams';
+import { useEntitySearch } from '@/hooks/useEntitySearch';
 
 export const WorkflowList = () => {
     const workflows = useSuspenseWorkflows()
@@ -45,6 +47,23 @@ export const WorkflowHeader = ({ disabled }: { disabled?: boolean }) => {
     );
 }
 
+export const WorkflowSearch = () => {
+    const [params, setParams] = useWorkflowParams();
+    const { searchValue, onSearchChange } = useEntitySearch({
+        params,
+        setParams
+    });
+
+    return (
+        <EntitySerach
+            value={searchValue}
+            onChange={onSearchChange}
+            placeHolder='Search Workflows'
+        />
+    )
+}
+
+
 export const WorkflowContainer = ({
   children,
 }: Readonly<{
@@ -53,13 +72,10 @@ export const WorkflowContainer = ({
     return (
         <EntityContainer
             header={<WorkflowHeader />}
-            search={<></>}
+            search={<WorkflowSearch/>}
             pagination={<></>}
         >
             {children}
         </EntityContainer>
     )
 }
-
-
-
