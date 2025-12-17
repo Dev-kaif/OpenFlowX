@@ -1,8 +1,17 @@
 import React from 'react';
 import { Button } from '../ui/button';
-import { PlusIcon, Search } from 'lucide-react';
+import { AlertTriangleIcon, Loader2Icon, PackageOpenIcon, PlusIcon, Search } from 'lucide-react';
 import Link from 'next/link';
 import { Input } from '../ui/input';
+import {
+    Empty,
+    EmptyHeader,
+    EmptyTitle,
+    EmptyDescription,
+    EmptyContent,
+    EmptyMedia,
+} from "@/components/ui/empty";
+import { cn } from '@/lib/utils';
 
 type EntityHeaderProps = {
     title: string,
@@ -121,7 +130,7 @@ export const EntityPagination = ({
     totalPage,
     onPageChange,
     disabled,
-}:EntityPaginationProps) => {
+}: EntityPaginationProps) => {
     return (
         <div className='flex items-center justify-between gap-x-2 w-full'>
             <div className='flex-1 text-muted-foreground text-sm'>
@@ -132,7 +141,7 @@ export const EntityPagination = ({
                     disabled={disabled || page === 1}
                     variant={"outline"}
                     size={"sm"}
-                    onClick={()=>{onPageChange(Math.max(1, page - 1))}}
+                    onClick={() => { onPageChange(Math.max(1, page - 1)) }}
                 >
                     Previous
                 </Button>
@@ -140,11 +149,119 @@ export const EntityPagination = ({
                     disabled={disabled || page === totalPage || totalPage === 0}
                     variant={"outline"}
                     size={"sm"}
-                    onClick={()=>{onPageChange(Math.max(1, page + 1))}}
+                    onClick={() => { onPageChange(Math.max(1, page + 1)) }}
                 >
                     Next
                 </Button>
             </div>
         </div>
-    )
+    );
+};
+
+interface StateViewProps{
+    message: string;
 }
+
+
+export const LoadingView = ({
+    message
+}: StateViewProps) => {
+    return (
+        <div className='flex justify-center items-center h-full flex-1 flex-col gap-y-4'>
+            <Loader2Icon className='size-6 animate-spin text-primary' />
+            {!!message &&
+                <p className='text-sm text-muted-foreground'>
+                    {message}...
+                </p>
+            }
+        </div>
+    );
+    
+};
+
+export const ErrorView = ({
+    message
+}: StateViewProps) => {
+    return (
+        <div className='flex justify-center items-center h-full flex-1 flex-col gap-y-4'>
+            <AlertTriangleIcon className='size-6 text-primary' />
+            {!!message &&
+                <p className='text-sm text-muted-foreground'>
+                    {message}...
+                </p>
+            }
+        </div>
+    );
+    
+};
+
+interface EmptyViewProps extends StateViewProps {
+    onNew?: () => void;
+}
+
+export const EmptyView = ({
+    message,
+    onNew
+}: EmptyViewProps) => {
+    return (
+        <Empty className='border border-dashed border-primary bg-white'>
+            <EmptyHeader>
+                <EmptyMedia variant={"icon"}>
+                    <PackageOpenIcon className='text-primary' />
+                </EmptyMedia>
+            </EmptyHeader>
+            <EmptyTitle>
+                no items
+            </EmptyTitle>
+            {!!message && (
+                <EmptyDescription>
+                    {message}
+                </EmptyDescription>
+            )}
+            {!!onNew && (
+                <EmptyContent>
+                    <Button onClick={onNew}>
+                        Add items
+                    </Button>
+                </EmptyContent>
+            )}
+        </Empty>
+    );
+};
+
+interface EntityListProps<T>{
+    items: T[];
+    renderItem: (item: T, index: number) => React.ReactNode;
+    getKey?: (item: T, index: number) => string | number;
+    emptyView?: React.ReactNode;
+    className?: string;
+}
+
+export function EntityList<T>({
+    items,
+    renderItem,
+    getKey,
+    emptyView,
+    className,
+}: EntityListProps<T>) {
+    
+    if (items.length == 0 && emptyView) {
+        return (
+            <div className='flex flex-1 justify-center items-center'>
+                <div className='mx-auto max-w-sm'>
+                    {emptyView}
+                </div>
+            </div>
+        );
+    };
+
+    return (
+        <div className={cn("flex flex-col gap-y-4",className)}>
+            {items.map((item, index) => (
+                <div key={getKey ? getKey(item, index) : index}>
+                    {renderItem(item, index)}
+                </div>
+            ))}
+        </div>  
+    );
+};
