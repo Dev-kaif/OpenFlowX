@@ -1,7 +1,7 @@
 "use client"
 import React from 'react'
 import { useCreateWorkflow, useSuspenseWorkflows } from '@/features/workflows/hooks/useWorkflows';
-import { EntityContainer, EntityHeader, EntitySerach } from '@/components/entity/entityComponents';
+import { EntityContainer, EntityHeader, EntityPagination, EntitySerach } from '@/components/entity/entityComponents';
 import { useRouter } from 'next/navigation';
 import { useUpgradeModal } from '@/hooks/useUpgradeModal';
 import { useWorkflowParams } from '../hooks/useWorkflowParams';
@@ -63,6 +63,19 @@ export const WorkflowSearch = () => {
     )
 }
 
+export const WorkflowPagination = () => {
+    const workflows = useSuspenseWorkflows();
+    const [params, setParams] = useWorkflowParams()
+
+    return (
+        <EntityPagination
+            page={workflows.data.page}
+            totalPage={workflows.data.totalCount}
+            onPageChange={(page) => setParams({ ...params, page })}
+            disabled={workflows.isFetching}
+        />
+    );
+};
 
 export const WorkflowContainer = ({
   children,
@@ -73,7 +86,7 @@ export const WorkflowContainer = ({
         <EntityContainer
             header={<WorkflowHeader />}
             search={<WorkflowSearch/>}
-            pagination={<></>}
+            pagination={<WorkflowPagination/>}
         >
             {children}
         </EntityContainer>

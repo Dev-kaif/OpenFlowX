@@ -108,3 +108,43 @@ export const EntitySerach = ({
         </div>
     );
 }
+
+type EntityPaginationProps = {
+    page: number;
+    totalPage: number;
+    onPageChange: (page: number) => void;
+    disabled?: boolean;
+}
+
+export const EntityPagination = ({
+    page,
+    totalPage,
+    onPageChange,
+    disabled,
+}:EntityPaginationProps) => {
+    return (
+        <div className='flex items-center justify-between gap-x-2 w-full'>
+            <div className='flex-1 text-muted-foreground text-sm'>
+                Page {page} of {totalPage || 1}
+            </div>
+            <div className='flex items-center justify-end space-x-2 py-4'>
+                <Button
+                    disabled={disabled || page === 1}
+                    variant={"outline"}
+                    size={"sm"}
+                    onClick={()=>{onPageChange(Math.max(1, page - 1))}}
+                >
+                    Previous
+                </Button>
+                <Button
+                    disabled={disabled || page === totalPage || totalPage === 0}
+                    variant={"outline"}
+                    size={"sm"}
+                    onClick={()=>{onPageChange(Math.max(1, page + 1))}}
+                >
+                    Next
+                </Button>
+            </div>
+        </div>
+    )
+}
