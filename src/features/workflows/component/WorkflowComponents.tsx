@@ -1,10 +1,11 @@
 "use client"
 import React from 'react'
-import { useCreateWorkflow, useSuspenseWorkflows } from '@/features/workflows/hooks/useWorkflows';
+import { useCreateWorkflow, useRemoveWorkflow, useSuspenseWorkflows } from '@/features/workflows/hooks/useWorkflows';
 import {
     EmptyView,
     EntityContainer,
     EntityHeader,
+    EntityItem,
     EntityList,
     EntityPagination,
     EntitySerach,
@@ -15,6 +16,10 @@ import { useRouter } from 'next/navigation';
 import { useUpgradeModal } from '@/hooks/useUpgradeModal';
 import { useWorkflowParams } from '../hooks/useWorkflowParams';
 import { useEntitySearch } from '@/hooks/useEntitySearch';
+import type { Workflow } from '@/generated/prisma/client';
+import { WorkflowIcon } from 'lucide-react';
+import { formatDistanceToNow } from "date-fns";
+import { toast } from 'sonner';
 
 export const WorkflowList = () => {
     const workflows = useSuspenseWorkflows();
@@ -22,7 +27,7 @@ export const WorkflowList = () => {
         <EntityList
             items={workflows.data.items}
             getKey={(workflow) => workflow.id}
-            renderItem={(workflow) => <>{workflow.name}</>}
+            renderItem={(workflow) => <WorkflowItem data={workflow} />}
             emptyView={<WorkflowEmpty/>}
         />
     )
@@ -82,7 +87,7 @@ export const WorkflowPagination = () => {
     return (
         <EntityPagination
             page={workflows.data.page}
-            totalPage={workflows.data.totalCount}
+            totalPage={workflows.data.totalPages}
             onPageChange={(page) => setParams({ ...params, page })}
             disabled={workflows.isFetching}
         />
@@ -137,5 +142,36 @@ export const WorkflowEmpty = () => {
                 message="Looks like there are no workflows here right now"
             />
         </>
+    );
+};
+
+
+export const WorkflowItem = ({ data }: { data: Workflow }) => {
+    const removeWorkflow = useRemoveWorkflow();
+
+    const handleRemove = () => {
+        removeWorkflow.mutate({ id: data.id }, {
+            onSuccess: () => {
+                toast.success(`Workflow ${data.name} removed`);
+            },
+            onError: (error) => {
+                toast.error(`Failed to remove workflow: ${error.message}`);
+            },
+        });
+    };
+
+    return (
+        <EntityItem
+            href={`/workflows/${data.id}`}
+            title={data.name}
+            subtitle={`Updated ${formatDistanceToNow(data.updatedAt, { addSuffix: true })} • Created ${formatDistanceToNow(data.createdAt, { addSuffix: true })}`}
+            image={
+                <div className="size-8 flex items-center justify-center">
+                    <WorkflowIcon className="size-5 text-muted-foreground" />
+                </div>
+            }
+            onRemove={handleRemove}
+            isRemoving={removeWorkflow.isPending}
+        />
     );
 };
