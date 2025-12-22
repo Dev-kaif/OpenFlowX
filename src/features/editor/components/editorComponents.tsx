@@ -1,7 +1,7 @@
 "use client"
 
 import { ErrorView, LoadingView } from "@/components/entity/entityComponents";
-import { nodeComponents } from "@/config/nodeComponents";
+import { nodeComponents } from "@/components/reactFlow/nodeComponents";
 import { useSuspenseWorkflow } from "@/features/workflows/hooks/useWorkflows"
 import {
     ReactFlow,
