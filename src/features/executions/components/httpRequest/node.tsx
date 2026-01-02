@@ -1,6 +1,6 @@
 import type { Node, NodeProps } from "@xyflow/react";
 import { memo } from "react";
-import { BaseExecutionNode } from "../../baseExecutionNode";
+import { BaseExecutionNode } from "../baseExecutionNode";
 import { GlobeIcon } from "lucide-react";
 
 type HttpRequestNodeData = {
