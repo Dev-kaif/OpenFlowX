@@ -1,8 +1,8 @@
-import type { Node, NodeProps } from "@xyflow/react";
+import { useReactFlow, type Node, type NodeProps } from "@xyflow/react";
 import { memo, useState } from "react";
 import { BaseExecutionNode } from "../baseExecutionNode";
 import { GlobeIcon } from "lucide-react";
-import { HttpRequestDialog } from "./dailog";
+import { FormType, HttpRequestDialog } from "./dailog";
 
 type HttpRequestNodeData = {
     endpoint?: string;
@@ -16,14 +16,34 @@ type HttpRequestNodeType = Node<HttpRequestNodeData>;
 export const HttpRequestNode = memo((props : NodeProps<HttpRequestNodeType>) => {
 
     const nodeData = props.data;
-    const description = nodeData.endpoint ? `${nodeData.method || "GET"}` : "Not Configured";
+    const nodeEndpoint = nodeData.endpoint ? nodeData.endpoint.replace(/^https:\/\//, "").replace(/\/$/, "") : "";
+    const description = nodeData.endpoint ? `${nodeData.method || "GET"}  ${nodeEndpoint}` : "Not Configured";
     const [dialogOpen, setDialogOpen] = useState(false);
+    const { setNodes } = useReactFlow();
 
     const handleOpenSettings = () => {
         setDialogOpen(true);
     };
     
     // const status ="loading"
+
+    const handleSubmit = (values: FormType) => {
+        setNodes((nodes) => nodes.map((node) => {
+            if (node.id === props.id) {
+                return {
+                    ...node,
+                    data: {
+                        ...node.data,
+                        endpoint: values.endpoint,
+                        method: values.method,
+                        body: values.body,
+                    },
+                };
+            }
+            return node;
+        }));
+        setDialogOpen(false);
+    };
 
     return (
         <>
@@ -36,7 +56,11 @@ export const HttpRequestNode = memo((props : NodeProps<HttpRequestNodeType>) => 
                 onDoubleClick={handleOpenSettings}
                 onSetting={handleOpenSettings}
             />
-            <HttpRequestDialog open={dialogOpen} onOpenChange={setDialogOpen} /> 
+            <HttpRequestDialog
+                onSubmit={handleSubmit}
+                open={dialogOpen}
+                onOpenChange={setDialogOpen}
+            /> 
         </>
     )
 });
