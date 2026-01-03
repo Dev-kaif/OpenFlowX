@@ -5,6 +5,7 @@ import Image from "next/image";
 import { BaseHandle } from "@/components/reactFlow/base-handle";
 import { BaseNodeContent ,BaseNode} from '@/components/reactFlow/base-node';
 import { WorkflowNode } from "@/components/reactFlow/workflowNode";
+import { NodeStatus, NodeStatusIndicator } from "@/components/reactFlow/node-status-indicator";
 
 
 interface BaseTriggerProps extends NodeProps {
@@ -12,7 +13,7 @@ interface BaseTriggerProps extends NodeProps {
     name: string;
     description?: string;
     children?: ReactNode;
-    // status?:NodeStatus
+    status?:NodeStatus
     onSetting?: () => void;
     onDoubleClick?: () => void;
 }
@@ -24,7 +25,8 @@ export const BaseTriggerNode = memo(({
     description,
     children,
     onDoubleClick,
-    onSetting
+    onSetting,
+    status = "initial"
 }: BaseTriggerProps) => {
 
     const { setNodes, setEdges } = useReactFlow();
@@ -50,24 +52,31 @@ export const BaseTriggerNode = memo(({
             onSetting={onSetting}
             showToolbar={true}
         >
-            <BaseNode
-                className="rounded-l-2xl relative group"
-                onDoubleClick={onDoubleClick}
+            <NodeStatusIndicator
+                status={status}
+                variant="border"
+                className={"rounded-l-2xl"}
             >
-                <BaseNodeContent>
-                    {typeof Icon == "string" ? (
-                        <Image alt={name} src={Icon} height={16} width={16} />
-                    ): (
-                        <Icon className="size-4 text-muted-foreground" />   
-                    )}
-                    {children}
-                    <BaseHandle
-                        id={"source-1"}
-                        type="source"
-                        position={Position.Right}
-                    />
-                </BaseNodeContent>
-            </BaseNode>
+                <BaseNode
+                    status={status}
+                    className="rounded-l-2xl relative group"
+                    onDoubleClick={onDoubleClick}
+                >
+                    <BaseNodeContent>
+                        {typeof Icon == "string" ? (
+                            <Image alt={name} src={Icon} height={16} width={16} />
+                        ): (
+                            <Icon className="size-4 text-muted-foreground" />   
+                        )}
+                        {children}
+                        <BaseHandle
+                            id={"source-1"}
+                            type="source"
+                            position={Position.Right}
+                        />
+                    </BaseNodeContent>
+                </BaseNode>
+            </NodeStatusIndicator>
         </WorkflowNode>
     );
 });
