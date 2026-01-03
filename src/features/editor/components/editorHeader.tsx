@@ -4,18 +4,45 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbS
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input";
 import { SidebarTrigger } from "@/components/ui/sidebar"
-import { useSuspenseWorkflow, useUpdateWorkflowName } from "@/features/workflows/hooks/useWorkflows";
+import { useSuspenseWorkflow, useUpdateWorkflow, useUpdateWorkflowName } from "@/features/workflows/hooks/useWorkflows";
+import { useAtomValue } from "jotai";
 import { SaveIcon } from "lucide-react"
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { editorAtom } from "../store/Atoms";
 
-export const EditorSaveButton = ({ id }: { id: string }) => {
+export const EditorSaveButton = ({ workflowId }: { workflowId: string }) => {
+
+    const editorState = useAtomValue(editorAtom);
+    
+    const saveWorkflow = useUpdateWorkflow();
+
+    const handleSaveWorkflow = () => {
+        if (!editorState) {
+            return;
+        }
+
+        const nodes = editorState.getNodes();
+        const edges = editorState.getEdges().map((edge) => ({
+            source: edge.source,
+            target: edge.target,
+            sourceHandle: edge.sourceHandle ?? undefined, // null → undefined
+            targetHandle: edge.targetHandle ?? undefined, // null → undefined
+        }));
+        
+        saveWorkflow.mutate({
+            id:workflowId,
+            nodes,
+            edges
+        })
+    }
+
     return (
         <div className="ml-auto">
             <Button
                 size={"sm"}
-                onClick={() => { }}
-                disabled={false}
+                onClick={handleSaveWorkflow}
+                disabled={saveWorkflow.isPending}
             >
                 <SaveIcon className="size-4" />
                 Save
@@ -25,7 +52,7 @@ export const EditorSaveButton = ({ id }: { id: string }) => {
 };
 
 
-export const EditorBreadcumbs = ({ id }: { id: string }) => {
+export const EditorBreadcumbs = ({ workflowId }: { workflowId: string }) => {
     return (
         <Breadcrumb>
             <BreadcrumbList>
@@ -37,15 +64,15 @@ export const EditorBreadcumbs = ({ id }: { id: string }) => {
                     </BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
-                <EditorNameInput id={id} />
+                <EditorNameInput workflowId={workflowId} />
             </BreadcrumbList>
         </Breadcrumb>
     )
 }
 
 
-export const EditorNameInput = ({ id }: { id: string }) => {
-    const { data: workflow } = useSuspenseWorkflow(id);
+export const EditorNameInput = ({ workflowId }: { workflowId: string }) => {
+    const { data: workflow } = useSuspenseWorkflow(workflowId);
     const updateWorkflowName = useUpdateWorkflowName();
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [workflowName, setWorkflowName] = useState<string>("");
@@ -123,8 +150,8 @@ export const EditorHeader = ({ workflowId }: { workflowId: string }) => {
         <header className='flex h-14 shrink-0 items-center gap-2 border-b px-4 bg-background'>
             <SidebarTrigger />
             <div className="flex flex-row items-center justify-between gap-x-4 w-full">
-                <EditorBreadcumbs id={workflowId} />
-                <EditorSaveButton id={workflowId} />
+                <EditorBreadcumbs workflowId={workflowId} />
+                <EditorSaveButton workflowId={workflowId} />
             </div>
         </header>
     )
