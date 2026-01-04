@@ -5,6 +5,7 @@ import { generateSlug } from "random-word-slugs";
 import { PAGINATION } from "@/config/constant";
 import { NodeType } from "@/generated/prisma/enums";
 import type { Edge, Node } from "@xyflow/react";
+import { inngest } from "@/inngest/client";
 
 export const workflowsRouter = createTRPCRouter({
   create: protectedProcedure.mutation(({ ctx }) => {
@@ -271,4 +272,27 @@ export const workflowsRouter = createTRPCRouter({
         hasPreviousPage
       };
     }),
+
+  execute: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const workflow = prisma.workflow.findFirstOrThrow({
+        where: {
+          id: input.id,
+          userId: ctx.userId,
+        },
+      });
+
+      await inngest.send({
+        name: "workflows/execute.workflow",
+        data: { workflowId: input.id }
+      })
+
+      return workflow;
+    }),
+
 });

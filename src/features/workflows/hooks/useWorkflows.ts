@@ -91,3 +91,18 @@ export const useUpdateWorkflow = () => {
     })
   );
 };
+
+export const useExecuteWorkflow = () => {
+  const trpc = useTRPC();
+
+  return useMutation(
+    trpc.workflows.execute.mutationOptions({
+      onSuccess: (data) => {
+        toast.success(`Started Executing Workflow ${data.name} `);
+      },
+      onError: (error) => {
+        toast.error(`Failed to execute workflow: ${error.message}`);
+      },
+    })
+  );
+};
