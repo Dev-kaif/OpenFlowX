@@ -12,7 +12,7 @@ type HttpRequestNodeData = {
 
 type HttpRequestNodeType = Node<HttpRequestNodeData>;
 
-export const HttpRequestNode = memo((props : NodeProps<HttpRequestNodeType>) => {
+export const HttpRequestNode = memo((props: NodeProps<HttpRequestNodeType>) => {
 
     const nodeData = props.data;
     const nodeEndpoint = nodeData.endpoint ? nodeData.endpoint.replace(/^https:\/\//, "").replace(/\/$/, "") : "";
@@ -23,7 +23,7 @@ export const HttpRequestNode = memo((props : NodeProps<HttpRequestNodeType>) => 
     const handleOpenSettings = () => {
         setDialogOpen(true);
     };
-    
+
     // const status ="loading"
 
     const handleSubmit = (values: HttpRequestFormValues) => {
@@ -33,9 +33,7 @@ export const HttpRequestNode = memo((props : NodeProps<HttpRequestNodeType>) => 
                     ...node,
                     data: {
                         ...node.data,
-                        endpoint: values.endpoint,
-                        method: values.method,
-                        body: values.body,
+                        ...values
                     },
                 };
             }
@@ -60,7 +58,7 @@ export const HttpRequestNode = memo((props : NodeProps<HttpRequestNodeType>) => 
                 open={dialogOpen}
                 onOpenChange={setDialogOpen}
                 defaultValues={nodeData}
-            /> 
+            />
         </>
     )
 });

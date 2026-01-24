@@ -1,31 +1,31 @@
 "use client";
 
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-  DialogClose,
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
+    DialogFooter,
+    DialogClose,
 } from "@/components/ui/dialog";
 import { z } from "zod";
 import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
+    Form,
+    FormControl,
+    FormDescription,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -33,58 +33,58 @@ import { useForm } from "react-hook-form";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 
-export type HttpRequestFormValues= z.infer<typeof formSchema>;
+export type HttpRequestFormValues = z.infer<typeof formSchema>;
 
 interface Props {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onSubmit: (values: z.infer<typeof formSchema>) => void;
-  defaultValues?: Partial<HttpRequestFormValues>;
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+    onSubmit: (values: z.infer<typeof formSchema>) => void;
+    defaultValues?: Partial<HttpRequestFormValues>;
 }
 
 const formSchema = z.object({
-  endpoint: z.url({ message: "Please enter a valid URL" }),
-  method: z.enum(["GET", "POST", "PUT", "PATCH", "DELETE"]),
-  body: z.string().optional(),
+    endpoint: z.url({ message: "Please enter a valid URL" }),
+    method: z.enum(["GET", "POST", "PUT", "PATCH", "DELETE"]),
+    body: z.string().optional(),
 });
 
 export const HttpRequestDialog = ({
-  open,
-  onOpenChange,
-  onSubmit,
-  defaultValues = {},
+    open,
+    onOpenChange,
+    onSubmit,
+    defaultValues = {},
 }: Props) => {
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      endpoint: defaultValues.endpoint || "",
-      method: defaultValues.method || "GET",
-      body: defaultValues.body || "",
-    },
-  });
+    const form = useForm<z.infer<typeof formSchema>>({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            endpoint: defaultValues.endpoint || "",
+            method: defaultValues.method || "GET",
+            body: defaultValues.body || "",
+        },
+    });
 
-  useEffect(() => {
-    if (open) {
-      form.reset({
-        endpoint: defaultValues.endpoint || "",
-        method: defaultValues.method || "GET",
-        body: defaultValues.body || "",
-      });
-    }
-  }, [open, form, defaultValues]);
+    useEffect(() => {
+        if (open) {
+            form.reset({
+                endpoint: defaultValues.endpoint || "",
+                method: defaultValues.method || "GET",
+                body: defaultValues.body || "",
+            });
+        }
+    }, [open, form, defaultValues]);
 
-  // eslint-disable-next-line react-hooks/incompatible-library
-  const watchMethod = form.watch("method");
-  const showBodyField = ["POST", "PUT", "PATCH"].includes(watchMethod);
+    // eslint-disable-next-line react-hooks/incompatible-library
+    const watchMethod = form.watch("method");
+    const showBodyField = ["POST", "PUT", "PATCH"].includes(watchMethod);
 
-  const handleSubmit = (values: z.infer<typeof formSchema>) => {
-    onSubmit(values);
-    onOpenChange(false);
-  };
+    const handleSubmit = (values: z.infer<typeof formSchema>) => {
+        onSubmit(values);
+        onOpenChange(false);
+    };
 
 
-  return (
+    return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent>
                 <DialogHeader>
@@ -98,14 +98,14 @@ export const HttpRequestDialog = ({
                             name="endpoint"
                             render={({ field }) => (
                                 <FormItem>
-                                <FormLabel>Endpoint</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="https://api.example.com/endpoint" {...field} />
-                                </FormControl>
-                                <FormDescription>
-                                    Static URL or use {"{{variables}}"} for simple values or {"{{json variable}}"} to stringify objects
-                                </FormDescription>
-                                <FormMessage />
+                                    <FormLabel>Endpoint</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="https://api.example.com/endpoint" {...field} />
+                                    </FormControl>
+                                    <FormDescription>
+                                        Static URL or use {"{{variables}}"} for simple values or {"{{json variable}}"} to stringify objects
+                                    </FormDescription>
+                                    <FormMessage />
                                 </FormItem>
                             )}
                         />
@@ -141,20 +141,20 @@ export const HttpRequestDialog = ({
                                 control={form.control}
                                 name="body"
                                 render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Request Body</FormLabel>
-                                    <FormControl>
-                                    <Textarea
-                                        placeholder={`Enter JSON request body:\n {\n \t"userId\": \"{{httpResponse.data.id}}\",\n \t"name\": \"{{httpResponse.data.name}}\",\n \t"items\": \"{{json httpResponse.data.items}}\"\n}`}
-                                        className="min-h-[100px] p-2 text-sm font-mono"
-                                        {...field}
-                                    />
-                                    </FormControl>
-                                    <FormDescription>
-                                        JSON with template variables. Use {"{{Variables}}"} for simple values or {"{{json variable}}"} to stringify objects
-                                    </FormDescription>
-                                    <FormMessage />
-                                </FormItem>
+                                    <FormItem>
+                                        <FormLabel>Request Body</FormLabel>
+                                        <FormControl>
+                                            <Textarea
+                                                placeholder={`Enter JSON request body:\n {\n \t"userId\": \"{{httpResponse.data.id}}\",\n \t"name\": \"{{httpResponse.data.name}}\",\n \t"items\": \"{{json httpResponse.data.items}}\"\n}`}
+                                                className="min-h-[100px] p-2 text-sm font-mono"
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                        <FormDescription>
+                                            JSON with template variables. Use {"{{Variables}}"} for simple values or {"{{json variable}}"} to stringify objects
+                                        </FormDescription>
+                                        <FormMessage />
+                                    </FormItem>
                                 )}
                             />
                         )}

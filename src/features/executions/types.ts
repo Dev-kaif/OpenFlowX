@@ -1,0 +1,17 @@
+import { GetStepTools, Inngest } from "inngest"
+
+export type WorkflowContext = Record<string, unknown>
+
+export type stepTools = GetStepTools<Inngest.Any>
+
+export interface NodeExecutionParams<Tdata = Record<string, unknown>> {
+    data: Tdata;
+    nodeId: string;
+    context: WorkflowContext;
+    step: stepTools;
+    // publish:
+}
+
+export type NodeExecutor<Tdata = Record<string, unknown>> = (
+    params: NodeExecutionParams<Tdata>
+) => Promise<WorkflowContext>
