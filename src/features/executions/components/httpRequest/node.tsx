@@ -5,6 +5,7 @@ import { GlobeIcon } from "lucide-react";
 import { HttpRequestFormValues, HttpRequestDialog } from "./dailog";
 
 type HttpRequestNodeData = {
+    variableName?: string
     endpoint?: string;
     method?: "GET" | "PUT" | "POST" | "PATCH" | "DELETE";
     body?: string;

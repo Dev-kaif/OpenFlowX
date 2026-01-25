@@ -46,6 +46,8 @@ const formSchema = z.object({
     endpoint: z.url({ message: "Please enter a valid URL" }),
     method: z.enum(["GET", "POST", "PUT", "PATCH", "DELETE"]),
     body: z.string().optional(),
+    variableName: z.string().min(1, { message: "Variable Name is required" })
+        .regex(/^[A-Za-z-$][A-Za-z0-9_$]*$/, { message: "Variable Name must start with letter , underscore and contain only letters numbers and underscores" }),
 });
 
 export const HttpRequestDialog = ({
@@ -58,6 +60,7 @@ export const HttpRequestDialog = ({
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
+            variableName: defaultValues.variableName,
             endpoint: defaultValues.endpoint || "",
             method: defaultValues.method || "GET",
             body: defaultValues.body || "",
@@ -67,6 +70,7 @@ export const HttpRequestDialog = ({
     useEffect(() => {
         if (open) {
             form.reset({
+                variableName: defaultValues.variableName,
                 endpoint: defaultValues.endpoint || "",
                 method: defaultValues.method || "GET",
                 body: defaultValues.body || "",
@@ -76,6 +80,7 @@ export const HttpRequestDialog = ({
 
     // eslint-disable-next-line react-hooks/incompatible-library
     const watchMethod = form.watch("method");
+    const watchVaribleName = form.watch("variableName") || "MyAPIcall";
     const showBodyField = ["POST", "PUT", "PATCH"].includes(watchMethod);
 
     const handleSubmit = (values: z.infer<typeof formSchema>) => {
@@ -95,15 +100,16 @@ export const HttpRequestDialog = ({
                     <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6 mt-4">
                         <FormField
                             control={form.control}
-                            name="endpoint"
+                            name="variableName"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Endpoint</FormLabel>
+                                    <FormLabel>Variable Name</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="https://api.example.com/endpoint" {...field} />
+                                        <Input placeholder="MyAPIcall" {...field} />
                                     </FormControl>
                                     <FormDescription>
-                                        Static URL or use {"{{variables}}"} for simple values or {"{{json variable}}"} to stringify objects
+                                        Use this name to reference he result in other nodes:{" "}
+                                        {`{{${watchVaribleName}.httpRespone.data}}`}
                                     </FormDescription>
                                     <FormMessage />
                                 </FormItem>
@@ -131,6 +137,22 @@ export const HttpRequestDialog = ({
                                     </Select>
                                     <FormDescription>
                                         The HTTP method to use
+                                    </FormDescription>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="endpoint"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Endpoint</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="https://api.example.com/endpoint" {...field} />
+                                    </FormControl>
+                                    <FormDescription>
+                                        Static URL or use {"{{variables}}"} for simple values or {"{{json variable}}"} to stringify objects
                                     </FormDescription>
                                     <FormMessage />
                                 </FormItem>
