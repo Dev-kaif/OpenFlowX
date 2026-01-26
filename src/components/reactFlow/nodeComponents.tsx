@@ -5,6 +5,7 @@ import { HttpRequestNode } from "@/features/executions/components/httpRequest/no
 import { ManualTriggerNode } from "@/features/trigger/components/manualTrigger/node";
 import { GoogleFormTriggerNode } from "@/features/trigger/components/googleFormTrigger/node";
 import { StripeTriggerNode } from "@/features/trigger/components/stripeTrigger/node";
+import { PolarTriggerNode } from "@/features/trigger/components/polarTrigger/node";
 
 export const nodeComponents = {
     [NodeType.INITIAL]: InitialNode,
@@ -12,6 +13,7 @@ export const nodeComponents = {
     [NodeType.MANUAL_TRIGGER]: ManualTriggerNode,
     [NodeType.GOOGLE_FORM_TRIGGER]: GoogleFormTriggerNode,
     [NodeType.STRIPE_TRIGGER]: StripeTriggerNode,
+    [NodeType.POLAR_TRIGGER]: PolarTriggerNode,
 } as const satisfies NodeTypes;
 
 export type RegisteredNodeTypes = keyof typeof nodeComponents;

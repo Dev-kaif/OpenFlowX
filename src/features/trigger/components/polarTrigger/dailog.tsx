@@ -19,12 +19,12 @@ interface Props {
     onOpenChange: (open: boolean) => void;
 }
 
-export const StripeTriggerDialog = ({ open, onOpenChange }: Props) => {
+export const PolarTriggerDialog = ({ open, onOpenChange }: Props) => {
     const params = useParams();
     const workflowId = params.workflowID as string;
 
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-    const webhookUrl = `${baseUrl}/api/webhooks/stripe?workflowId=${workflowId}`;
+    const webhookUrl = `${baseUrl}/api/webhooks/polar?workflowId=${workflowId}`;
 
     const copyToClipboard = async () => {
         try {
@@ -39,10 +39,10 @@ export const StripeTriggerDialog = ({ open, onOpenChange }: Props) => {
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-h-[85vh] overflow-y-auto">
                 <DialogHeader>
-                    <DialogTitle>Stripe Trigger Configuration</DialogTitle>
+                    <DialogTitle>Polar Trigger Configuration</DialogTitle>
                     <DialogDescription>
-                        Configure this webhook URL in your Stripe Dashboard to trigger this
-                        workflow on payment events.
+                        Configure this webhook URL in your Polar dashboard to trigger this
+                        workflow on Polar events.
                     </DialogDescription>
                 </DialogHeader>
 
@@ -71,18 +71,12 @@ export const StripeTriggerDialog = ({ open, onOpenChange }: Props) => {
                     {/* Instructions */}
                     <div className="rounded-lg bg-muted p-3 text-xs">
                         <ol className="space-y-1 list-decimal list-inside text-muted-foreground">
-                            <li>Open your Stripe Dashboard</li>
-                            <li>Go to Developers → Webhooks</li>
+                            <li>Open your Polar dashboard</li>
+                            <li>Go to Settings → Webhooks</li>
                             <li>Click "Add endpoint"</li>
                             <li>Paste the webhook URL above</li>
-                            <li>
-                                Select events to listen for (e.g.{" "}
-                                <code className="bg-background px-1 py-0.5 rounded">
-                                    payment_intent.succeeded
-                                </code>
-                                )
-                            </li>
-                            <li>Save and copy the signing secret</li>
+                            <li>Select events to listen for (orders, subscriptions, etc.)</li>
+                            <li>Save the webhook</li>
                         </ol>
                     </div>
 
@@ -92,29 +86,24 @@ export const StripeTriggerDialog = ({ open, onOpenChange }: Props) => {
 
                         <div className="grid grid-cols-[1fr_auto] gap-x-3 gap-y-2 text-xs text-muted-foreground">
                             <code className="bg-background px-1.5 py-0.5 rounded text-foreground">
-                                {"{{stripe.eventType}}"}
+                                {"{{polar.eventType}}"}
                             </code>
-                            <span>Event type (e.g. payment_intent.succeeded)</span>
+                            <span>Event type (e.g. order.created)</span>
 
                             <code className="bg-background px-1.5 py-0.5 rounded text-foreground">
-                                {"{{stripe.eventId}}"}
-                            </code>
-                            <span>Stripe event ID</span>
-
-                            <code className="bg-background px-1.5 py-0.5 rounded text-foreground">
-                                {"{{stripe.timestamp}}"}
+                                {"{{polar.timestamp}}"}
                             </code>
                             <span>Event timestamp</span>
 
                             <code className="bg-background px-1.5 py-0.5 rounded text-foreground">
-                                {"{{json stripe.raw}}"}
+                                {"{{json polar.raw}}"}
                             </code>
-                            <span>Raw Stripe object (payment, subscription, etc)</span>
+                            <span>Raw Polar event object</span>
 
                             <code className="bg-background px-1.5 py-0.5 rounded text-foreground">
-                                {"{{json stripe}}"}
+                                {"{{json polar}}"}
                             </code>
-                            <span>Full Stripe trigger payload</span>
+                            <span>Full Polar trigger payload</span>
                         </div>
 
                     </div>
