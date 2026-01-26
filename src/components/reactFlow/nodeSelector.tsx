@@ -1,5 +1,5 @@
 import { NodeType } from "@/generated/prisma/enums";
-import { createId} from "@paralleldrive/cuid2";
+import { createId } from "@paralleldrive/cuid2";
 import { GlobeIcon, MousePointerIcon } from "lucide-react";
 import React, { useCallback } from "react";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "../ui/sheet";
@@ -7,7 +7,7 @@ import { Separator } from "../ui/separator";
 import { useReactFlow } from "@xyflow/react";
 import { toast } from "sonner";
 
-export type NodeTypeOption= {
+export type NodeTypeOption = {
     type: NodeType,
     lable: string;
     description: string;
@@ -17,22 +17,28 @@ export type NodeTypeOption= {
 const triggerNode: NodeTypeOption[] = [
     {
         type: NodeType.MANUAL_TRIGGER,
-        lable:"Trigger Manually",
-        description:"Runs the flow on clicking a button. Good for getting started quickly",
-        icon:MousePointerIcon,
+        lable: "Trigger Manually",
+        description: "Runs the flow on clicking a button. Good for getting started quickly",
+        icon: MousePointerIcon,
+    },
+    {
+        type: NodeType.GOOGLE_FORM_TRIGGER,
+        lable: "Google Form",
+        description: "Runs the flow when a google form is submitted",
+        icon: "/googleform.svg",
     }
 ]
 
 const executionNode: NodeTypeOption[] = [
     {
         type: NodeType.HTTP_REQUEST,
-        lable:"HTTP Request",
-        description:"makes an HTTP request",
-        icon:GlobeIcon,
+        lable: "HTTP Request",
+        description: "makes an HTTP request",
+        icon: GlobeIcon,
     }
 ]
 
-interface NodeSelectorPros{
+interface NodeSelectorPros {
     open: boolean,
     onOpenChange: (open: boolean) => void;
     children: React.ReactNode;
@@ -84,9 +90,9 @@ export const NodeSelector = ({
 
             return [...nodes, newNode]
         })
-        
+
         onOpenChange(false);
-        
+
     }, [getNodes, onOpenChange, screenToFlowPosition, setNodes]);
 
     return (
@@ -123,20 +129,20 @@ export const NodeSelector = ({
                                     ) : (
                                         <Icon className="size-5" />
                                     )}
-                                <div className="flex flex-col items-start text-left">
-                                    <span className="font-medium text-sm">
-                                        {nodeType.lable}
-                                    </span>
-                                    <span className="text-xs text-muted-foreground">
-                                        {nodeType.description}
-                                    </span>
-                                </div>
+                                    <div className="flex flex-col items-start text-left">
+                                        <span className="font-medium text-sm">
+                                            {nodeType.lable}
+                                        </span>
+                                        <span className="text-xs text-muted-foreground">
+                                            {nodeType.description}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         );
                     })}
                 </div>
-                <Separator/>
+                <Separator />
                 <div>
                     {executionNode.map((nodeType, index) => {
                         const Icon = nodeType.icon;
@@ -157,14 +163,14 @@ export const NodeSelector = ({
                                     ) : (
                                         <Icon className="size-5" />
                                     )}
-                                <div className="flex flex-col items-start text-left">
-                                    <span className="font-medium text-sm">
-                                        {nodeType.lable}
-                                    </span>
-                                    <span className="text-xs text-muted-foreground">
-                                        {nodeType.description}
-                                    </span>
-                                </div>
+                                    <div className="flex flex-col items-start text-left">
+                                        <span className="font-medium text-sm">
+                                            {nodeType.lable}
+                                        </span>
+                                        <span className="text-xs text-muted-foreground">
+                                            {nodeType.description}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         );
