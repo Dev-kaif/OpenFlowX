@@ -16,6 +16,7 @@ export const auth = betterAuth({
     enabled: true,
     autoSignIn: true,
   },
+  // trustedOrigins: ["https://latanya-lardiest-rosetta.ngrok-free.dev"],
   plugins: [
     polar({
       client: polarClient,

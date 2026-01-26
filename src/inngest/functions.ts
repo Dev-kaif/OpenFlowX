@@ -38,7 +38,7 @@ export const executeWorkflow = inngest.createFunction(
 
 
         // intialise context with intial data 
-        let context = event.data.initalData || {};
+        let context = event.data.initialData || {};
 
         for (const node of sortedNodes) {
             const executor = getExecutor(node.type as NodeType)
