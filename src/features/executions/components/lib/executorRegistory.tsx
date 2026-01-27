@@ -6,6 +6,7 @@ import { googleFormTriggerExecution } from "@/features/trigger/components/google
 import { polarTriggerExecution } from "@/features/trigger/components/polarTrigger/executor";
 import { stripeTriggerExecution } from "@/features/trigger/components/stripeTrigger/executor";
 import { GeminiExecutor } from "../gemini/executor";
+import { OpenRouterExecutor } from "../openrouter/executor";
 
 export const executorRegistory: Record<NodeType, NodeExecutor> = {
     [NodeType.INITIAL]: manualExecutionTrigger,
@@ -15,10 +16,10 @@ export const executorRegistory: Record<NodeType, NodeExecutor> = {
     [NodeType.STRIPE_TRIGGER]: stripeTriggerExecution,
     [NodeType.POLAR_TRIGGER]: polarTriggerExecution,
     [NodeType.GEMINI]: GeminiExecutor,
+    [NodeType.OPENROUTER]: OpenRouterExecutor,
 
     // ----------------------------------------------
     [NodeType.OPENAI]: GeminiExecutor,
-    [NodeType.OPENROUTER]: GeminiExecutor,
     [NodeType.XAI]: GeminiExecutor,
     [NodeType.DEEPSEEK]: GeminiExecutor,
     [NodeType.ANTHROPIC]: GeminiExecutor,

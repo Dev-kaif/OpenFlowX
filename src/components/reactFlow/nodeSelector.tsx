@@ -54,6 +54,12 @@ const executionNode: NodeTypeOption[] = [
         description: "makes an Request to Gemini Api",
         icon: "/gemini.svg",
     },
+    {
+        type: NodeType.OPENROUTER,
+        lable: "Open Router",
+        description: "makes an Request to OpenRouter Api",
+        icon: "/openrouter.svg",
+    },
 ]
 
 interface NodeSelectorPros {

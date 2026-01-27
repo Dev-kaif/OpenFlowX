@@ -7,6 +7,7 @@ import { GoogleFormTriggerNode } from "@/features/trigger/components/googleFormT
 import { StripeTriggerNode } from "@/features/trigger/components/stripeTrigger/node";
 import { PolarTriggerNode } from "@/features/trigger/components/polarTrigger/node";
 import { GeminiNode } from "@/features/executions/components/gemini/node";
+import { OpenRouterNode } from "@/features/executions/components/openrouter/node";
 
 export const nodeComponents = {
     [NodeType.INITIAL]: InitialNode,
@@ -16,6 +17,7 @@ export const nodeComponents = {
     [NodeType.STRIPE_TRIGGER]: StripeTriggerNode,
     [NodeType.POLAR_TRIGGER]: PolarTriggerNode,
     [NodeType.GEMINI]: GeminiNode,
+    [NodeType.OPENROUTER]: OpenRouterNode,
 } as const satisfies NodeTypes;
 
 export type RegisteredNodeTypes = keyof typeof nodeComponents;
