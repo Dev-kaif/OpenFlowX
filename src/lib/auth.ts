@@ -16,7 +16,7 @@ export const auth = betterAuth({
     enabled: true,
     autoSignIn: true,
   },
-  // trustedOrigins: ["https://latanya-lardiest-rosetta.ngrok-free.dev"],
+  trustedOrigins: [`${process.env.NEXT_PUBLIC_APP_URL}`, "http://localhost:3000",],
   plugins: [
     polar({
       client: polarClient,
@@ -29,7 +29,7 @@ export const auth = betterAuth({
               slug: "proMax",
             },
           ],
-          successUrl: process.env.POLAR_SUCCESS_URL,
+          successUrl: "/workflows",
           authenticatedUsersOnly: true,
         }),
         portal(),

@@ -47,7 +47,13 @@ const executionNode: NodeTypeOption[] = [
         lable: "HTTP Request",
         description: "makes an HTTP request",
         icon: GlobeIcon,
-    }
+    },
+    {
+        type: NodeType.GEMINI,
+        lable: "Gemini",
+        description: "makes an Request to Gemini Api",
+        icon: "/gemini.svg",
+    },
 ]
 
 interface NodeSelectorPros {

@@ -20,8 +20,11 @@
     "inngest": "pnpm dlx inngest-cli@latest dev"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^3.0.23",
+    "@ai-sdk/deepseek": "^2.0.11",
     "@ai-sdk/google": "^2.0.46",
     "@ai-sdk/openai": "^2.0.86",
+    "@ai-sdk/xai": "^3.0.36",
     "@hookform/resolvers": "^5.2.2",
     "@inngest/realtime": "^0.4.5",
     "@paralleldrive/cuid2": "^3.0.4",
