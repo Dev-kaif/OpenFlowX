@@ -1,6 +1,6 @@
 import { useQueryStates } from 'nuqs';
-import { credentialsParams } from '../params';
+import { credentialsParams } from '../server/paramsLoader';
 
-export const useCredentailParams = () => {
+export const useCredentialParams = () => {
     return useQueryStates(credentialsParams)
 }

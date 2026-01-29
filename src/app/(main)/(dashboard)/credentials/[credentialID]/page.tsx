@@ -1,21 +1,37 @@
-import { RequiredAuth } from '@/lib/authUtil';
-import React from 'react'
 
-interface PageProps{
+import { CredentialView } from "@/features/credentails/components/credentialForm";
+import { CredentialError, CredentialLoading } from "@/features/credentails/components/credentials";
+import { prefetchCredential } from "@/features/credentails/server/prefetch";
+import { RequiredAuth } from "@/lib/authUtil";
+import { HydrateClient } from "@/trpc/server";
+import { Suspense } from "react";
+import { ErrorBoundary } from "react-error-boundary";
+
+interface PageProps {
   params: Promise<{
-    credentialID:string
+    credentialId: string;
   }>
-}
+};
 
-async function Page({ params }: PageProps) {
-  await RequiredAuth()
+const Page = async ({ params }: PageProps) => {
+  await RequiredAuth();
 
-  const { credentialID } = await params;
+  const { credentialId } = await params;
+  prefetchCredential(credentialId);
+
   return (
-    <div>
-      credentialID : {credentialID}
+    <div className="p-4 md:px-10 md:py-6 h-full">
+      <div className="mx-auto max-w-3xl w-full flex flex-col gap-y-8 h-full">
+        <HydrateClient>
+          <ErrorBoundary fallback={<CredentialError />}>
+            <Suspense fallback={<CredentialLoading />}>
+              <CredentialView credentialId={credentialId} />
+            </Suspense>
+          </ErrorBoundary>
+        </HydrateClient>
+      </div>
     </div>
-  )
-}
+  );
+};
 
 export default Page;

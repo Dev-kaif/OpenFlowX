@@ -28,7 +28,7 @@ export const WorkflowList = () => {
             items={workflows.data.items}
             getKey={(workflow) => workflow.id}
             renderItem={(workflow) => <WorkflowItem data={workflow} />}
-            emptyView={<WorkflowEmpty/>}
+            emptyView={<WorkflowEmpty />}
         />
     )
 }
@@ -41,7 +41,7 @@ export const WorkflowHeader = ({ disabled }: { disabled?: boolean }) => {
     const handleCreate = () => {
         createWorkflow.mutate(undefined, {
             onSuccess: (data) => {
-                router.push(`/workflows/${data.id}`); 
+                router.push(`/workflows/${data.id}`);
             },
             onError: (error) => {
                 handleError(error)
@@ -126,7 +126,7 @@ export const WorkflowEmpty = () => {
     const handleCreate = () => {
         createWorkflow.mutate(undefined, {
             onSuccess: (data) => {
-                router.push(`/workflows/${data.id}`); 
+                router.push(`/workflows/${data.id}`);
             },
             onError: (error) => {
                 handleError(error);
@@ -150,14 +150,7 @@ export const WorkflowItem = ({ data }: { data: Workflow }) => {
     const removeWorkflow = useRemoveWorkflow();
 
     const handleRemove = () => {
-        removeWorkflow.mutate({ id: data.id }, {
-            onSuccess: () => {
-                toast.success(`Workflow ${data.name} removed`);
-            },
-            onError: (error) => {
-                toast.error(`Failed to remove workflow: ${error.message}`);
-            },
-        });
+        removeWorkflow.mutate({ id: data.id })
     };
 
     return (

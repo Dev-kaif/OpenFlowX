@@ -10,25 +10,25 @@ import {
   WorkflowLoading
 } from '@/features/workflows/component/WorkflowComponents';
 import type { SearchParams } from 'nuqs/server';
-import { workflowParamLoader } from '@/features/workflows/params';
+import { workflowParamLoader } from '@/features/workflows/server/paramsLoader';
 
 type Props = {
   searchParams: Promise<SearchParams>
 }
 
-async function page({searchParams}:Props) {
+async function page({ searchParams }: Props) {
   await RequiredAuth();
 
   const props = await workflowParamLoader(searchParams);
-  
+
   prefetchWorkflows(props);
 
   return (
     <WorkflowContainer>
       <HydrateClient>
-        <ErrorBoundary fallback={<WorkflowError/>}>
-          <Suspense fallback={<WorkflowLoading/>}>
-            <WorkflowList/>
+        <ErrorBoundary fallback={<WorkflowError />}>
+          <Suspense fallback={<WorkflowLoading />}>
+            <WorkflowList />
           </Suspense>
         </ErrorBoundary>
       </HydrateClient>

@@ -1,22 +1,22 @@
 import { useTRPC } from "@/trpc/client";
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { useCredentailParams } from "./useCredentailParams";
+import { useCredentialParams } from "./useCredentailParams";
 
-export const useSuspenseCredentails = () => {
+export const useSuspenseCredentials = () => {
   const trpc = useTRPC();
-  const [params] = useCredentailParams()
+  const [params] = useCredentialParams()
 
   return useSuspenseQuery(trpc.credentials.getMany.queryOptions(params));
 };
 
-export const useSuspenseCredentail = (id: string) => {
+export const useSuspenseCredential = (id: string) => {
   const trpc = useTRPC();
   return useSuspenseQuery(trpc.credentials.getOne.queryOptions({ id }));
 };
 
 
-export const useCreateCredentail = () => {
+export const useCreateCredential = () => {
   const trcp = useTRPC();
   const queryClient = useQueryClient();
 
@@ -33,7 +33,7 @@ export const useCreateCredentail = () => {
   )
 }
 
-export const useRemoveCredentail = () => {
+export const useRemoveCredential = () => {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
 
@@ -51,7 +51,7 @@ export const useRemoveCredentail = () => {
   );
 };
 
-export const useUpdateCredentail = () => {
+export const useUpdateCredential = () => {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
 
