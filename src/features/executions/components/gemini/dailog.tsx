@@ -32,6 +32,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { useCredentialsByType } from "@/features/credentails/hooks/useCredentials";
+import { CredentialType } from "@/generated/prisma/enums";
+import Image from "next/image";
 
 export const AVAILABLE_MODELS = [
     // Gemini 2.5
@@ -63,6 +66,8 @@ const formSchema = z.object({
                 "Must start with a letter or underscore and contain only letters, numbers, underscores",
         }),
 
+    credentialId: z.string().min(1, { message: "Model is required" }),
+
     model: z.string().min(1, { message: "Model is required" }),
 
     systemPrompt: z.string().optional(),
@@ -85,6 +90,9 @@ export const GeminiDialog = ({
     onSubmit,
     defaultValues = {},
 }: Props) => {
+
+    const { data: credentials, isLoading: isLoadingCredentials } = useCredentialsByType(CredentialType.GEMINI)
+
     const form = useForm<GeminiFormValues>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -92,6 +100,7 @@ export const GeminiDialog = ({
             model: defaultValues.model || AVAILABLE_MODELS[0],
             systemPrompt: defaultValues.systemPrompt || "",
             userPrompt: defaultValues.userPrompt || "",
+            credentialId: defaultValues.credentialId || ""
         },
     });
 
@@ -102,6 +111,7 @@ export const GeminiDialog = ({
                 model: defaultValues.model || AVAILABLE_MODELS[0],
                 systemPrompt: defaultValues.systemPrompt || "",
                 userPrompt: defaultValues.userPrompt || "",
+                credentialId: defaultValues.credentialId || ""
             });
         }
     }, [open, form, defaultValues]);
@@ -176,6 +186,47 @@ export const GeminiDialog = ({
                                     <FormDescription>
                                         Choose which Gemini model to use
                                     </FormDescription>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        {/* Credentials */}
+                        <FormField
+                            control={form.control}
+                            name="credentialId"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Gemini API key</FormLabel>
+                                    <Select
+                                        onValueChange={field.onChange}
+                                        defaultValue={field.value}
+                                        disabled={isLoadingCredentials || !credentials?.length}
+                                    >
+                                        <FormControl>
+                                            <SelectTrigger className="w-full">
+                                                <SelectValue placeholder="Select API key" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {credentials?.map((cred) => (
+                                                <SelectItem
+                                                    key={cred.id}
+                                                    value={cred.id}
+                                                >
+                                                    <div className="flex items-center gap-2">
+                                                        <Image
+                                                            src={"/gemini.svg"}
+                                                            alt={"Gemini"}
+                                                            width={16}
+                                                            height={16}
+                                                        />
+                                                        {cred.name}
+                                                    </div>
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
                                     <FormMessage />
                                 </FormItem>
                             )}

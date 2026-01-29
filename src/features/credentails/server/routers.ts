@@ -3,7 +3,7 @@ import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import z from "zod";
 import { PAGINATION } from "@/config/constant";
 import { CredentialType } from "@/generated/prisma/enums";
-import { decryptApiKey, encryptApiKey, maskApiKey } from "@/lib/crypto";
+import { encryptApiKey, maskApiKey } from "@/lib/crypto";
 
 export const credentialRouter = createTRPCRouter({
   create: protectedProcedure
@@ -87,33 +87,9 @@ export const credentialRouter = createTRPCRouter({
         }
       })
 
-      const decryptedValue = decryptApiKey(data.value);
-
       return {
         ...data,
         value: data.maskValue
-      }
-    }),
-
-  getOneDcrypt: protectedProcedure
-    .input(
-      z.object({
-        id: z.string(),
-      })
-    )
-    .query(async ({ ctx, input }) => {
-      const data = await prisma.credential.findUniqueOrThrow({
-        where: {
-          id: input.id,
-          userId: ctx.userId
-        }
-      })
-
-      const decryptedValue = decryptApiKey(data.value);
-
-      return {
-        ...data,
-        value: decryptedValue
       }
     }),
 
@@ -183,10 +159,7 @@ export const credentialRouter = createTRPCRouter({
         orderBy: {
           updatedAt: "asc"
         },
-      })
-
-
-
-    })
+      });
+    }),
 
 });

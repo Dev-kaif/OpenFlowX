@@ -1,7 +1,8 @@
 import { useTRPC } from "@/trpc/client";
-import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useCredentialParams } from "./useCredentailParams";
+import { CredentialType } from "@/generated/prisma/enums";
 
 export const useSuspenseCredentials = () => {
   const trpc = useTRPC();
@@ -69,4 +70,10 @@ export const useUpdateCredential = () => {
       },
     })
   );
+};
+
+
+export const useCredentialsByType = (type: CredentialType) => {
+  const trpc = useTRPC();
+  return useQuery(trpc.credentials.getByType.queryOptions({ type }));
 };

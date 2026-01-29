@@ -4,6 +4,8 @@ import Handlebars from "handlebars"
 import { geminiChannel } from "@/inngest/channels/gemini";
 import { generateText } from "ai"
 import { createAIModel, extractTextFromSteps } from "@/features/ai/ai";
+import prisma from "@/lib/db";
+import { decryptApiKey } from "@/lib/crypto";
 
 Handlebars.registerHelper("json", (context) => {
     const jsonString = JSON.stringify(context, null, 2);
@@ -16,6 +18,7 @@ type GeminiProps = {
     model?: string;
     userPrompt?: string;
     systemPrompt?: string;
+    credentialId?: string;
 }
 
 export const GeminiExecutor: NodeExecutor<GeminiProps> = async ({
@@ -33,6 +36,16 @@ export const GeminiExecutor: NodeExecutor<GeminiProps> = async ({
         }),
     );
 
+    if (!data.credentialId) {
+        await publish(
+            geminiChannel().status({
+                nodeId,
+                status: "error"
+            }),
+        );
+        throw new NonRetriableError("Gemini Node : No API KEY configured");
+    }
+
     if (!data.variableName) {
         await publish(
             geminiChannel().status({
@@ -47,8 +60,18 @@ export const GeminiExecutor: NodeExecutor<GeminiProps> = async ({
         Handlebars.compile(data.systemPrompt)(context)
         : "You are helpful assistant";
 
+    const credential = await step.run("get-api-key", async () => {
+        const cred = await prisma.credential.findUniqueOrThrow({
+            where: {
+                id: data.credentialId
+            }
+        });
+        const decryptedKey = decryptApiKey(cred.value);
+        return decryptedKey
+    })
+
     const userPrompt = Handlebars.compile(data.userPrompt)(context);
-    const apiKey = process.env.GEMINI_API_KEY!
+    const apiKey = credential;
     const model = (data.model || "gemini-flash-latest")
 
     const client = await createAIModel({
