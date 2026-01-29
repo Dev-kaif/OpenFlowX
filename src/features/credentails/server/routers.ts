@@ -150,4 +150,21 @@ export const credentialRouter = createTRPCRouter({
       };
     }),
 
+  getByType: protectedProcedure
+    .input(z.object({ type: z.enum(CredentialType) }))
+    .query(async ({ input, ctx }) => {
+      return prisma.credential.findMany({
+        where: {
+          userId: ctx.userId,
+          type: input.type,
+        },
+        orderBy: {
+          updatedAt: "asc"
+        },
+      })
+
+
+
+    })
+
 });
