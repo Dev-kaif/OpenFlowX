@@ -33,6 +33,9 @@ import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { PlusIcon } from "lucide-react";
+import Image from "next/image";
+import { useCredentialsByType } from "@/features/credentails/hooks/useCredentials";
+import { CredentialType } from "@/generated/prisma/enums";
 
 export const AVAILABLE_MODELS = [
     "openai/gpt-4o-mini",
@@ -45,8 +48,9 @@ export const AVAILABLE_MODELS = [
     "anthropic/claude-3.7-sonnet",
     "anthropic/claude-opus-4.1",
 
-    "deepseek/deepseek-chat",
     "deepseek/deepseek-r1",
+    "deepseek/deepseek-v3.2",
+    "deepseek/deepseek-chat-v3.1",
 
     "qwen/qwen-2.5-72b-instruct",
     "qwen/qwen-max",
@@ -64,6 +68,8 @@ const formSchema = z.object({
         }),
 
     model: z.string().min(1, { message: "Model is required" }),
+
+    credentialId: z.string().min(1, { message: "API key is required" }),
 
     systemPrompt: z.string().optional(),
 
@@ -88,6 +94,8 @@ export const OpenRouterDialog = ({
 
     const CUSTOM_MODEL_VALUE = "__custom__";
     const [isCustomModel, setIsCustomModel] = useState(false);
+    const { data: credentials, isLoading: isLoadingCredentials } = useCredentialsByType(CredentialType.OPENROUTER)
+
 
     const form = useForm<OpenRouterFormValues>({
         resolver: zodResolver(formSchema),
@@ -96,6 +104,7 @@ export const OpenRouterDialog = ({
             model: defaultValues.model || AVAILABLE_MODELS[0],
             systemPrompt: defaultValues.systemPrompt || "",
             userPrompt: defaultValues.userPrompt || "",
+            credentialId: defaultValues.credentialId || ""
         },
     });
 
@@ -106,6 +115,7 @@ export const OpenRouterDialog = ({
                 model: defaultValues.model || AVAILABLE_MODELS[0],
                 systemPrompt: defaultValues.systemPrompt || "",
                 userPrompt: defaultValues.userPrompt || "",
+                credentialId: defaultValues.credentialId || ""
             });
         }
     }, [open, form, defaultValues]);
@@ -153,7 +163,6 @@ export const OpenRouterDialog = ({
                             )}
                         />
 
-                        {/* Model */}
                         {/* Model */}
                         <FormField
                             control={form.control}
@@ -226,6 +235,47 @@ export const OpenRouterDialog = ({
                             )}
                         />
 
+
+                        {/* Credentials */}
+                        <FormField
+                            control={form.control}
+                            name="credentialId"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>OpenRouter API key</FormLabel>
+                                    <Select
+                                        onValueChange={field.onChange}
+                                        defaultValue={field.value}
+                                        disabled={isLoadingCredentials || !credentials?.length}
+                                    >
+                                        <FormControl>
+                                            <SelectTrigger className="w-full">
+                                                <SelectValue placeholder={credentials?.length ? "Select API key" : "No API keys saved in Credentials"} />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {credentials?.map((cred) => (
+                                                <SelectItem
+                                                    key={cred.id}
+                                                    value={cred.id}
+                                                >
+                                                    <div className="flex items-center gap-2">
+                                                        <Image
+                                                            src={"/openrouter.svg"}
+                                                            alt={"Open Router"}
+                                                            width={16}
+                                                            height={16}
+                                                        />
+                                                        {cred.name}
+                                                    </div>
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
 
                         {/* System Prompt */}
                         <FormField

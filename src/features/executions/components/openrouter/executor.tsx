@@ -4,6 +4,8 @@ import Handlebars from "handlebars"
 import { openRouterChannel } from "@/inngest/channels/openrouter";
 import { generateText } from "ai"
 import { createAIModel, extractTextFromSteps } from "@/features/ai/ai";
+import { decryptApiKey } from "@/lib/crypto";
+import prisma from "@/lib/db";
 
 Handlebars.registerHelper("json", (context) => {
     const jsonString = JSON.stringify(context, null, 2);
@@ -16,6 +18,7 @@ type OpenrouterProps = {
     model?: string;
     userPrompt?: string;
     systemPrompt?: string;
+    credentialId?: string;
 }
 
 export const OpenRouterExecutor: NodeExecutor<OpenrouterProps> = async ({
@@ -33,6 +36,16 @@ export const OpenRouterExecutor: NodeExecutor<OpenrouterProps> = async ({
         }),
     );
 
+    if (!data.credentialId) {
+        await publish(
+            openRouterChannel().status({
+                nodeId,
+                status: "error"
+            }),
+        );
+        throw new NonRetriableError("OpenRouter Node : No API KEY configured");
+    }
+
     if (!data.variableName) {
         await publish(
             openRouterChannel().status({
@@ -40,15 +53,29 @@ export const OpenRouterExecutor: NodeExecutor<OpenrouterProps> = async ({
                 status: "error"
             }),
         );
-        throw new NonRetriableError("Gemini Node : No Varible Name configured");
+        throw new NonRetriableError("OpenRouter Node : No Varible Name configured");
     }
+
+
+    const credential = await step.run("get-api-key", async () => {
+        const cred = await prisma.credential.findUniqueOrThrow({
+            where: {
+                id: data.credentialId
+            },
+            select: {
+                value: true
+            }
+        });
+        const decryptedKey = decryptApiKey(cred.value);
+        return decryptedKey
+    })
 
     const systemPrompt = data.systemPrompt ?
         Handlebars.compile(data.systemPrompt)(context)
         : "You are helpful assistant";
 
     const userPrompt = Handlebars.compile(data.userPrompt)(context);
-    const apiKey = process.env.OPENROUTER_API_KEY!
+    const apiKey = credential;
     const model = (data.model || "openai/gpt-4o-mini")
 
     const client = await createAIModel({

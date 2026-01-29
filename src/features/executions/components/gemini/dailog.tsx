@@ -66,7 +66,7 @@ const formSchema = z.object({
                 "Must start with a letter or underscore and contain only letters, numbers, underscores",
         }),
 
-    credentialId: z.string().min(1, { message: "Model is required" }),
+    credentialId: z.string().min(1, { message: "API key is required" }),
 
     model: z.string().min(1, { message: "Model is required" }),
 
@@ -205,7 +205,7 @@ export const GeminiDialog = ({
                                     >
                                         <FormControl>
                                             <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Select API key" />
+                                                <SelectValue placeholder={credentials?.length ? "Select API key" : "No API keys saved in Credentials"} />
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>

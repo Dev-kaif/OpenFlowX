@@ -56,19 +56,24 @@ export const GeminiExecutor: NodeExecutor<GeminiProps> = async ({
         throw new NonRetriableError("Gemini Node : No Varible Name configured");
     }
 
-    const systemPrompt = data.systemPrompt ?
-        Handlebars.compile(data.systemPrompt)(context)
-        : "You are helpful assistant";
 
     const credential = await step.run("get-api-key", async () => {
         const cred = await prisma.credential.findUniqueOrThrow({
             where: {
                 id: data.credentialId
+            },
+            select: {
+                value: true
             }
         });
         const decryptedKey = decryptApiKey(cred.value);
         return decryptedKey
     })
+
+
+    const systemPrompt = data.systemPrompt ?
+        Handlebars.compile(data.systemPrompt)(context)
+        : "You are helpful assistant";
 
     const userPrompt = Handlebars.compile(data.userPrompt)(context);
     const apiKey = credential;
