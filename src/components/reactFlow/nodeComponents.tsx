@@ -8,6 +8,7 @@ import { StripeTriggerNode } from "@/features/trigger/components/stripeTrigger/n
 import { PolarTriggerNode } from "@/features/trigger/components/polarTrigger/node";
 import { GeminiNode } from "@/features/executions/components/gemini/node";
 import { OpenRouterNode } from "@/features/executions/components/openrouter/node";
+import { OpenAINode } from "@/features/executions/components/openai/node";
 
 export const nodeComponents = {
     [NodeType.INITIAL]: InitialNode,
@@ -18,6 +19,7 @@ export const nodeComponents = {
     [NodeType.POLAR_TRIGGER]: PolarTriggerNode,
     [NodeType.GEMINI]: GeminiNode,
     [NodeType.OPENROUTER]: OpenRouterNode,
+    [NodeType.OPENAI]: OpenAINode,
 } as const satisfies NodeTypes;
 
 export type RegisteredNodeTypes = keyof typeof nodeComponents;

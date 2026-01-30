@@ -36,16 +36,6 @@ export const GeminiExecutor: NodeExecutor<GeminiProps> = async ({
         }),
     );
 
-    if (!data.credentialId) {
-        await publish(
-            geminiChannel().status({
-                nodeId,
-                status: "error"
-            }),
-        );
-        throw new NonRetriableError("Gemini Node : No API KEY configured");
-    }
-
     if (!data.variableName) {
         await publish(
             geminiChannel().status({
@@ -54,6 +44,27 @@ export const GeminiExecutor: NodeExecutor<GeminiProps> = async ({
             }),
         );
         throw new NonRetriableError("Gemini Node : No Varible Name configured");
+    }
+
+    if (!data.userPrompt) {
+        await publish(
+            geminiChannel().status({
+                nodeId,
+                status: "error",
+            }),
+        );
+        throw new NonRetriableError("OpenAI Node: No user prompt configured");
+    }
+
+
+    if (!data.credentialId) {
+        await publish(
+            geminiChannel().status({
+                nodeId,
+                status: "error"
+            }),
+        );
+        throw new NonRetriableError("Gemini Node : No API KEY configured");
     }
 
 

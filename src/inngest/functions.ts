@@ -11,6 +11,7 @@ import { polarTriggerChannel } from "./channels/polarTrigger";
 import { stripeTriggerChannel } from "./channels/stripeTrigger";
 import { geminiChannel } from "./channels/gemini";
 import { openRouterChannel } from "./channels/openrouter";
+import { openAIChannel } from "./channels/openAi";
 
 
 export const executeWorkflow = inngest.createFunction(
@@ -25,6 +26,7 @@ export const executeWorkflow = inngest.createFunction(
             polarTriggerChannel(),
             geminiChannel(),
             openRouterChannel(),
+            openAIChannel(),
         ]
     },
     async ({ event, step, publish }) => {

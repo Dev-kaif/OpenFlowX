@@ -60,6 +60,12 @@ const executionNode: NodeTypeOption[] = [
         description: "makes an Request to OpenRouter Api",
         icon: "/openrouter.svg",
     },
+    {
+        type: NodeType.OPENAI,
+        lable: "Open Router",
+        description: "makes an Request to Open AI Api",
+        icon: "/openai.svg",
+    },
 ]
 
 interface NodeSelectorPros {
