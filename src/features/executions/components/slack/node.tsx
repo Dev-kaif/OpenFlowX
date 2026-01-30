@@ -9,7 +9,6 @@ import { SLACK_CHANNEL_NAME } from "@/inngest/channels/slack";
 type SlackNodeData = {
     webhookUrl?: string;
     content?: string;
-    username?: string;
 }
 
 type SlackNodeType = Node<SlackNodeData>;

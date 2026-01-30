@@ -17,7 +17,6 @@ type SlackProps = {
     variableName?: string;
     webhookUrl?: string;
     content?: string;
-    username?: string;
 };
 
 
@@ -72,16 +71,11 @@ export const SlackExecutor: NodeExecutor<SlackProps> = async ({
         const decoded = decode(rawContent);
         const text = markdownToSlack(decoded).slice(0, 40000);
 
-        const username = data.username
-            ? decode(Handlebars.compile(data.username)(context))
-            : undefined;
-
-
         const result = await step.run("slack-webhook", async () => {
+
             await ky.post(data.webhookUrl!, {
                 json: {
-                    text,
-                    ...(username ? { username } : {}),
+                    content: text,
                 },
             });
 

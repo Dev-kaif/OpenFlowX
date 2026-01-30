@@ -41,8 +41,6 @@ const formSchema = z.object({
         .url("Must be a valid Slack webhook URL")
         .min(1, { message: "Webhook URL is required" }),
 
-    username: z.string().optional(),
-
     content: z
         .string()
         .min(1, "Message content is required")
@@ -71,7 +69,6 @@ export const SlackDialog = ({
         defaultValues: {
             variableName: defaultValues.variableName || "mySlack",
             webhookUrl: defaultValues.webhookUrl || "",
-            username: defaultValues.username || "",
             content: defaultValues.content || "",
         },
     });
@@ -81,7 +78,6 @@ export const SlackDialog = ({
             form.reset({
                 variableName: defaultValues.variableName || "mySlack",
                 webhookUrl: defaultValues.webhookUrl || "",
-                username: defaultValues.username || "",
                 content: defaultValues.content || "",
             });
         }
@@ -143,31 +139,66 @@ export const SlackDialog = ({
                                             {...field}
                                         />
                                     </FormControl>
+
                                     <FormDescription>
-                                        Create one in Slack → App Settings → Incoming Webhooks
+                                        <div className="rounded-lg border bg-muted/50 p-4 space-y-3 text-sm">
+                                            <div className="font-medium flex items-center gap-2">
+                                                <span>How to get a Slack webhook URL</span>
+                                            </div>
+
+                                            <ol className="list-decimal ml-4 space-y-1 text-muted-foreground">
+                                                <li>Open Slack</li>
+                                                <li>
+                                                    Go to <b>More → Tools → Workflows</b>
+                                                </li>
+                                                <li>
+                                                    Click <b>New workflow</b> → <b>Build a workflow</b>
+                                                </li>
+                                                <li>
+                                                    Choose trigger: <b>From a webhook</b>
+                                                </li>
+                                                <li>
+                                                    Add a variable:
+                                                    <ul className="list-disc ml-5 mt-1">
+                                                        <li>
+                                                            <b>Key:</b> <code className="px-1 rounded bg-background">content</code>
+                                                        </li>
+                                                        <li>
+                                                            <b>Data type:</b> Text
+                                                        </li>
+                                                    </ul>
+                                                </li>
+                                                <li>
+                                                    Click <b>Continue</b> → <b>Save</b>
+                                                </li>
+                                                <li>
+                                                    Click <b>Add step</b> → <b>Send a message</b>
+                                                </li>
+                                                <li>Select the channel</li>
+                                                <li>
+                                                    Insert variable → select{" "}
+                                                    <code className="px-1 rounded bg-background">content</code>
+                                                </li>
+                                                <li>
+                                                    Click <b>Save</b> → <b>Finish up</b>
+                                                </li>
+                                                <li>Name the workflow and choose a bot image</li>
+                                                <li>
+                                                    Click <b>Publish</b> and add it to the channel
+                                                </li>
+                                                <li>
+                                                    Click <b>Start with webhook</b> and copy the webhook URL
+                                                </li>
+                                            </ol>
+                                        </div>
                                     </FormDescription>
+
+
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
 
-                        {/* Username */}
-                        <FormField
-                            control={form.control}
-                            name="username"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Username (optional)</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Bot name override" {...field} />
-                                    </FormControl>
-                                    <FormDescription>
-                                        Overrides the webhook’s default display name.
-                                    </FormDescription>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
 
                         {/* Content */}
                         <FormField
@@ -185,7 +216,7 @@ export const SlackDialog = ({
                                     </FormControl>
                                     <FormDescription>
                                         <div className="rounded-lg bg-muted p-3 space-y-3 text-xs">
-                                            <h4 className="font-medium text-sm">Using Variables</h4>
+                                            <div className="font-medium text-sm">Using Variables</div>
 
                                             <div className="space-y-2 text-muted-foreground">
                                                 <p>You can inject data from previous nodes:</p>
