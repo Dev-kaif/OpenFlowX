@@ -15,6 +15,7 @@ import { GrokNode } from "@/features/executions/components/grok/node";
 import { DiscordNode } from "@/features/executions/components/discord/node";
 import { SlackNode } from "@/features/executions/components/slack/node";
 import { IfElseNode } from "@/features/executions/components/UtilsNodes/ifElseNode/node";
+import { DelayNode } from "@/features/executions/components/UtilsNodes/delay/node";
 
 export const nodeComponents = {
     [NodeType.INITIAL]: InitialNode,
@@ -32,6 +33,7 @@ export const nodeComponents = {
     [NodeType.DISCORD]: DiscordNode,
     [NodeType.SLACK]: SlackNode,
     [NodeType.IFELSE]: IfElseNode,
+    [NodeType.DELAY]: DelayNode,
 } as const satisfies NodeTypes;
 
 export type RegisteredNodeTypes = keyof typeof nodeComponents;

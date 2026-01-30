@@ -24,7 +24,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 
-export const ifFormSchema = z.object({
+export const ifElseFormSchema = z.object({
     variableName: z
         .string()
         .min(1, "Variable name is required")
@@ -33,7 +33,7 @@ export const ifFormSchema = z.object({
     condition: z.string().min(1, "Condition is required"),
 });
 
-export type IfElseFormValues = z.infer<typeof ifFormSchema>;
+export type IfElseFormValues = z.infer<typeof ifElseFormSchema>;
 
 interface Props {
     open: boolean;
@@ -50,7 +50,7 @@ export const IfElseDialog = ({
 }: Props) => {
 
     const form = useForm<IfElseFormValues>({
-        resolver: zodResolver(ifFormSchema),
+        resolver: zodResolver(ifElseFormSchema),
         defaultValues: {
             variableName: defaultValues?.variableName || "if1",
             condition: defaultValues?.condition || "",

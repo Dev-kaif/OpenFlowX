@@ -101,6 +101,8 @@ enum NodeType {
   DISCORD
   SLACK
   IFELSE
+  DELAY
+  LOOP
 }
 
 model Node {

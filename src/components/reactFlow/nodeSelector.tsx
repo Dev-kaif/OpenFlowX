@@ -102,6 +102,12 @@ const executionNode: NodeTypeOption[] = [
         description: "makes an Request to Grok Api",
         icon: "/utils/ifelse.svg",
     },
+    {
+        type: NodeType.DELAY,
+        lable: "Delay",
+        description: "makes an Request to Grok Api",
+        icon: "/utils/delay.svg",
+    },
 ]
 
 interface NodeSelectorPros {

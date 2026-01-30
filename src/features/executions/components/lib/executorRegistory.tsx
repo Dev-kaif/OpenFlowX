@@ -14,6 +14,7 @@ import { AnthropicExecutor } from "../anthropic/executor";
 import { DiscordExecutor } from "../discord/executor";
 import { SlackExecutor } from "../slack/executor";
 import { IfNodeExecutor } from "../UtilsNodes/ifElseNode/executor";
+import { DelayExecutor } from "../UtilsNodes/delay/executor";
 
 export const executorRegistory: Record<NodeType, NodeExecutor> = {
     [NodeType.INITIAL]: manualExecutionTrigger,
@@ -31,6 +32,8 @@ export const executorRegistory: Record<NodeType, NodeExecutor> = {
     [NodeType.DISCORD]: DiscordExecutor,
     [NodeType.SLACK]: SlackExecutor,
     [NodeType.IFELSE]: IfNodeExecutor,
+    [NodeType.DELAY]: DelayExecutor,
+    [NodeType.LOOP]: DelayExecutor,
 };
 
 
