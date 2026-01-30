@@ -16,6 +16,7 @@ import { DiscordNode } from "@/features/executions/components/discord/node";
 import { SlackNode } from "@/features/executions/components/slack/node";
 import { IfElseNode } from "@/features/executions/components/UtilsNodes/ifElseNode/node";
 import { DelayNode } from "@/features/executions/components/UtilsNodes/delay/node";
+import { CodeNode } from "@/features/executions/components/UtilsNodes/code/node";
 
 export const nodeComponents = {
     [NodeType.INITIAL]: InitialNode,
@@ -34,6 +35,7 @@ export const nodeComponents = {
     [NodeType.SLACK]: SlackNode,
     [NodeType.IFELSE]: IfElseNode,
     [NodeType.DELAY]: DelayNode,
+    [NodeType.CODE]: CodeNode,
 } as const satisfies NodeTypes;
 
 export type RegisteredNodeTypes = keyof typeof nodeComponents;

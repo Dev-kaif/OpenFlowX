@@ -15,6 +15,7 @@ import { DiscordExecutor } from "../discord/executor";
 import { SlackExecutor } from "../slack/executor";
 import { IfNodeExecutor } from "../UtilsNodes/ifElseNode/executor";
 import { DelayExecutor } from "../UtilsNodes/delay/executor";
+import { CodeExecutor } from "../UtilsNodes/code/executor";
 
 export const executorRegistory: Record<NodeType, NodeExecutor> = {
     [NodeType.INITIAL]: manualExecutionTrigger,
@@ -33,7 +34,7 @@ export const executorRegistory: Record<NodeType, NodeExecutor> = {
     [NodeType.SLACK]: SlackExecutor,
     [NodeType.IFELSE]: IfNodeExecutor,
     [NodeType.DELAY]: DelayExecutor,
-    [NodeType.LOOP]: DelayExecutor,
+    [NodeType.CODE]: CodeExecutor,
 };
 
 

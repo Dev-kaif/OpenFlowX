@@ -102,7 +102,7 @@ enum NodeType {
   SLACK
   IFELSE
   DELAY
-  LOOP
+  CODE
 }
 
 model Node {

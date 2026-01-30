@@ -1,6 +1,6 @@
 import { NodeType } from "@/generated/prisma/enums";
 import { createId } from "@paralleldrive/cuid2";
-import { GlobeIcon, MousePointerIcon } from "lucide-react";
+import { CodeIcon, GlobeIcon, MousePointerIcon } from "lucide-react";
 import React, { useCallback } from "react";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "../ui/sheet";
 import { Separator } from "../ui/separator";
@@ -107,6 +107,12 @@ const executionNode: NodeTypeOption[] = [
         lable: "Delay",
         description: "makes an Request to Grok Api",
         icon: "/utils/delay.svg",
+    },
+    {
+        type: NodeType.CODE,
+        lable: "Code",
+        description: "makes an Request to Grok Api",
+        icon: CodeIcon,
     },
 ]
 
