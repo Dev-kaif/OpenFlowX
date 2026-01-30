@@ -167,9 +167,14 @@ export const SlackDialog = ({
                                                             <b>Data type:</b> Text
                                                         </li>
                                                     </ul>
+                                                    <div className="mt-2 text-xs text-muted-foreground">
+                                                        <span className="font-medium text-foreground">Important:</span>{" "}
+                                                        The variable key <code className="px-1 rounded bg-background">content</code>{" "}
+                                                        must match exactly, otherwise messages will not appear in Slack.
+                                                    </div>
                                                 </li>
                                                 <li>
-                                                    Click <b>Continue</b> → <b>Save</b>
+                                                    Click <b>Continue</b>
                                                 </li>
                                                 <li>
                                                     Click <b>Add step</b> → <b>Send a message</b>

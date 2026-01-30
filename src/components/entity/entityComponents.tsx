@@ -13,24 +13,24 @@ import {
 } from "@/components/ui/empty";
 import { cn } from '@/lib/utils';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
 import { Card, CardContent, CardDescription, CardTitle } from '../ui/card';
 
 type EntityHeaderProps = {
     title: string,
     discription: string,
-    newButtonLable: string,
+    newButtonLable?: string,
     disabled?: boolean,
     isCreating?: boolean,
 } & (
-    | { onNewFunction: () => void; newButtonHref?: never }
-    | { newButtonHref: string; onNewFunction?: never }
-    | { onNewFunction?: never; newButtonHref?: never }
-)
+        | { onNewFunction: () => void; newButtonHref?: never }
+        | { newButtonHref: string; onNewFunction?: never }
+        | { onNewFunction?: never; newButtonHref?: never }
+    )
 
 
 export const EntityHeader = ({
@@ -45,10 +45,10 @@ export const EntityHeader = ({
     return (
         <div className='flex flex-row items-center justify-between gap-x-4'>
             <div className='flex flex-col'>
-            <h1 className='text-lg md:text-xl font-semibold'>{title}</h1>
-            {discription && (
-                <p className='text-xs md:text-sm text-muted-foreground'>{ discription}</p>
-            )}
+                <h1 className='text-lg md:text-xl font-semibold'>{title}</h1>
+                {discription && (
+                    <p className='text-xs md:text-sm text-muted-foreground'>{discription}</p>
+                )}
             </div>
             {onNewFunction && !newButtonHref && (
                 <Button
@@ -79,7 +79,7 @@ type EntityContainerProps = {
     children: React.ReactNode,
     header?: React.ReactNode,
     search?: React.ReactNode,
-    pagination?:React.ReactNode
+    pagination?: React.ReactNode
 }
 
 export const EntityContainer = ({
@@ -87,7 +87,7 @@ export const EntityContainer = ({
     header,
     search,
     pagination
-}:EntityContainerProps) => {
+}: EntityContainerProps) => {
     return (
         <div className='p-4 md:px-10 md:py-6 h-full'>
             <div className='mx-auto max-w-7xl w-full flex flex-col gap-y-8 h-full'>
@@ -112,14 +112,14 @@ export const EntitySerach = ({
     value,
     onChange,
     placeHolder = "Search"
-}:EntitySearchProps) => {
+}: EntitySearchProps) => {
     return (
         <div className='relative ml-auto'>
             <Search className='size-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground' />
             <Input className='max-w-[200px] bg-background shadow-none border-border pl-8'
                 placeholder={placeHolder}
                 value={value}
-                onChange={(e)=>onChange(e.target.value)}
+                onChange={(e) => onChange(e.target.value)}
             />
         </div>
     );
@@ -165,7 +165,7 @@ export const EntityPagination = ({
     );
 };
 
-interface StateViewProps{
+interface StateViewProps {
     message: string;
 }
 
@@ -183,7 +183,7 @@ export const LoadingView = ({
             }
         </div>
     );
-    
+
 };
 
 export const ErrorView = ({
@@ -199,7 +199,7 @@ export const ErrorView = ({
             }
         </div>
     );
-    
+
 };
 
 interface EmptyViewProps extends StateViewProps {
@@ -236,7 +236,7 @@ export const EmptyView = ({
     );
 };
 
-interface EntityListProps<T>{
+interface EntityListProps<T> {
     items: T[];
     renderItem: (item: T, index: number) => React.ReactNode;
     getKey?: (item: T, index: number) => string | number;
@@ -251,7 +251,7 @@ export function EntityList<T>({
     emptyView,
     className,
 }: EntityListProps<T>) {
-    
+
     if (items.length == 0 && emptyView) {
         return (
             <div className='flex flex-1 justify-center items-center'>
@@ -263,18 +263,18 @@ export function EntityList<T>({
     };
 
     return (
-        <div className={cn("flex flex-col gap-y-4",className)}>
+        <div className={cn("flex flex-col gap-y-4", className)}>
             {items.map((item, index) => (
                 <div key={getKey ? getKey(item, index) : index}>
                     {renderItem(item, index)}
                 </div>
             ))}
-        </div>  
+        </div>
     );
 };
 
 
-interface EntityItemPros{
+interface EntityItemPros {
     href: string;
     title: string;
     subtitle?: React.ReactNode;
@@ -295,8 +295,8 @@ export const EntityItem = ({
     isRemoving,
     className
 }: EntityItemPros) => {
-    
-    const handelRemove = async (e:React.MouseEvent) => {
+
+    const handelRemove = async (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
 
@@ -308,8 +308,8 @@ export const EntityItem = ({
             await onRemove()
         }
     }
-    
-    return(
+
+    return (
         <Link href={href}>
             <Card className={cn("p-4 shadow-none hover:shadow cursor-pointer",
                 isRemoving && "opacity-50 cursor-not-allowed",
@@ -325,7 +325,7 @@ export const EntityItem = ({
                             {!!subtitle &&
                                 <CardDescription className='text-xs '>
                                     {subtitle}
-                                </CardDescription>    
+                                </CardDescription>
                             }
                         </div>
                     </div>
@@ -336,11 +336,11 @@ export const EntityItem = ({
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
                                         <Button
-                                        size="icon"
-                                        variant="ghost"
-                                        onClick={(e) => e.stopPropagation()}
+                                            size="icon"
+                                            variant="ghost"
+                                            onClick={(e) => e.stopPropagation()}
                                         >
-                                        <MoreVerticalIcon className="size-4" />
+                                            <MoreVerticalIcon className="size-4" />
                                         </Button>
                                     </DropdownMenuTrigger>
 
