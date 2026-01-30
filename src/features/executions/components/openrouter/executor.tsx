@@ -58,7 +58,7 @@ export const OpenRouterExecutor: NodeExecutor<OpenrouterProps> = async ({
     }
 
 
-    const credential = await step.run("get-api-key", async () => {
+    const apiKey = await step.run("get-api-key", async () => {
         const cred = await prisma.credential.findUniqueOrThrow({
             where: {
                 id: data.credentialId,
@@ -77,7 +77,6 @@ export const OpenRouterExecutor: NodeExecutor<OpenrouterProps> = async ({
         : "You are helpful assistant";
 
     const userPrompt = Handlebars.compile(data.userPrompt)(context);
-    const apiKey = credential;
     const model = (data.model || "openai/gpt-4o-mini")
 
     const client = await createAIModel({

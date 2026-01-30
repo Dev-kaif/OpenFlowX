@@ -69,7 +69,7 @@ export const GeminiExecutor: NodeExecutor<GeminiProps> = async ({
     }
 
 
-    const credential = await step.run("get-api-key", async () => {
+    const apiKey = await step.run("get-api-key", async () => {
         const cred = await prisma.credential.findUniqueOrThrow({
             where: {
                 id: data.credentialId,
@@ -89,7 +89,6 @@ export const GeminiExecutor: NodeExecutor<GeminiProps> = async ({
         : "You are helpful assistant";
 
     const userPrompt = Handlebars.compile(data.userPrompt)(context);
-    const apiKey = credential;
     const model = (data.model || "gemini-flash-latest")
 
     const client = await createAIModel({
