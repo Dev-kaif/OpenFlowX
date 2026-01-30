@@ -1,4 +1,4 @@
-export type ConnectionLike = {
+type ConnectionLike = {
     fromNodeId: string;
     toNodeId: string;
 };

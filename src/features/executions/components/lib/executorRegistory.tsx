@@ -13,6 +13,7 @@ import { GrokExecutor } from "../grok/executor";
 import { AnthropicExecutor } from "../anthropic/executor";
 import { DiscordExecutor } from "../discord/executor";
 import { SlackExecutor } from "../slack/executor";
+import { IfNodeExecutor } from "../UtilsNodes/ifElseNode/executor";
 
 export const executorRegistory: Record<NodeType, NodeExecutor> = {
     [NodeType.INITIAL]: manualExecutionTrigger,
@@ -29,12 +30,15 @@ export const executorRegistory: Record<NodeType, NodeExecutor> = {
     [NodeType.XAI]: GrokExecutor,
     [NodeType.DISCORD]: DiscordExecutor,
     [NodeType.SLACK]: SlackExecutor,
+    [NodeType.IFELSE]: IfNodeExecutor,
 };
+
 
 export const getExecutor = (type: NodeType): NodeExecutor => {
     const executor = executorRegistory[type];
     if (!executor) {
         throw new Error("No executor found for node type")
     }
+
     return executor;
 }

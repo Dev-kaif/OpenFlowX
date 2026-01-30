@@ -96,6 +96,12 @@ const executionNode: NodeTypeOption[] = [
         description: "makes an Request to Grok Api",
         icon: "/slack.svg",
     },
+    {
+        type: NodeType.IFELSE,
+        lable: "If Else",
+        description: "makes an Request to Grok Api",
+        icon: "/utils/ifelse.svg",
+    },
 ]
 
 interface NodeSelectorPros {
