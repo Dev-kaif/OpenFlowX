@@ -18,15 +18,30 @@ export function buildParentsMap(connections: {
 export function buildNodeInput(
     nodeId: string,
     parentsMap: Map<string, string[]>,
-    nodeOutputs: Record<string, any>
+    nodeOutputs: Record<string, any>,
+    triggerNodeIds: string[]
 ) {
     const parents = parentsMap.get(nodeId) || [];
     const input: Record<string, any> = {};
 
     for (const parentId of parents) {
-        input[parentId] = nodeOutputs[parentId];
+        const parentOutput = nodeOutputs[parentId];
+        if (!parentOutput) continue;
+
+        // Trigger nodes: merge output directly
+        if (triggerNodeIds.includes(parentId)) {
+            Object.assign(input, parentOutput);
+            continue;
+        }
+
+        // Non-trigger nodes:
+        // output is already namespaced by variableName
+        Object.assign(input, parentOutput);
     }
 
     return input;
 }
+
+
+
 

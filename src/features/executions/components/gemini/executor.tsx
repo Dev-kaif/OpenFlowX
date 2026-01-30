@@ -117,7 +117,6 @@ export const GeminiExecutor: NodeExecutor<GeminiProps> = async ({
         );
 
         return {
-            ...context,
             [data.variableName]: {
                 text: text,
                 raw: steps

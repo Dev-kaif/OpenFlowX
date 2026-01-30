@@ -5,6 +5,8 @@ import { topologicalSort } from "./utils/topoSort";
 import { getReachableNodeIds } from "./utils/reachability";
 import { ExecutionStatus, NodeType } from "@/generated/prisma/enums";
 import { getExecutor } from "@/features/executions/components/lib/executorRegistory";
+
+
 import { httpRequestChannel } from "./channels/httpRequest";
 import { manualTriggerChannel } from "./channels/manualTrigger";
 import { googleFormTriggerChannel } from "./channels/googleFormTrigger";
@@ -149,7 +151,7 @@ export const executeWorkflow = inngest.createFunction(
             const context =
                 triggerNodeIds.includes(node.id)
                     ? event.data.initialData || {}
-                    : buildNodeInput(node.id, parentsMap, nodeOutputs);
+                    : buildNodeInput(node.id, parentsMap, nodeOutputs, triggerNodeIds);
 
 
             const output = await executor({

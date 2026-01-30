@@ -122,7 +122,6 @@ export const DeepSeekExecutor: NodeExecutor<DeepSeekProps> = async ({
         );
 
         return {
-            ...context,
             [data.variableName]: {
                 text,
                 raw: steps,

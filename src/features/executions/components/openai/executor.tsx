@@ -125,7 +125,6 @@ export const OpenAIExecutor: NodeExecutor<OpenAIProps> = async ({
         );
 
         return {
-            ...context,
             [data.variableName]: {
                 text,
                 raw: steps,

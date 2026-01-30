@@ -105,7 +105,6 @@ export const OpenRouterExecutor: NodeExecutor<OpenrouterProps> = async ({
         );
 
         return {
-            // ...context,
             [data.variableName]: {
                 text: text,
                 raw: steps

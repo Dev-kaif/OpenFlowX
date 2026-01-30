@@ -74,6 +74,16 @@ export const DiscordExecutor: NodeExecutor<DiscordProps> = async ({
                 throw new NonRetriableError("Discord Node : No webhook url configured");
             }
 
+            if (!content) {
+                await publish(
+                    discordChannel().status({
+                        nodeId,
+                        status: "error",
+                    }),
+                );
+                throw new NonRetriableError("Discord Node: No message content configured");
+            }
+
 
             await ky.post(data.webhookUrl, {
                 json: {
@@ -83,7 +93,6 @@ export const DiscordExecutor: NodeExecutor<DiscordProps> = async ({
             })
 
             return {
-                ...context,
                 [data.variableName]: {
                     discordMessageSent: true,
                     messageContent: content.slice(0, 2000),

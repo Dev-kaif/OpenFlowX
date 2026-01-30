@@ -123,7 +123,6 @@ export const AnthropicExecutor: NodeExecutor<AnthropicProps> = async ({
         );
 
         return {
-            ...context,
             [data.variableName]: {
                 text,
                 raw: steps,

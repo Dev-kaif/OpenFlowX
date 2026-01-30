@@ -118,7 +118,6 @@ export const GrokExecutor: NodeExecutor<GrokProps> = async ({
         );
 
         return {
-            ...context,
             [data.variableName]: {
                 text,
                 raw: steps,

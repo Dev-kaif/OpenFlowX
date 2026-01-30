@@ -71,6 +71,17 @@ export const SlackExecutor: NodeExecutor<SlackProps> = async ({
         const decoded = decode(rawContent);
         const text = markdownToSlack(decoded).slice(0, 40000);
 
+        if (!text) {
+            await publish(
+                slackChannel().status({
+                    nodeId,
+                    status: "error",
+                }),
+            );
+            throw new NonRetriableError("Slack Node: No message content configured");
+        }
+
+
         const result = await step.run("slack-webhook", async () => {
 
             await ky.post(data.webhookUrl!, {
@@ -80,7 +91,6 @@ export const SlackExecutor: NodeExecutor<SlackProps> = async ({
             });
 
             return {
-                ...context,
                 [data.variableName!]: {
                     slackMessageSent: true,
                     messageText: text,
