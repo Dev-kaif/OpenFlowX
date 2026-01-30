@@ -12,6 +12,7 @@ import { DeepSeekExecutor } from "../deepseek/executor";
 import { GrokExecutor } from "../grok/executor";
 import { AnthropicExecutor } from "../anthropic/executor";
 import { DiscordExecutor } from "../discord/executor";
+import { SlackExecutor } from "../slack/executor";
 
 export const executorRegistory: Record<NodeType, NodeExecutor> = {
     [NodeType.INITIAL]: manualExecutionTrigger,
@@ -27,7 +28,7 @@ export const executorRegistory: Record<NodeType, NodeExecutor> = {
     [NodeType.ANTHROPIC]: AnthropicExecutor,
     [NodeType.XAI]: GrokExecutor,
     [NodeType.DISCORD]: DiscordExecutor,
-    [NodeType.SLACK]: DiscordExecutor,
+    [NodeType.SLACK]: SlackExecutor,
 };
 
 export const getExecutor = (type: NodeType): NodeExecutor => {
