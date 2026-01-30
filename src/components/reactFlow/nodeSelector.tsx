@@ -72,6 +72,12 @@ const executionNode: NodeTypeOption[] = [
         description: "makes an Request to Deepseek Api",
         icon: "/deepseek.svg",
     },
+    {
+        type: NodeType.ANTHROPIC,
+        lable: "Anthropic",
+        description: "makes an Request to Anthropic Api",
+        icon: "/anthropic.svg",
+    },
 ]
 
 interface NodeSelectorPros {
