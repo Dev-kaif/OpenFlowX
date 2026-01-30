@@ -29,6 +29,7 @@ export const AnthropicExecutor: NodeExecutor<AnthropicProps> = async ({
     context,
     step,
     publish,
+    userId
 }) => {
     await publish(
         anthropicChannel().status({
@@ -74,8 +75,13 @@ export const AnthropicExecutor: NodeExecutor<AnthropicProps> = async ({
 
     const apiKey = await step.run("get-api-key", async () => {
         const cred = await prisma.credential.findUniqueOrThrow({
-            where: { id: data.credentialId },
-            select: { value: true },
+            where: {
+                id: data.credentialId,
+                userId
+            },
+            select: {
+                value: true
+            },
         });
 
         return decryptApiKey(cred.value);

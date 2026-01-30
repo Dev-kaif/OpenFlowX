@@ -30,6 +30,7 @@ export const OpenAIExecutor: NodeExecutor<OpenAIProps> = async ({
     nodeId,
     context,
     step,
+    userId,
     publish,
 }) => {
     await publish(
@@ -74,8 +75,13 @@ export const OpenAIExecutor: NodeExecutor<OpenAIProps> = async ({
 
     const apiKey = await step.run("get-api-key", async () => {
         const cred = await prisma.credential.findUniqueOrThrow({
-            where: { id: data.credentialId },
-            select: { value: true },
+            where: {
+                id: data.credentialId,
+                userId,
+            },
+            select: {
+                value: true
+            },
         });
 
         return decryptApiKey(cred.value);

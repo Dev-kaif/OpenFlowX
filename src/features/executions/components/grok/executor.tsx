@@ -27,6 +27,7 @@ export const GrokExecutor: NodeExecutor<GrokProps> = async ({
     nodeId,
     context,
     step,
+    userId,
     publish,
 }) => {
 
@@ -69,8 +70,13 @@ export const GrokExecutor: NodeExecutor<GrokProps> = async ({
 
     const apiKey = await step.run("get-api-key", async () => {
         const cred = await prisma.credential.findUniqueOrThrow({
-            where: { id: data.credentialId },
-            select: { value: true },
+            where: {
+                id: data.credentialId,
+                userId,
+            },
+            select: {
+                value: true
+            },
         });
 
         return decryptApiKey(cred.value);

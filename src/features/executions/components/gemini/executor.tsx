@@ -24,6 +24,7 @@ type GeminiProps = {
 export const GeminiExecutor: NodeExecutor<GeminiProps> = async ({
     data,
     nodeId,
+    userId,
     context,
     step,
     publish
@@ -71,7 +72,8 @@ export const GeminiExecutor: NodeExecutor<GeminiProps> = async ({
     const credential = await step.run("get-api-key", async () => {
         const cred = await prisma.credential.findUniqueOrThrow({
             where: {
-                id: data.credentialId
+                id: data.credentialId,
+                userId
             },
             select: {
                 value: true

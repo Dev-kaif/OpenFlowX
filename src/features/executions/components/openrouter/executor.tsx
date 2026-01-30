@@ -25,6 +25,7 @@ export const OpenRouterExecutor: NodeExecutor<OpenrouterProps> = async ({
     data,
     nodeId,
     context,
+    userId,
     step,
     publish
 }) => {
@@ -60,7 +61,8 @@ export const OpenRouterExecutor: NodeExecutor<OpenrouterProps> = async ({
     const credential = await step.run("get-api-key", async () => {
         const cred = await prisma.credential.findUniqueOrThrow({
             where: {
-                id: data.credentialId
+                id: data.credentialId,
+                userId
             },
             select: {
                 value: true
