@@ -8,6 +8,7 @@ import { stripeTriggerExecution } from "@/features/trigger/components/stripeTrig
 import { GeminiExecutor } from "../gemini/executor";
 import { OpenRouterExecutor } from "../openrouter/executor";
 import { OpenAIExecutor } from "../openai/executor";
+import { DeepSeekExecutor } from "../deepseek/executor";
 
 export const executorRegistory: Record<NodeType, NodeExecutor> = {
     [NodeType.INITIAL]: manualExecutionTrigger,
@@ -19,10 +20,10 @@ export const executorRegistory: Record<NodeType, NodeExecutor> = {
     [NodeType.GEMINI]: GeminiExecutor,
     [NodeType.OPENROUTER]: OpenRouterExecutor,
     [NodeType.OPENAI]: OpenAIExecutor,
+    [NodeType.DEEPSEEK]: DeepSeekExecutor,
 
     // ----------------------------------------------
     [NodeType.XAI]: GeminiExecutor,
-    [NodeType.DEEPSEEK]: GeminiExecutor,
     [NodeType.ANTHROPIC]: GeminiExecutor,
 };
 

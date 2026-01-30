@@ -5,7 +5,7 @@ import { generateText } from "ai";
 import { createAIModel, extractTextFromSteps } from "@/features/ai/ai";
 import { decryptApiKey } from "@/lib/crypto";
 import prisma from "@/lib/db";
-import { openAIChannel } from "@/inngest/channels/openAi";
+import { deepseekChannel } from "@/inngest/channels/deepseek";
 
 
 Handlebars.registerHelper("json", (context) => {
@@ -14,8 +14,7 @@ Handlebars.registerHelper("json", (context) => {
 });
 
 
-
-type OpenAIProps = {
+type DeepSeekProps = {
     variableName?: string;
     model?: string;
     userPrompt?: string;
@@ -24,8 +23,7 @@ type OpenAIProps = {
 };
 
 
-
-export const OpenAIExecutor: NodeExecutor<OpenAIProps> = async ({
+export const DeepSeekExecutor: NodeExecutor<DeepSeekProps> = async ({
     data,
     nodeId,
     context,
@@ -33,7 +31,7 @@ export const OpenAIExecutor: NodeExecutor<OpenAIProps> = async ({
     publish,
 }) => {
     await publish(
-        openAIChannel().status({
+        deepseekChannel().status({
             nodeId,
             status: "loading",
         }),
@@ -42,33 +40,32 @@ export const OpenAIExecutor: NodeExecutor<OpenAIProps> = async ({
 
     if (!data.variableName) {
         await publish(
-            openAIChannel().status({
+            deepseekChannel().status({
                 nodeId,
                 status: "error",
             }),
         );
-        throw new NonRetriableError("OpenAI Node: No variable name configured");
+        throw new NonRetriableError("DeepSeek Node: No variable name configured");
     }
 
     if (!data.userPrompt) {
         await publish(
-            openAIChannel().status({
+            deepseekChannel().status({
                 nodeId,
                 status: "error",
             }),
         );
-        throw new NonRetriableError("OpenAI Node: No user prompt configured");
+        throw new NonRetriableError("DeepSeek Node: No user prompt configured");
     }
-
 
     if (!data.credentialId) {
         await publish(
-            openAIChannel().status({
+            deepseekChannel().status({
                 nodeId,
                 status: "error",
             }),
         );
-        throw new NonRetriableError("OpenAI Node: No API key configured");
+        throw new NonRetriableError("DeepSeek Node: No API key configured");
     }
 
 
@@ -82,25 +79,25 @@ export const OpenAIExecutor: NodeExecutor<OpenAIProps> = async ({
     });
 
 
-
     const systemPrompt = data.systemPrompt
         ? Handlebars.compile(data.systemPrompt)(context)
         : "You are a helpful assistant.";
 
     const userPrompt = Handlebars.compile(data.userPrompt)(context);
 
-    const model = data.model || "gpt-4o-mini";
 
+    const model = data.model || "deepseek-chat";
 
     const client = await createAIModel({
-        provider: "openai",
+        provider: "deepseek",
         model,
         apiKey,
     });
 
+
     try {
         const { steps } = await step.ai.wrap(
-            "openai-generate-text",
+            "deepseek-generate-text",
             generateText,
             {
                 model: client,
@@ -112,7 +109,7 @@ export const OpenAIExecutor: NodeExecutor<OpenAIProps> = async ({
         const text = extractTextFromSteps(steps);
 
         await publish(
-            openAIChannel().status({
+            deepseekChannel().status({
                 nodeId,
                 status: "success",
             }),
@@ -127,7 +124,7 @@ export const OpenAIExecutor: NodeExecutor<OpenAIProps> = async ({
         };
     } catch (error) {
         await publish(
-            openAIChannel().status({
+            deepseekChannel().status({
                 nodeId,
                 status: "error",
             }),

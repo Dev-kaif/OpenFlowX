@@ -9,6 +9,7 @@ import { PolarTriggerNode } from "@/features/trigger/components/polarTrigger/nod
 import { GeminiNode } from "@/features/executions/components/gemini/node";
 import { OpenRouterNode } from "@/features/executions/components/openrouter/node";
 import { OpenAINode } from "@/features/executions/components/openai/node";
+import { DeepseekNode } from "@/features/executions/components/deepseek/node";
 
 export const nodeComponents = {
     [NodeType.INITIAL]: InitialNode,
@@ -20,6 +21,7 @@ export const nodeComponents = {
     [NodeType.GEMINI]: GeminiNode,
     [NodeType.OPENROUTER]: OpenRouterNode,
     [NodeType.OPENAI]: OpenAINode,
+    [NodeType.DEEPSEEK]: DeepseekNode,
 } as const satisfies NodeTypes;
 
 export type RegisteredNodeTypes = keyof typeof nodeComponents;

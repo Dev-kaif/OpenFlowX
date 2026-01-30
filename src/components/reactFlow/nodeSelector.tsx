@@ -62,9 +62,15 @@ const executionNode: NodeTypeOption[] = [
     },
     {
         type: NodeType.OPENAI,
-        lable: "Open Router",
+        lable: "Open AI",
         description: "makes an Request to Open AI Api",
         icon: "/openai.svg",
+    },
+    {
+        type: NodeType.DEEPSEEK,
+        lable: "Deepseek",
+        description: "makes an Request to Deepseek Api",
+        icon: "/deepseek.svg",
     },
 ]
 
