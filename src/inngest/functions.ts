@@ -25,6 +25,8 @@ import { discordChannel } from "./channels/discord";
 import { slackChannel } from "./channels/slack";
 import { ifElseChannel } from "./channels/ifElse";
 import { disableSubtree } from "./utils/disable";
+import { delayChannel } from "./channels/delay";
+import { codeChannel } from "./channels/code";
 
 const TRIGGER_NODE_TYPES: NodeType[] = [
     NodeType.INITIAL,
@@ -68,6 +70,8 @@ export const executeWorkflow = inngest.createFunction(
             discordChannel(),
             slackChannel(),
             ifElseChannel(),
+            delayChannel(),
+            codeChannel(),
         ],
     },
     async ({ event, step, publish }) => {
