@@ -11,6 +11,7 @@ import { OpenRouterNode } from "@/features/executions/components/openrouter/node
 import { OpenAINode } from "@/features/executions/components/openai/node";
 import { DeepseekNode } from "@/features/executions/components/deepseek/node";
 import { AnthropicNode } from "@/features/executions/components/anthropic/node";
+import { GrokNode } from "@/features/executions/components/grok/node";
 
 export const nodeComponents = {
     [NodeType.INITIAL]: InitialNode,
@@ -24,6 +25,7 @@ export const nodeComponents = {
     [NodeType.OPENAI]: OpenAINode,
     [NodeType.DEEPSEEK]: DeepseekNode,
     [NodeType.ANTHROPIC]: AnthropicNode,
+    [NodeType.XAI]: GrokNode,
 } as const satisfies NodeTypes;
 
 export type RegisteredNodeTypes = keyof typeof nodeComponents;

@@ -9,6 +9,8 @@ import { GeminiExecutor } from "../gemini/executor";
 import { OpenRouterExecutor } from "../openrouter/executor";
 import { OpenAIExecutor } from "../openai/executor";
 import { DeepSeekExecutor } from "../deepseek/executor";
+import { GrokExecutor } from "../grok/executor";
+import { AnthropicExecutor } from "../anthropic/executor";
 
 export const executorRegistory: Record<NodeType, NodeExecutor> = {
     [NodeType.INITIAL]: manualExecutionTrigger,
@@ -21,10 +23,8 @@ export const executorRegistory: Record<NodeType, NodeExecutor> = {
     [NodeType.OPENROUTER]: OpenRouterExecutor,
     [NodeType.OPENAI]: OpenAIExecutor,
     [NodeType.DEEPSEEK]: DeepSeekExecutor,
-
-    // ----------------------------------------------
-    [NodeType.XAI]: GeminiExecutor,
-    [NodeType.ANTHROPIC]: GeminiExecutor,
+    [NodeType.ANTHROPIC]: AnthropicExecutor,
+    [NodeType.XAI]: GrokExecutor,
 };
 
 export const getExecutor = (type: NodeType): NodeExecutor => {

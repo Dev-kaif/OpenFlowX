@@ -78,6 +78,12 @@ const executionNode: NodeTypeOption[] = [
         description: "makes an Request to Anthropic Api",
         icon: "/anthropic.svg",
     },
+    {
+        type: NodeType.XAI,
+        lable: "Grok",
+        description: "makes an Request to Grok Api",
+        icon: "/grok.svg",
+    },
 ]
 
 interface NodeSelectorPros {
