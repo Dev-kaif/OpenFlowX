@@ -84,6 +84,12 @@ const executionNode: NodeTypeOption[] = [
         description: "makes an Request to Grok Api",
         icon: "/grok.svg",
     },
+    {
+        type: NodeType.DISCORD,
+        lable: "Discord",
+        description: "makes an Request to Grok Api",
+        icon: "/discord.svg",
+    },
 ]
 
 interface NodeSelectorPros {

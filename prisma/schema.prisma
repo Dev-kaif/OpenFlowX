@@ -96,6 +96,8 @@ enum NodeType {
   ANTHROPIC
   DEEPSEEK
   XAI
+  DISCORD
+  SLACK
 }
 
 model Node {
