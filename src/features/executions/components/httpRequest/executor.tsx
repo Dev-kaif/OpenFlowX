@@ -95,7 +95,6 @@ export const httpRequestTrigger: NodeExecutor<HttpRequest> = async ({
             }
 
             return {
-                ...context,
                 [data.variableName]: responsePayload
             }
         })

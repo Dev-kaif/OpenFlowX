@@ -1,19 +1,19 @@
 import { Realtime } from "@inngest/realtime";
-import { GetStepTools, Inngest } from "inngest"
+import { GetStepTools, Inngest } from "inngest";
 
-export type WorkflowContext = Record<string, unknown>
+export type NodeOutput = Record<string, any>;
 
-export type stepTools = GetStepTools<Inngest.Any>
+export type StepTools = GetStepTools<Inngest.Any>;
 
-export interface NodeExecutionParams<Tdata = Record<string, unknown>> {
-    data: Tdata;
+export interface NodeExecutionParams<TData = Record<string, unknown>> {
     nodeId: string;
+    data: TData;
+    context: Record<string, any>;
     userId: string;
-    context: WorkflowContext;
-    step: stepTools;
+    step: StepTools;
     publish: Realtime.PublishFn;
 }
 
-export type NodeExecutor<Tdata = Record<string, unknown>> = (
-    params: NodeExecutionParams<Tdata>
-) => Promise<WorkflowContext>
+export type NodeExecutor<TData = Record<string, unknown>> = (
+    params: NodeExecutionParams<TData>
+) => Promise<NodeOutput>;
