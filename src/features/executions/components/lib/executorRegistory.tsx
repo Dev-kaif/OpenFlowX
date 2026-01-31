@@ -16,6 +16,7 @@ import { SlackExecutor } from "../slack/executor";
 import { IfNodeExecutor } from "../UtilsNodes/ifElseNode/executor";
 import { DelayExecutor } from "../UtilsNodes/delay/executor";
 import { CodeExecutor } from "../UtilsNodes/code/executor";
+import { PostgresExecutor } from "../postgress/executor";
 
 export const executorRegistory: Record<NodeType, NodeExecutor> = {
     [NodeType.INITIAL]: manualExecutionTrigger,
@@ -35,6 +36,7 @@ export const executorRegistory: Record<NodeType, NodeExecutor> = {
     [NodeType.IFELSE]: IfNodeExecutor,
     [NodeType.DELAY]: DelayExecutor,
     [NodeType.CODE]: CodeExecutor,
+    [NodeType.POSTGRESS]: PostgresExecutor,
 };
 
 

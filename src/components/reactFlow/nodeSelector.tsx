@@ -114,6 +114,12 @@ const executionNode: NodeTypeOption[] = [
         description: "makes an Request to Grok Api",
         icon: CodeIcon,
     },
+    {
+        type: NodeType.POSTGRESS,
+        lable: "Postgress",
+        description: "makes an Request to Grok Api",
+        icon: "/postgress.svg",
+    },
 ]
 
 interface NodeSelectorPros {

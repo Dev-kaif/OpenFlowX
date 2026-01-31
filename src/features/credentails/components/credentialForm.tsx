@@ -34,6 +34,7 @@ import {
 import { Button } from '@/components/ui/button';
 import Link from "next/link";
 import { CredentialType } from "@/generated/prisma/enums";
+import { useState } from "react";
 
 const formSchema = z.object({
     name: z.string().min(1, 'Name is required'),
@@ -73,6 +74,11 @@ export const credentialTypeOptions = [
         value: CredentialType.XAI,
         label: "xAI",
         logo: "/grok.svg",
+    },
+    {
+        value: CredentialType.POSTGRESS,
+        label: "Postgres",
+        logo: "/postgress.svg",
     },
 ];
 
@@ -121,6 +127,8 @@ export const CredentialForm = ({ initialData }: CredentialFormProps) => {
         }
     };
 
+    const selectedType = form.watch("type");
+
     return (
         <Card className="shadow-none">
             <CardHeader>
@@ -145,7 +153,10 @@ export const CredentialForm = ({ initialData }: CredentialFormProps) => {
                                 <FormItem>
                                     <FormLabel>Name</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="My API key" {...field} />
+                                        <Input placeholder={
+                                            CredentialType.POSTGRESS === selectedType ?
+                                                "My Connection String" : "My API Key"
+                                        } {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -194,9 +205,17 @@ export const CredentialForm = ({ initialData }: CredentialFormProps) => {
                             name="value"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>API Key</FormLabel>
+                                    <FormLabel>
+                                        {
+                                            CredentialType.POSTGRESS === selectedType ?
+                                                "Connection String" : "API Key"
+                                        }
+                                    </FormLabel>
                                     <FormControl>
-                                        <Input type="text" placeholder="sk-..." {...field} />
+                                        <Input type="text" placeholder={
+                                            CredentialType.POSTGRESS === selectedType ?
+                                                "postgresql://" : "sk-..."
+                                        }  {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>

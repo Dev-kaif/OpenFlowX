@@ -103,6 +103,10 @@ enum NodeType {
   IFELSE
   DELAY
   CODE
+  TEMPLATE
+  SEARCH
+  SCRAPER
+  POSTGRESS
 }
 
 model Node {
@@ -150,6 +154,7 @@ enum CredentialType {
   ANTHROPIC
   DEEPSEEK
   XAI
+  POSTGRESS
 }
 
 model Credential {

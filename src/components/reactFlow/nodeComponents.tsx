@@ -17,6 +17,7 @@ import { SlackNode } from "@/features/executions/components/slack/node";
 import { IfElseNode } from "@/features/executions/components/UtilsNodes/ifElseNode/node";
 import { DelayNode } from "@/features/executions/components/UtilsNodes/delay/node";
 import { CodeNode } from "@/features/executions/components/UtilsNodes/code/node";
+import { PostgressNode } from "@/features/executions/components/postgress/node";
 
 export const nodeComponents = {
     [NodeType.INITIAL]: InitialNode,
@@ -36,6 +37,7 @@ export const nodeComponents = {
     [NodeType.IFELSE]: IfElseNode,
     [NodeType.DELAY]: DelayNode,
     [NodeType.CODE]: CodeNode,
+    [NodeType.POSTGRESS]: PostgressNode,
 } as const satisfies NodeTypes;
 
 export type RegisteredNodeTypes = keyof typeof nodeComponents;
