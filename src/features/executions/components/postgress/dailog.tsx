@@ -45,7 +45,32 @@ const postgressSchema = z.object({
     data: z.string().optional(),
     filter: z.string().optional(),
     rawQuery: z.string().optional(),
+}).superRefine((data, ctx) => {
+    if (data.action !== "QUERY" && !data.tableName) {
+        ctx.addIssue({
+            path: ["tableName"],
+            message: "Table name is required",
+            code: z.ZodIssueCode.custom,
+        });
+    }
+
+    if (data.action === "QUERY" && !data.rawQuery) {
+        ctx.addIssue({
+            path: ["rawQuery"],
+            message: "SQL query is required",
+            code: z.ZodIssueCode.custom,
+        });
+    }
+
+    if ((data.action === "INSERT" || data.action === "UPDATE") && !data.data) {
+        ctx.addIssue({
+            path: ["data"],
+            message: "Data payload is required",
+            code: z.ZodIssueCode.custom,
+        });
+    }
 });
+
 
 export type PostgressFormValues = z.infer<typeof postgressSchema>;
 
@@ -85,10 +110,9 @@ export const PostgressDialog = ({
     const credentialId = form.watch("credentialId");
 
     useEffect(() => {
-        if (!open) return;
         setFetchedTables([]);
-    }, [open]);
-
+        form.setValue("tableName", "");
+    }, [credentialId]);
 
 
     const selectedCredential = credentials?.find(
