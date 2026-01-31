@@ -7,6 +7,7 @@ import prisma from "@/lib/db";
 import { decryptApiKey } from "@/lib/crypto";
 
 type PostgresNodeData = {
+    variableName?: string;
     credentialId?: string;
     action?: "INSERT" | "SELECT" | "UPDATE" | "DELETE" | "QUERY";
     tableName?: string;
@@ -49,8 +50,19 @@ export const PostgresExecutor: NodeExecutor<PostgresNodeData> = async ({
                 status: "error"
             })
         );
-        throw new NonRetriableError("Postgres: Connection string is required");
+        throw new NonRetriableError("Postgres Node: Connection string is required");
     }
+
+    if (!data.variableName) {
+        await publish(
+            postgressChannel().status({
+                nodeId,
+                status: "error",
+            }),
+        );
+        throw new NonRetriableError("Postgres Node: No variable name configured");
+    }
+
 
     try {
 
@@ -143,7 +155,16 @@ export const PostgresExecutor: NodeExecutor<PostgresNodeData> = async ({
                 status: "success"
             })
         );
-        return { result };
+
+        const rows = Array.isArray(result) ? result : [];
+
+        return {
+            [data.variableName!]: {
+                rows,
+                count: rows.length,
+                raw: result,
+            },
+        };
 
     } catch (error: any) {
         await publish(

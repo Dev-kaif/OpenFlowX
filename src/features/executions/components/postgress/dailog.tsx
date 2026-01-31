@@ -37,8 +37,14 @@ import { useCredentialsByType } from "@/features/credentails/hooks/useCredential
 import { CredentialType } from "@/generated/prisma/enums";
 import { fetchPostgressTables } from "./actions";
 
+/* ================= SCHEMA ================= */
 
 const postgressSchema = z.object({
+    variableName: z
+        .string()
+        .min(1, "Variable name is required")
+        .regex(/^[A-Za-z_][A-Za-z0-9_]*$/, "Invalid variable name"),
+
     credentialId: z.string().min(1, "Database credential is required"),
     action: z.enum(["INSERT", "SELECT", "UPDATE", "DELETE", "QUERY"]),
     tableName: z.string().optional(),
@@ -71,9 +77,7 @@ const postgressSchema = z.object({
     }
 });
 
-
 export type PostgressFormValues = z.infer<typeof postgressSchema>;
-
 
 interface Props {
     open: boolean;
@@ -92,11 +96,13 @@ export const PostgressDialog = ({
     const [fetchedTables, setFetchedTables] = useState<string[]>([]);
     const [isFetching, setIsFetching] = useState(false);
 
-    const { data: credentials, isLoading } = useCredentialsByType(CredentialType.POSTGRESS);
+    const { data: credentials, isLoading } =
+        useCredentialsByType(CredentialType.POSTGRESS);
 
     const form = useForm<PostgressFormValues>({
         resolver: zodResolver(postgressSchema),
         defaultValues: {
+            variableName: defaultValues.variableName ?? "db",
             credentialId: defaultValues.credentialId ?? "",
             action: defaultValues.action ?? "SELECT",
             tableName: defaultValues.tableName ?? "",
@@ -108,30 +114,28 @@ export const PostgressDialog = ({
 
     const action = form.watch("action");
     const credentialId = form.watch("credentialId");
+    const watchVariableName = form.watch("variableName") || "db";
 
     useEffect(() => {
         setFetchedTables([]);
         form.setValue("tableName", "");
     }, [credentialId]);
 
-
     const selectedCredential = credentials?.find(
         (c) => c.id === credentialId
     );
 
     const handleFetchTables = async () => {
-        if (!credentialId) {
-            toast.error("Select a database credential first");
-            return;
-        }
-
-        if (!selectedCredential) {
+        if (!credentialId || !selectedCredential) {
             toast.error("Select a database credential first");
             return;
         }
 
         setIsFetching(true);
-        const result = await fetchPostgressTables(credentialId, selectedCredential?.userId);
+        const result = await fetchPostgressTables(
+            credentialId,
+            selectedCredential.userId
+        );
         setIsFetching(false);
 
         if (!result.success) {
@@ -152,7 +156,6 @@ export const PostgressDialog = ({
         }
     };
 
-
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
@@ -171,6 +174,35 @@ export const PostgressDialog = ({
                         })}
                         className="space-y-4"
                     >
+                        {/* Variable Name */}
+                        <FormField
+                            control={form.control}
+                            name="variableName"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Variable Name</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="db" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <div className="rounded-lg bg-muted p-3 text-xs space-y-2">
+                            <p className="font-medium">Available variables in next node</p>
+                            <div className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-muted-foreground">
+                                <code className="bg-background px-1.5 py-0.5 rounded">
+                                    {`{{${watchVariableName}.rows}}`}
+                                </code>
+                                <span>All returned rows</span>
+
+                                <code className="bg-background px-1.5 py-0.5 rounded">
+                                    {`{{${watchVariableName}.count}}`}
+                                </code>
+                                <span>Number of rows</span>
+                            </div>
+                        </div>
 
                         {/* Credential */}
                         <FormField
@@ -370,7 +402,6 @@ export const PostgressDialog = ({
                             </DialogClose>
                             <Button type="submit">Save Database Node</Button>
                         </DialogFooter>
-
                     </form>
                 </Form>
             </DialogContent>
