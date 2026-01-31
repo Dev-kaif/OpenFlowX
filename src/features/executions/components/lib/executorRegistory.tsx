@@ -17,6 +17,7 @@ import { IfNodeExecutor } from "../UtilsNodes/ifElseNode/executor";
 import { DelayExecutor } from "../UtilsNodes/delay/executor";
 import { CodeExecutor } from "../UtilsNodes/code/executor";
 import { PostgresExecutor } from "../postgress/executor";
+import { TemplateExecutor } from "../UtilsNodes/template/executor";
 
 export const executorRegistory: Record<NodeType, NodeExecutor> = {
     [NodeType.INITIAL]: manualExecutionTrigger,
@@ -36,6 +37,7 @@ export const executorRegistory: Record<NodeType, NodeExecutor> = {
     [NodeType.IFELSE]: IfNodeExecutor,
     [NodeType.DELAY]: DelayExecutor,
     [NodeType.CODE]: CodeExecutor,
+    [NodeType.TEMPLATE]: TemplateExecutor,
     [NodeType.POSTGRESS]: PostgresExecutor,
 };
 

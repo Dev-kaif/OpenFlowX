@@ -18,6 +18,7 @@ import { IfElseNode } from "@/features/executions/components/UtilsNodes/ifElseNo
 import { DelayNode } from "@/features/executions/components/UtilsNodes/delay/node";
 import { CodeNode } from "@/features/executions/components/UtilsNodes/code/node";
 import { PostgressNode } from "@/features/executions/components/postgress/node";
+import { TemplateNode } from "@/features/executions/components/UtilsNodes/template/node";
 
 export const nodeComponents = {
     [NodeType.INITIAL]: InitialNode,
@@ -37,6 +38,7 @@ export const nodeComponents = {
     [NodeType.IFELSE]: IfElseNode,
     [NodeType.DELAY]: DelayNode,
     [NodeType.CODE]: CodeNode,
+    [NodeType.TEMPLATE]: TemplateNode,
     [NodeType.POSTGRESS]: PostgressNode,
 } as const satisfies NodeTypes;
 

@@ -1,6 +1,6 @@
 import { NodeType } from "@/generated/prisma/enums";
 import { createId } from "@paralleldrive/cuid2";
-import { CodeIcon, GlobeIcon, MousePointerIcon } from "lucide-react";
+import { CodeIcon, FileText, GlobeIcon, MousePointerIcon } from "lucide-react";
 import React, { useCallback } from "react";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "../ui/sheet";
 import { Separator } from "../ui/separator";
@@ -45,82 +45,88 @@ const executionNode: NodeTypeOption[] = [
     {
         type: NodeType.HTTP_REQUEST,
         lable: "HTTP Request",
-        description: "makes an HTTP request",
+        description: "Send an HTTP request to any REST API and use the response in your workflow",
         icon: GlobeIcon,
     },
     {
         type: NodeType.GEMINI,
         lable: "Gemini",
-        description: "makes an Request to Gemini Api",
+        description: "Generate text or structured output using Google Gemini models",
         icon: "/gemini.svg",
     },
     {
         type: NodeType.OPENROUTER,
-        lable: "Open Router",
-        description: "makes an Request to OpenRouter Api",
+        lable: "OpenRouter",
+        description: "Call LLMs from multiple providers through the OpenRouter API",
         icon: "/openrouter.svg",
     },
     {
         type: NodeType.OPENAI,
-        lable: "Open AI",
-        description: "makes an Request to Open AI Api",
+        lable: "OpenAI",
+        description: "Generate text or data using OpenAI models like GPT-4",
         icon: "/openai.svg",
     },
     {
         type: NodeType.DEEPSEEK,
-        lable: "Deepseek",
-        description: "makes an Request to Deepseek Api",
+        lable: "DeepSeek",
+        description: "Run reasoning or code-focused prompts using DeepSeek models",
         icon: "/deepseek.svg",
     },
     {
         type: NodeType.ANTHROPIC,
         lable: "Anthropic",
-        description: "makes an Request to Anthropic Api",
+        description: "Generate responses using Anthropic Claude models",
         icon: "/anthropic.svg",
     },
     {
         type: NodeType.XAI,
         lable: "Grok",
-        description: "makes an Request to Grok Api",
+        description: "Generate text using xAI Grok models",
         icon: "/grok.svg",
     },
     {
         type: NodeType.DISCORD,
         lable: "Discord",
-        description: "makes an Request to Grok Api",
+        description: "Send messages or notifications to a Discord channel",
         icon: "/discord.svg",
     },
     {
         type: NodeType.SLACK,
         lable: "Slack",
-        description: "makes an Request to Grok Api",
+        description: "Post messages or alerts to a Slack workspace",
         icon: "/slack.svg",
     },
     {
         type: NodeType.IFELSE,
-        lable: "If Else",
-        description: "makes an Request to Grok Api",
+        lable: "If / Else",
+        description: "Branch workflow execution based on a boolean condition",
         icon: "/utils/ifelse.svg",
     },
     {
         type: NodeType.DELAY,
         lable: "Delay",
-        description: "makes an Request to Grok Api",
+        description: "Pause workflow execution for a specified amount of time",
         icon: "/utils/delay.svg",
     },
     {
         type: NodeType.CODE,
         lable: "Code",
-        description: "makes an Request to Grok Api",
+        description: "Run custom JavaScript logic inside the workflow",
         icon: CodeIcon,
     },
     {
+        type: NodeType.TEMPLATE,
+        lable: "Template",
+        description: "Create reusable text or data by rendering a template with workflow variables",
+        icon: FileText,
+    },
+    {
         type: NodeType.POSTGRESS,
-        lable: "Postgress",
-        description: "makes an Request to Grok Api",
+        lable: "Postgres",
+        description: "Read or write data from a Postgres database",
         icon: "/postgress.svg",
     },
-]
+];
 
 interface NodeSelectorPros {
     open: boolean,
