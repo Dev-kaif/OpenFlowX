@@ -117,6 +117,7 @@ enum NodeType {
   CLOUDINARY
   NOTION
   SCHEDULE
+  JSON_PARSE
 }
 
 model Node {

@@ -155,6 +155,12 @@ const executionNode: NodeTypeOption[] = [
         description: "Read or write data from a Postgres database",
         icon: "/resend.svg",
     },
+    {
+        type: NodeType.JSON_PARSE,
+        lable: "Json Parsing",
+        description: "Read or write data from a Postgres database",
+        icon: "/utils/json.svg",
+    },
 ];
 
 interface NodeSelectorPros {

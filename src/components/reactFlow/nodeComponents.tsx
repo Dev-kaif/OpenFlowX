@@ -24,6 +24,7 @@ import { ScraperNode } from "@/features/executions/components/UtilsNodes/scraper
 import { GoogleSheetsNode } from "@/features/executions/components/googleSheets/node";
 import { ScheduleNode } from "@/features/trigger/components/schedule/node";
 import { ResendNode } from "@/features/executions/components/resend/node";
+import { JsonParseNode } from "@/features/executions/components/UtilsNodes/jsonParse/node";
 
 export const nodeComponents = {
     [NodeType.INITIAL]: InitialNode,
@@ -50,6 +51,7 @@ export const nodeComponents = {
     [NodeType.GOOGLESHEETS]: GoogleSheetsNode,
     [NodeType.SCHEDULE]: ScheduleNode,
     [NodeType.EMAIL_RESEND]: ResendNode,
+    [NodeType.JSON_PARSE]: JsonParseNode,
 } as const satisfies NodeTypes;
 
 export type RegisteredNodeTypes = keyof typeof nodeComponents;

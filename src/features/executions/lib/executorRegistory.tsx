@@ -23,6 +23,7 @@ import { PostgresExecutor } from "../components/postgress/executor";
 import { GoogleSheetsExecutor } from "../components/googleSheets/executor";
 import { ScheduleExecutor } from "@/features/trigger/components/schedule/executor";
 import { ResendExecutor } from "../components/resend/executor";
+import { JsonParseExecutor } from "../components/UtilsNodes/jsonParse/executor";
 
 
 export const executorRegistory: Record<NodeType, NodeExecutor> = {
@@ -50,6 +51,7 @@ export const executorRegistory: Record<NodeType, NodeExecutor> = {
     [NodeType.GOOGLESHEETS]: GoogleSheetsExecutor,
     [NodeType.SCHEDULE]: ScheduleExecutor,
     [NodeType.EMAIL_RESEND]: ResendExecutor,
+    [NodeType.JSON_PARSE]: JsonParseExecutor,
 };
 
 
