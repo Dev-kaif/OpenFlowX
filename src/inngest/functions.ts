@@ -34,6 +34,7 @@ const TRIGGER_NODE_TYPES: NodeType[] = [
     NodeType.GOOGLE_FORM_TRIGGER,
     NodeType.STRIPE_TRIGGER,
     NodeType.POLAR_TRIGGER,
+    NodeType.SCHEDULE,
 ];
 
 const BRANCH_CONDITIONS = ["true", "false"];

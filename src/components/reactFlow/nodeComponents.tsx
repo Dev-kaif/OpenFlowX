@@ -22,6 +22,7 @@ import { TemplateNode } from "@/features/executions/components/UtilsNodes/templa
 import { SearchNode } from "@/features/executions/components/UtilsNodes/search/node";
 import { ScraperNode } from "@/features/executions/components/UtilsNodes/scraper/node";
 import { GoogleSheetsNode } from "@/features/executions/components/googleSheets/node";
+import { ScheduleNode } from "@/features/trigger/components/schedule/node";
 
 export const nodeComponents = {
     [NodeType.INITIAL]: InitialNode,
@@ -46,6 +47,7 @@ export const nodeComponents = {
     [NodeType.SEARCH]: SearchNode,
     [NodeType.SCRAPER]: ScraperNode,
     [NodeType.GOOGLESHEETS]: GoogleSheetsNode,
+    [NodeType.SCHEDULE]: ScheduleNode,
 } as const satisfies NodeTypes;
 
 export type RegisteredNodeTypes = keyof typeof nodeComponents;

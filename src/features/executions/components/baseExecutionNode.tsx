@@ -16,21 +16,23 @@ interface BaseExecutionProps extends NodeProps {
     status?: NodeStatus;
     onSetting?: () => void;
     onDoubleClick?: () => void;
+    onDelete?: () => void;
 }
 
 export const BaseExecutionNode = memo(({
     id,
-    icon:Icon,
+    icon: Icon,
     name,
     description,
     children,
     status = "initial",
     onDoubleClick,
     onSetting,
+    onDelete
 }: BaseExecutionProps) => {
 
     const { setNodes, setEdges } = useReactFlow();
-    
+
     const handleDelete = () => {
         setNodes((currentNodes) => {
             const updatedNodes = currentNodes.filter((node) => node.id !== id);
@@ -38,12 +40,14 @@ export const BaseExecutionNode = memo(({
         });
         setEdges((currentEdges) => {
             const updatedEdges = currentEdges.filter(
-            (edge) => edge.source !== id && edge.target !== id
+                (edge) => edge.source !== id && edge.target !== id
             );
             return updatedEdges;
         });
+
+        if (onDelete) onDelete()
     };
-    
+
     return (
         <WorkflowNode
             name={name}
@@ -63,8 +67,8 @@ export const BaseExecutionNode = memo(({
                     <BaseNodeContent>
                         {typeof Icon == "string" ? (
                             <Image alt={name} src={Icon} height={16} width={16} />
-                        ): (
-                            <Icon className="size-4 text-muted-foreground" />   
+                        ) : (
+                            <Icon className="size-4 text-muted-foreground" />
                         )}
                         {children}
                         <BaseHandle
@@ -76,7 +80,7 @@ export const BaseExecutionNode = memo(({
                             id={"source-1"}
                             type="source"
                             position={Position.Right}
-                            />
+                        />
                     </BaseNodeContent>
                 </BaseNode>
             </NodeStatusIndicator>

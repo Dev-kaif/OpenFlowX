@@ -10,12 +10,15 @@ import { SaveIcon } from "lucide-react"
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { editorAtom } from "../store/Atoms";
+import { useActivateSchedule } from "@/features/trigger/components/schedule/hook";
+import { NodeType } from "@/generated/prisma/enums";
 
 export const EditorSaveButton = ({ workflowId }: { workflowId: string }) => {
 
     const editorState = useAtomValue(editorAtom);
-    
+
     const saveWorkflow = useUpdateWorkflow();
+    const ActivateSchedule = useActivateSchedule()
 
     const handleSaveWorkflow = () => {
         if (!editorState) {
@@ -29,11 +32,19 @@ export const EditorSaveButton = ({ workflowId }: { workflowId: string }) => {
             sourceHandle: edge.sourceHandle ?? undefined, // null → undefined
             targetHandle: edge.targetHandle ?? undefined, // null → undefined
         }));
-        
+
         saveWorkflow.mutate({
-            id:workflowId,
+            id: workflowId,
             nodes,
             edges
+        }, {
+            onSuccess: () => {
+                const schedulers = nodes.filter(n => n.type === NodeType.SCHEDULE);
+
+                for (const node of schedulers) {
+                    ActivateSchedule.mutate({ nodeId: node.id });
+                }
+            },
         })
     }
 
@@ -84,14 +95,14 @@ export const EditorNameInput = ({ workflowId }: { workflowId: string }) => {
             setWorkflowName(workflow.name)
         }
     }, [workflow.name])
-    
+
     useEffect(() => {
         if (isEditing && inputRef.current) {
             inputRef.current.focus();
             inputRef.current.select();
         }
     }, [isEditing])
-    
+
     const handleSave = async () => {
         if (workflowName == workflow.name) {
             setIsEditing(false)

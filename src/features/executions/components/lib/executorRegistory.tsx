@@ -21,6 +21,7 @@ import { TemplateExecutor } from "../UtilsNodes/template/executor";
 import { SearchExecutor } from "../UtilsNodes/search/executor";
 import { ScraperExecutor } from "../UtilsNodes/scraper/executor";
 import { GoogleSheetsExecutor } from "../googleSheets/executor";
+import { ScheduleExecutor } from "../../../trigger/components/schedule/executor";
 
 export const executorRegistory: Record<NodeType, NodeExecutor> = {
     [NodeType.INITIAL]: manualExecutionTrigger,
@@ -45,6 +46,7 @@ export const executorRegistory: Record<NodeType, NodeExecutor> = {
     [NodeType.SCRAPER]: ScraperExecutor,
     [NodeType.POSTGRESS]: PostgresExecutor,
     [NodeType.GOOGLESHEETS]: GoogleSheetsExecutor,
+    [NodeType.SCHEDULE]: ScheduleExecutor,
 };
 
 

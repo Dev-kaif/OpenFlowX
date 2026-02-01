@@ -38,6 +38,12 @@ const triggerNode: NodeTypeOption[] = [
         description: "Runs the flow when a Polar event is received.",
         icon: "/polar.svg",
     },
+    {
+        type: NodeType.SCHEDULE,
+        lable: "Schedule",
+        description: "Runs the flow when a Polar event is received.",
+        icon: "/utils/schedule.svg",
+    },
 ]
 
 const executionNode: NodeTypeOption[] = [

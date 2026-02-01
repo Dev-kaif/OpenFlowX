@@ -83,6 +83,8 @@ model Workflow {
   user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   executions Execution[]
+
+  schedules Schedule[]
 }
 
 enum NodeType {
@@ -108,6 +110,13 @@ enum NodeType {
   SCRAPER
   POSTGRESS
   GOOGLESHEETS
+  EMAIL_RESEND
+  FILE
+  S3
+  R2
+  CLOUDINARY
+  NOTION
+  SCHEDULE
 }
 
 model Node {
@@ -157,6 +166,10 @@ enum CredentialType {
   XAI
   POSTGRESS
   GOOGLESHEETS
+  S3
+  R2
+  CLOUDINARY
+  NOTION
 }
 
 model Credential {
@@ -197,4 +210,23 @@ model Execution {
   inngestEventId String @unique
 
   output Json?
+}
+
+model Schedule {
+  id              String  @id @default(cuid())
+  workflowId      String
+  nodeId          String  @unique
+  mode            String
+  timezone        String
+  isDraft         Boolean @default(true)
+  intervalMinutes Int?
+  time            String?
+  days            Int[]
+
+  enabled   Boolean   @default(true)
+  lastRunAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  workflow Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
 }
