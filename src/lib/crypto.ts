@@ -28,11 +28,11 @@ export function decryptApiKey(encryptedValue: string): string {
 
     const decrypted = simpleCrypto.decrypt(encryptedValue);
 
-    if (typeof decrypted !== "string") {
-        throw new Error("Decrypted value is not a string");
+    if (typeof decrypted === "string") {
+        return decrypted;
     }
 
-    return decrypted;
+    return JSON.stringify(decrypted);
 }
 
 

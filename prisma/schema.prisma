@@ -107,6 +107,7 @@ enum NodeType {
   SEARCH
   SCRAPER
   POSTGRESS
+  GOOGLESHEETS
 }
 
 model Node {
@@ -155,6 +156,7 @@ enum CredentialType {
   DEEPSEEK
   XAI
   POSTGRESS
+  GOOGLESHEETS
 }
 
 model Credential {

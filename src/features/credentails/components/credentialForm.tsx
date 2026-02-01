@@ -80,6 +80,11 @@ export const credentialTypeOptions = [
         label: "Postgres",
         logo: "/postgress.svg",
     },
+    {
+        value: CredentialType.GOOGLESHEETS,
+        label: "Sheets",
+        logo: "/googleform.svg",
+    },
 ];
 
 

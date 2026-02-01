@@ -21,6 +21,7 @@ import { PostgressNode } from "@/features/executions/components/postgress/node";
 import { TemplateNode } from "@/features/executions/components/UtilsNodes/template/node";
 import { SearchNode } from "@/features/executions/components/UtilsNodes/search/node";
 import { ScraperNode } from "@/features/executions/components/UtilsNodes/scraper/node";
+import { GoogleSheetsNode } from "@/features/executions/components/googleSheets/node";
 
 export const nodeComponents = {
     [NodeType.INITIAL]: InitialNode,
@@ -44,6 +45,7 @@ export const nodeComponents = {
     [NodeType.POSTGRESS]: PostgressNode,
     [NodeType.SEARCH]: SearchNode,
     [NodeType.SCRAPER]: ScraperNode,
+    [NodeType.GOOGLESHEETS]: GoogleSheetsNode,
 } as const satisfies NodeTypes;
 
 export type RegisteredNodeTypes = keyof typeof nodeComponents;

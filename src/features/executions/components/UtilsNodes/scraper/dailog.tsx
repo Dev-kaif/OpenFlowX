@@ -110,13 +110,25 @@ export const ScraperDialog = ({
                                     <FormControl>
                                         <Input placeholder="{{search.results}}" {...field} />
                                     </FormControl>
-                                    <div className="text-[10px] text-muted-foreground space-y-1">
-                                        <p>Supports:</p>
-                                        <ul className="list-disc pl-3">
-                                            <li>Single URL: <code>https://example.com</code></li>
-                                            <li>Search Results: <code>{`{{search.results}}`}</code> (Scrapes top 3)</li>
-                                            <li>Specific Result: <code>{`{{search.results[0].url}}`}</code></li>
-                                        </ul>
+                                    <div className="rounded-lg bg-muted p-3 text-xs space-y-2">
+                                        <p className="font-medium">Supported inputs</p>
+
+                                        <div className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-muted-foreground">
+                                            <code className="bg-background px-1.5 py-0.5 rounded">
+                                                https://example.com
+                                            </code>
+                                            <span>Single URL</span>
+
+                                            <code className="bg-background px-1.5 py-0.5 rounded">
+                                                {`{{search.results}}`}
+                                            </code>
+                                            <span>Top 3 search result URLs</span>
+
+                                            <code className="bg-background px-1.5 py-0.5 rounded">
+                                                {`{{search.results[0].url}}`}
+                                            </code>
+                                            <span>Specific result URL</span>
+                                        </div>
                                     </div>
                                     <FormMessage />
                                 </FormItem>

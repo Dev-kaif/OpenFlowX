@@ -137,6 +137,12 @@ const executionNode: NodeTypeOption[] = [
         description: "Read or write data from a Postgres database",
         icon: "/postgress.svg",
     },
+    {
+        type: NodeType.GOOGLESHEETS,
+        lable: "Google Sheets",
+        description: "Read or write data from a Postgres database",
+        icon: "/sheets.svg",
+    },
 ];
 
 interface NodeSelectorPros {
