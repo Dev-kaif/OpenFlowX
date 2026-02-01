@@ -18,6 +18,8 @@ import { DelayExecutor } from "../UtilsNodes/delay/executor";
 import { CodeExecutor } from "../UtilsNodes/code/executor";
 import { PostgresExecutor } from "../postgress/executor";
 import { TemplateExecutor } from "../UtilsNodes/template/executor";
+import { SearchExecutor } from "../UtilsNodes/search/executor";
+import { ScraperExecutor } from "../UtilsNodes/scraper/executor";
 
 export const executorRegistory: Record<NodeType, NodeExecutor> = {
     [NodeType.INITIAL]: manualExecutionTrigger,
@@ -38,6 +40,8 @@ export const executorRegistory: Record<NodeType, NodeExecutor> = {
     [NodeType.DELAY]: DelayExecutor,
     [NodeType.CODE]: CodeExecutor,
     [NodeType.TEMPLATE]: TemplateExecutor,
+    [NodeType.SEARCH]: SearchExecutor,
+    [NodeType.SCRAPER]: ScraperExecutor,
     [NodeType.POSTGRESS]: PostgresExecutor,
 };
 

@@ -25,7 +25,6 @@ import { Button } from "@/components/ui/button";
 import Editor from "@monaco-editor/react";
 import { FileText, Loader2 } from "lucide-react";
 
-/* ================= SCHEMA ================= */
 
 export const templateFormSchema = z.object({
     variableName: z

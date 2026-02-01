@@ -19,6 +19,8 @@ import { DelayNode } from "@/features/executions/components/UtilsNodes/delay/nod
 import { CodeNode } from "@/features/executions/components/UtilsNodes/code/node";
 import { PostgressNode } from "@/features/executions/components/postgress/node";
 import { TemplateNode } from "@/features/executions/components/UtilsNodes/template/node";
+import { SearchNode } from "@/features/executions/components/UtilsNodes/search/node";
+import { ScraperNode } from "@/features/executions/components/UtilsNodes/scraper/node";
 
 export const nodeComponents = {
     [NodeType.INITIAL]: InitialNode,
@@ -40,6 +42,8 @@ export const nodeComponents = {
     [NodeType.CODE]: CodeNode,
     [NodeType.TEMPLATE]: TemplateNode,
     [NodeType.POSTGRESS]: PostgressNode,
+    [NodeType.SEARCH]: SearchNode,
+    [NodeType.SCRAPER]: ScraperNode,
 } as const satisfies NodeTypes;
 
 export type RegisteredNodeTypes = keyof typeof nodeComponents;

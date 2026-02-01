@@ -36,8 +36,9 @@ export const TemplateExecutor: NodeExecutor<TemplateNodeData> = async ({
         const rendered = await step.run("render-template", async () => {
             const tpl = Handlebars.compile(data.template, {
                 noEscape: true,
-            });
-            return tpl(context)?.trim?.();
+            })(context)?.trim?.();
+
+            return tpl;
         });
 
         await publish(

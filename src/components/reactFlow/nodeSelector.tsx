@@ -1,12 +1,11 @@
 import { NodeType } from "@/generated/prisma/enums";
 import { createId } from "@paralleldrive/cuid2";
-import { CodeIcon, FileText, GlobeIcon, MousePointerIcon } from "lucide-react";
+import { CodeIcon, EyeIcon, FileText, GlobeIcon, MousePointerIcon, Search } from "lucide-react";
 import React, { useCallback } from "react";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "../ui/sheet";
 import { Separator } from "../ui/separator";
 import { useReactFlow } from "@xyflow/react";
 import { toast } from "sonner";
-
 export type NodeTypeOption = {
     type: NodeType,
     lable: string;
@@ -119,6 +118,18 @@ const executionNode: NodeTypeOption[] = [
         lable: "Template",
         description: "Create reusable text or data by rendering a template with workflow variables",
         icon: FileText,
+    },
+    {
+        type: NodeType.SEARCH,
+        lable: "Search",
+        description: "Create reusable text or data by rendering a template with workflow variables",
+        icon: Search,
+    },
+    {
+        type: NodeType.SCRAPER,
+        lable: "Scraper",
+        description: "Create reusable text or data by rendering a template with workflow variables",
+        icon: EyeIcon,
     },
     {
         type: NodeType.POSTGRESS,
