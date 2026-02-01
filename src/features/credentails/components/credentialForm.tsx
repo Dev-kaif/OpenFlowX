@@ -85,6 +85,11 @@ export const credentialTypeOptions = [
         label: "Sheets",
         logo: "/googleform.svg",
     },
+    {
+        value: CredentialType.RESEND,
+        label: "Resend",
+        logo: "/resend.svg",
+    },
 ];
 
 

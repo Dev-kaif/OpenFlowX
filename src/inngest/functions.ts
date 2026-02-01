@@ -7,7 +7,7 @@ import { getReachableNodeIds } from "./utils/reachability";
 import { buildNodeInput, buildParentsMap } from "./utils/parents";
 
 import { ExecutionStatus, NodeType } from "@/generated/prisma/enums";
-import { getExecutor } from "@/features/executions/components/lib/executorRegistory";
+import { getExecutor } from "@/features/executions/lib/executorRegistory";
 
 
 import { httpRequestChannel } from "./channels/httpRequest";

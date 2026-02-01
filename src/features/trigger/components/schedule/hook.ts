@@ -75,7 +75,8 @@ export const useDeleteSchedule = () => {
                 toast.success("Schedule deleted");
             },
             onError: (error) => {
-                toast.error(error.message ?? "Failed to delete schedule");
+                console.log(error)
+                // toast.error(error.message ?? "Failed to delete schedule");
             },
         })
     );

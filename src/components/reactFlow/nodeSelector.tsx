@@ -149,6 +149,12 @@ const executionNode: NodeTypeOption[] = [
         description: "Read or write data from a Postgres database",
         icon: "/sheets.svg",
     },
+    {
+        type: NodeType.EMAIL_RESEND,
+        lable: "Resend",
+        description: "Read or write data from a Postgres database",
+        icon: "/resend.svg",
+    },
 ];
 
 interface NodeSelectorPros {

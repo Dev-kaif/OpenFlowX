@@ -170,6 +170,7 @@ enum CredentialType {
   R2
   CLOUDINARY
   NOTION
+  RESEND
 }
 
 model Credential {
