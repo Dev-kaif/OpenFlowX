@@ -26,6 +26,8 @@ import { ScheduleNode } from "@/features/trigger/components/schedule/node";
 import { ResendNode } from "@/features/executions/components/resend/node";
 import { JsonParseNode } from "@/features/executions/components/UtilsNodes/jsonParse/node";
 import { FileNode } from "@/features/executions/components/UtilsNodes/file/node";
+import { S3Node } from "@/features/executions/components/s3/node";
+import { R2Node } from "@/features/executions/components/r2/node";
 
 export const nodeComponents = {
     [NodeType.INITIAL]: InitialNode,
@@ -54,6 +56,8 @@ export const nodeComponents = {
     [NodeType.EMAIL_RESEND]: ResendNode,
     [NodeType.JSON_PARSE]: JsonParseNode,
     [NodeType.FILE]: FileNode,
+    [NodeType.S3]: S3Node,
+    [NodeType.R2]: R2Node,
 } as const satisfies NodeTypes;
 
 export type RegisteredNodeTypes = keyof typeof nodeComponents;

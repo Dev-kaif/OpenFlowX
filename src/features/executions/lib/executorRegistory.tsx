@@ -25,6 +25,8 @@ import { ScheduleExecutor } from "@/features/trigger/components/schedule/executo
 import { ResendExecutor } from "../components/resend/executor";
 import { JsonParseExecutor } from "../components/UtilsNodes/jsonParse/executor";
 import { FileExecutor } from "../components/UtilsNodes/file/executor";
+import { S3Executor } from "../components/s3/executor";
+import { R2Executor } from "../components/r2/executor";
 
 
 export const executorRegistory: Record<NodeType, NodeExecutor> = {
@@ -54,6 +56,8 @@ export const executorRegistory: Record<NodeType, NodeExecutor> = {
     [NodeType.EMAIL_RESEND]: ResendExecutor,
     [NodeType.JSON_PARSE]: JsonParseExecutor,
     [NodeType.FILE]: FileExecutor,
+    [NodeType.S3]: S3Executor,
+    [NodeType.R2]: R2Executor,
 };
 
 

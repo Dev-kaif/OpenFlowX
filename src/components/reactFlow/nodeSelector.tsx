@@ -167,6 +167,18 @@ const executionNode: NodeTypeOption[] = [
         description: "Read or write data from a Postgres database",
         icon: FileIcon,
     },
+    {
+        type: NodeType.S3,
+        lable: "AWS S3",
+        description: "Read or write data from a Postgres database",
+        icon: "/aws.svg",
+    },
+    {
+        type: NodeType.R2,
+        lable: "Cloudflare R2",
+        description: "Read or write data from a Postgres database",
+        icon: "/cloudflare.svg",
+    },
 ];
 
 interface NodeSelectorPros {
