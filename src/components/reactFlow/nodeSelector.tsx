@@ -58,6 +58,12 @@ const triggerNodes: NodeTypeOption[] = [
         icon: "/polar.svg",
     },
     {
+        type: NodeType.TELEGRAM_TRIGGER,
+        label: "Telegram Trigger",
+        description: "Trigger on telegram events",
+        icon: "/telegram.svg",
+    },
+    {
         type: NodeType.SCHEDULE,
         label: "Schedule",
         description: "Run the workflow automatically on a schedule",

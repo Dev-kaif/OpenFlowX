@@ -27,6 +27,8 @@ import { ifElseChannel } from "./channels/ifElse";
 import { disableSubtree } from "./utils/disable";
 import { delayChannel } from "./channels/delay";
 import { codeChannel } from "./channels/code";
+import { telegramChannel } from "./channels/telegram";
+import { telegramTriggerChannel } from "./channels/telegramTrigger";
 
 const TRIGGER_NODE_TYPES: NodeType[] = [
     NodeType.INITIAL,
@@ -35,6 +37,7 @@ const TRIGGER_NODE_TYPES: NodeType[] = [
     NodeType.STRIPE_TRIGGER,
     NodeType.POLAR_TRIGGER,
     NodeType.SCHEDULE,
+    NodeType.TELEGRAM_TRIGGER
 ];
 
 const BRANCH_CONDITIONS = ["true", "false"];
@@ -73,6 +76,8 @@ export const executeWorkflow = inngest.createFunction(
             ifElseChannel(),
             delayChannel(),
             codeChannel(),
+            telegramChannel(),
+            telegramTriggerChannel(),
         ],
     },
     async ({ event, step, publish }) => {

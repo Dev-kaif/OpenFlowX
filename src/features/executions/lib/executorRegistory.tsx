@@ -28,6 +28,7 @@ import { FileExecutor } from "../components/UtilsNodes/file/executor";
 import { S3Executor } from "../components/s3/executor";
 import { R2Executor } from "../components/r2/executor";
 import { TelegramExecutor } from "../components/telegram/executor";
+import { telegramExecutionTrigger } from "@/features/trigger/components/telegramTrigger/executor";
 
 
 export const executorRegistory: Record<NodeType, NodeExecutor> = {
@@ -37,6 +38,7 @@ export const executorRegistory: Record<NodeType, NodeExecutor> = {
     [NodeType.GOOGLE_FORM_TRIGGER]: googleFormTriggerExecution,
     [NodeType.STRIPE_TRIGGER]: stripeTriggerExecution,
     [NodeType.POLAR_TRIGGER]: polarTriggerExecution,
+    [NodeType.TELEGRAM_TRIGGER]: telegramExecutionTrigger,
     [NodeType.GEMINI]: GeminiExecutor,
     [NodeType.OPENROUTER]: OpenRouterExecutor,
     [NodeType.OPENAI]: OpenAIExecutor,

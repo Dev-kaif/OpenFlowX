@@ -33,6 +33,7 @@ export const NODE_ICONS: Record<NodeType, NodeIconType> = {
     SLACK: "/slack.svg",
     DISCORD: "/discord.svg",
     TELEGRAM: "/telegram.svg",
+    TELEGRAM_TRIGGER: "/telegram.svg",
 
     EMAIL_RESEND: "/resend.svg",
     POSTGRESS: "/postgres.svg",

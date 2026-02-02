@@ -29,6 +29,7 @@ import { FileNode } from "@/features/executions/components/UtilsNodes/file/node"
 import { S3Node } from "@/features/executions/components/s3/node";
 import { R2Node } from "@/features/executions/components/r2/node";
 import { TelegramNode } from "@/features/executions/components/telegram/node";
+import { TelegramTriggerNode } from "@/features/trigger/components/telegramTrigger/node";
 
 export const nodeComponents = {
     [NodeType.INITIAL]: InitialNode,
@@ -37,6 +38,7 @@ export const nodeComponents = {
     [NodeType.GOOGLE_FORM_TRIGGER]: GoogleFormTriggerNode,
     [NodeType.STRIPE_TRIGGER]: StripeTriggerNode,
     [NodeType.POLAR_TRIGGER]: PolarTriggerNode,
+    [NodeType.TELEGRAM_TRIGGER]: TelegramTriggerNode,
     [NodeType.GEMINI]: GeminiNode,
     [NodeType.OPENROUTER]: OpenRouterNode,
     [NodeType.OPENAI]: OpenAINode,
