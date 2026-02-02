@@ -16,6 +16,8 @@ import { NodeStatusIndicator } from "@/components/reactFlow/node-status-indicato
 import { WorkflowNode } from "@/components/reactFlow/workflowNode";
 import { BaseNode, BaseNodeContent } from "@/components/reactFlow/base-node";
 import { BaseHandle } from "@/components/reactFlow/base-handle";
+import { useTheme } from "next-themes";
+import { getThemedIcon } from "@/lib/icon";
 
 type IfNodeData = {
     variableName?: string;
@@ -27,6 +29,9 @@ type IfNodeType = Node<IfNodeData>;
 export const IfElseNode = memo((props: NodeProps<IfNodeType>) => {
     const { id, data } = props;
     const { setNodes, setEdges } = useReactFlow();
+    const { theme } = useTheme();
+    const currentTheme = theme === "dark" ? "dark" : "light"
+
 
     const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -74,7 +79,7 @@ export const IfElseNode = memo((props: NodeProps<IfNodeType>) => {
                         <BaseNodeContent className="relative">
                             {/* Icon */}
                             <Image
-                                src="/utils/ifelse.svg"
+                                src={getThemedIcon("/utils/ifelse.svg", currentTheme)}
                                 alt="If Else"
                                 width={16}
                                 height={16}
