@@ -19,6 +19,8 @@ import type { Credential } from '@/generated/prisma/client';
 import { formatDistanceToNow } from "date-fns";
 import { credentialTypeOptions } from './credentialForm';
 import Image from 'next/image';
+import { useTheme } from 'next-themes';
+import { getThemedIcon } from '@/lib/icon';
 
 
 export const CredentialList = () => {
@@ -132,6 +134,8 @@ export const CredentialEmpty = () => {
 
 export const CredentialItem = ({ data }: { data: Credential }) => {
     const removeCredential = useRemoveCredential();
+    const { theme } = useTheme();
+    const currentTheme = theme === "dark" ? "dark" : "light"
 
     const handleRemove = () => {
         removeCredential.mutate({ id: data.id });
@@ -149,11 +153,13 @@ export const CredentialItem = ({ data }: { data: Credential }) => {
             image={
                 <div className="size-8 flex items-center justify-center">
                     {option && (
-                        <Image
-                            src={option.logo}
+                        <img
+                            src={getThemedIcon(option.logo, currentTheme)}
                             alt={option.label}
-                            width={16}
-                            height={16}
+                            className="h-6 w-6 object-contain"
+                            onError={(e) => {
+                                e.currentTarget.src = option.logo;
+                            }}
                         />
                     )}
                 </div>

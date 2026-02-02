@@ -6,6 +6,8 @@ import { BaseHandle } from "@/components/reactFlow/base-handle";
 import { BaseNodeContent, BaseNode } from '@/components/reactFlow/base-node';
 import { WorkflowNode } from "@/components/reactFlow/workflowNode";
 import { NodeStatus, NodeStatusIndicator } from "@/components/reactFlow/node-status-indicator";
+import { getThemedIcon } from "@/lib/icon";
+import { useTheme } from "next-themes";
 
 
 interface BaseTriggerProps extends NodeProps {
@@ -32,6 +34,8 @@ export const BaseTriggerNode = memo(({
 }: BaseTriggerProps) => {
 
     const { setNodes, setEdges } = useReactFlow();
+    const { theme } = useTheme();
+    const currentTheme = theme === "dark" ? "dark" : "light"
 
     const handleDelete = () => {
         setNodes((currentNodes) => {
@@ -67,7 +71,14 @@ export const BaseTriggerNode = memo(({
                 >
                     <BaseNodeContent>
                         {typeof Icon == "string" ? (
-                            <Image alt={name} src={Icon} height={16} width={16} />
+                            <img
+                                src={getThemedIcon(Icon, currentTheme)}
+                                alt={name}
+                                className="h-4 w-4 object-contain"
+                                onError={(e) => {
+                                    e.currentTarget.src = Icon;
+                                }}
+                            />
                         ) : (
                             <Icon className="size-4 text-muted-foreground" />
                         )}

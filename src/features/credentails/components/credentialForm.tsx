@@ -35,6 +35,8 @@ import { Button } from '@/components/ui/button';
 import Link from "next/link";
 import { CredentialType } from "@/generated/prisma/enums";
 import { useState } from "react";
+import { getThemedIcon } from "@/lib/icon";
+import { useTheme } from "next-themes";
 
 const formSchema = z.object({
     name: z.string().min(1, 'Name is required'),
@@ -106,6 +108,8 @@ export const CredentialForm = ({ initialData }: CredentialFormProps) => {
     const router = useRouter();
     const createCredential = useCreateCredential();
     const updateCredential = useUpdateCredential();
+    const { theme } = useTheme();
+    const currentTheme = theme === "dark" ? "dark" : "light"
 
     const isEdit = !!initialData?.id;
 
@@ -194,11 +198,13 @@ export const CredentialForm = ({ initialData }: CredentialFormProps) => {
                                                     value={option.value}
                                                 >
                                                     <div className="flex items-center gap-2">
-                                                        <Image
-                                                            src={option.logo}
+                                                        <img
+                                                            src={getThemedIcon(option.logo, currentTheme)}
                                                             alt={option.label}
-                                                            width={16}
-                                                            height={16}
+                                                            className="h-4.5 w-4.5 object-contain"
+                                                            onError={(e) => {
+                                                                e.currentTarget.src = option.logo;
+                                                            }}
                                                         />
                                                         {option.label}
                                                     </div>

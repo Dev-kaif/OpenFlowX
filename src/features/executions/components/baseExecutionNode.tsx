@@ -6,6 +6,8 @@ import { BaseNode, BaseNodeContent } from "../../../components/reactFlow/base-no
 import Image from "next/image";
 import { BaseHandle } from "../../../components/reactFlow/base-handle";
 import { NodeStatus, NodeStatusIndicator } from "@/components/reactFlow/node-status-indicator";
+import { useTheme } from "next-themes";
+import { getThemedIcon } from "@/lib/icon";
 
 
 interface BaseExecutionProps extends NodeProps {
@@ -32,6 +34,8 @@ export const BaseExecutionNode = memo(({
 }: BaseExecutionProps) => {
 
     const { setNodes, setEdges } = useReactFlow();
+    const { theme } = useTheme();
+    const currentTheme = theme === "dark" ? "dark" : "light"
 
     const handleDelete = () => {
         setNodes((currentNodes) => {
@@ -66,9 +70,16 @@ export const BaseExecutionNode = memo(({
                 >
                     <BaseNodeContent>
                         {typeof Icon == "string" ? (
-                            <Image alt={name} src={Icon} height={16} width={16} />
+                            <img
+                                src={getThemedIcon(Icon, currentTheme)}
+                                alt={name}
+                                className="h-4 w-4 object-contain"
+                                onError={(e) => {
+                                    e.currentTarget.src = Icon;
+                                }}
+                            />
                         ) : (
-                            <Icon className="size-4 text-muted-foreground" />
+                            <Icon className="size-4 text-dark dark:text-white" />
                         )}
                         {children}
                         <BaseHandle

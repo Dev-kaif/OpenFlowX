@@ -196,7 +196,7 @@ export const ExecutionView = ({ executionId }: { executionId: string }) => {
                                                     <CopyIcon className="h-3 w-3" />
                                                 </Button>
 
-                                                <pre className="text-[11px] bg-muted/40 border rounded-md px-3 py-2 max-h-[240px] overflow-auto font-mono whitespace-pre-wrap wrap-break-word pr-8">
+                                                <pre className="text-[11px] bg-muted/40 border rounded-md px-3 py-2 max-h-60 overflow-auto font-mono whitespace-pre-wrap wrap-break-word pr-8">
                                                     {JSON.stringify(selectedStep.input, null, 2)}
                                                 </pre>
                                             </div>
@@ -230,7 +230,7 @@ export const ExecutionView = ({ executionId }: { executionId: string }) => {
                                                     <CopyIcon className="h-3 w-3" />
                                                 </Button>
 
-                                                <pre className=" text-[11px] bg-muted/40 border rounded-md px-3 py-2 max-h-[240px] overflow-auto font-mono whitespace-pre-wrap wrap-break-word pr-8">
+                                                <pre className=" text-[11px] bg-muted/40 border rounded-md px-3 py-2 max-h-60 overflow-auto font-mono whitespace-pre-wrap wrap-break-word pr-8">
                                                     {JSON.stringify(selectedStep.output, null, 2)}
                                                 </pre>
                                             </div>

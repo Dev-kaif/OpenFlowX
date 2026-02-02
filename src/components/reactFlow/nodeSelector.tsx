@@ -22,14 +22,22 @@ import { Separator } from "../ui/separator";
 import { Input } from "../ui/input";
 import { useReactFlow } from "@xyflow/react";
 import { toast } from "sonner";
+import { NodeIconRenderer } from "@/lib/icon";
 
+export type ThemedIcon =
+    | React.ComponentType<{ className?: string }>
+    | string
+    | {
+        src: string
+        darkSrc?: string
+    }
 
 export type NodeTypeOption = {
-    type: NodeType;
-    label: string;
-    description: string;
-    icon: React.ComponentType<{ className?: string }> | string;
-};
+    type: NodeType
+    label: string
+    description: string
+    icon: ThemedIcon
+}
 
 
 const triggerNodes: NodeTypeOption[] = [
@@ -55,7 +63,10 @@ const triggerNodes: NodeTypeOption[] = [
         type: NodeType.POLAR_TRIGGER,
         label: "Polar",
         description: "Trigger on Polar events",
-        icon: "/polar.svg",
+        icon: {
+            src: "/polar.svg",
+            darkSrc: "/polar-dark.svg"
+        },
     },
     {
         type: NodeType.TELEGRAM_TRIGGER,
@@ -67,7 +78,10 @@ const triggerNodes: NodeTypeOption[] = [
         type: NodeType.SCHEDULE,
         label: "Schedule",
         description: "Run the workflow automatically on a schedule",
-        icon: "/utils/schedule.svg",
+        icon: {
+            src: "/utils/schedule.svg",
+            darkSrc: "/utils/schedule-dark.svg"
+        },
     },
 ];
 
@@ -100,13 +114,19 @@ const executionNodes: NodeTypeOption[] = [
         type: NodeType.OPENROUTER,
         label: "OpenRouter",
         description: "Call multiple LLM providers via OpenRouter",
-        icon: "/openrouter.svg",
+        icon: {
+            src: "/openrouter.svg",
+            darkSrc: "/openrouter-dark.svg"
+        },
     },
     {
         type: NodeType.OPENAI,
         label: "OpenAI",
         description: "Generate text or JSON using OpenAI models",
-        icon: "/openai.svg",
+        icon: {
+            src: "/openai.svg",
+            darkSrc: "/openai-dark.svg"
+        },
     },
     {
         type: NodeType.DEEPSEEK,
@@ -124,7 +144,10 @@ const executionNodes: NodeTypeOption[] = [
         type: NodeType.XAI,
         label: "Grok",
         description: "Generate text using xAI Grok models",
-        icon: "/grok.svg",
+        icon: {
+            src: "/grok.svg",
+            darkSrc: "/grok-dark.svg"
+        },
     },
     {
         type: NodeType.DISCORD,
@@ -148,7 +171,10 @@ const executionNodes: NodeTypeOption[] = [
         type: NodeType.EMAIL_RESEND,
         label: "Resend Email",
         description: "Send transactional emails using Resend",
-        icon: "/resend.svg",
+        icon: {
+            src: "/resend.svg",
+            darkSrc: "/resend-dark.svg"
+        },
     },
     {
         type: NodeType.POSTGRESS,
@@ -181,13 +207,19 @@ const utilNodes: NodeTypeOption[] = [
         type: NodeType.IFELSE,
         label: "If / Else",
         description: "Branch execution based on a condition",
-        icon: "/utils/ifelse.svg",
+        icon: {
+            src: "/utils/ifelse.svg",
+            darkSrc: "/utils/ifelse-dark.svg"
+        },
     },
     {
         type: NodeType.DELAY,
         label: "Delay",
         description: "Pause workflow execution for a duration",
-        icon: "/utils/delay.svg",
+        icon: {
+            src: "/utils/delay.svg",
+            darkSrc: "/utils/delay-dark.svg"
+        },
     },
     {
         type: NodeType.CODE,
@@ -205,7 +237,10 @@ const utilNodes: NodeTypeOption[] = [
         type: NodeType.JSON_PARSE,
         label: "JSON Parse",
         description: "Parse a JSON string into structured data",
-        icon: "/utils/json.svg",
+        icon: {
+            src: "/utils/json.svg",
+            darkSrc: "/utils/json-dark.svg"
+        },
     },
     {
         type: NodeType.FILE,
@@ -364,7 +399,6 @@ const NodeItem = ({
     node: NodeTypeOption;
     onClick: (node: NodeTypeOption) => void;
 }) => {
-    const Icon = node.icon;
 
     return (
         <div
@@ -372,11 +406,7 @@ const NodeItem = ({
             onClick={() => onClick(node)}
         >
             <div className="flex gap-6 items-center">
-                {typeof Icon === "string" ? (
-                    <img src={Icon} alt={node.label} className="size-5" />
-                ) : (
-                    <Icon className="size-5" />
-                )}
+                <NodeIconRenderer icon={node.icon} />
                 <div>
                     <div className="font-medium text-sm">{node.label}</div>
                     <div className="text-xs text-muted-foreground">

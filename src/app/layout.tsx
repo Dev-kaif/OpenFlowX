@@ -5,6 +5,7 @@ import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import { Provider } from "jotai";
 
 import "./globals.css";
+import { ThemeProvider } from "next-themes";
 
 export const metadata: Metadata = {
   title: "N8N",
@@ -24,8 +25,15 @@ export default function RootLayout({
         <TRPCReactProvider>
           <NuqsAdapter>
             <Provider>
-              <Toaster />
-              {children}
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="system"
+                enableSystem
+                disableTransitionOnChange
+              >
+                <Toaster />
+                {children}
+              </ThemeProvider>
             </Provider>
           </NuqsAdapter>
         </TRPCReactProvider>

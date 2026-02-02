@@ -25,6 +25,7 @@ import { useSetAtom } from "jotai";
 import { editorAtom } from "../store/Atoms";
 import { ExecuteWorkflowButton } from "./executeButton";
 import { NodeType } from "@/generated/prisma/enums";
+import { useTheme } from "next-themes";
 
 
 
@@ -49,6 +50,8 @@ export const EditorError = () => {
 
 export const Editor = ({ workflowId }: { workflowId: string }) => {
     const { data: workflow } = useSuspenseWorkflow(workflowId);
+    const { theme } = useTheme();
+    const isDark = theme === "dark";
 
     const setEditorState = useSetAtom(editorAtom);
 
@@ -64,8 +67,8 @@ export const Editor = ({ workflowId }: { workflowId: string }) => {
     const onConnect = useCallback((params: Connection) => setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot)), []);
 
     const hasManualTrigger = useMemo(() => {
-        return nodes.some((node)=>node.type === NodeType.MANUAL_TRIGGER)
-    },[nodes])
+        return nodes.some((node) => node.type === NodeType.MANUAL_TRIGGER)
+    }, [nodes])
 
     return (
         <div className="size-full">
@@ -81,11 +84,12 @@ export const Editor = ({ workflowId }: { workflowId: string }) => {
                     hideAttribution: true
                 }}
                 onInit={setEditorState}
-                // snapGrid={[10, 10]}
-                // snapToGrid
-                // panOnScroll
-                // panOnDrag={false}
-                // selectionOnDrag
+                colorMode={isDark ? "dark" : "light"}
+            // snapGrid={[10, 10]}
+            // snapToGrid
+            // panOnScroll
+            // panOnDrag={false}
+            // selectionOnDrag
             >
                 <Background />
                 <Controls />

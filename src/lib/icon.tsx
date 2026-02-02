@@ -10,6 +10,9 @@ import {
 } from "lucide-react";
 import { NodeType } from "@/generated/prisma/enums";
 import Image from "next/image";
+import { useTheme } from "next-themes";
+import { ThemedIcon } from "@/components/reactFlow/nodeSelector";
+import { cn } from "./utils";
 
 type NodeIconType =
     | React.ComponentType<{ className?: string }>
@@ -58,22 +61,88 @@ export const NodeIcon = ({ type }: { type: NodeType }) => {
     const icon = NODE_ICONS[type];
     if (!icon) return null;
 
+    const { theme } = useTheme();
+    const currentTheme = theme === "dark" ? "dark" : "light"
+
+
     return (
         <div className="h-5 w-5 rounded-sm bg-muted flex items-center justify-center">
             {typeof icon === "string" ? (
-                <Image
-                    src={icon}
-                    alt=""
-                    width={16}
-                    height={16}
-                    className="object-contain"
+                <img
+                    src={getThemedIcon(icon, currentTheme)}
+                    alt={icon}
+                    className="h-4 w-4 object-contain"
+                    onError={(e) => {
+                        e.currentTarget.src = icon;
+                    }}
                 />
             ) : (
                 (() => {
                     const Icon = icon;
-                    return <Icon className="h-4 w-4 text-foreground" />;
+                    return <Icon className="h-4 w-4 text-black dark:text-white" />;
                 })()
             )}
         </div>
     );
 };
+
+
+export const NodeIconRenderer = ({
+    icon,
+    className = "h-5 w-5",
+}: {
+    icon: ThemedIcon
+    className?: string
+}) => {
+    if (typeof icon === "string") {
+        return (
+            <Image
+                src={icon}
+                alt=""
+                width={20}
+                height={20}
+                className={className}
+            />
+        )
+    }
+
+    if (typeof icon === "object" && "src" in icon) {
+        return (
+            <>
+                {/* light */}
+                <Image
+                    src={icon.src}
+                    alt=""
+                    width={20}
+                    height={20}
+                    className={cn(className, "dark:hidden")}
+                />
+                {/* dark */}
+                {icon.darkSrc && (
+                    <Image
+                        src={icon.darkSrc}
+                        alt=""
+                        width={20}
+                        height={20}
+                        className={cn(className, "hidden dark:block")}
+                    />
+                )}
+            </>
+        )
+    }
+
+    const Icon = icon as React.ElementType
+    return <Icon className={cn(className, "text-foreground")} />
+}
+
+export function getThemedIcon(icon: string, theme: "light" | "dark") {
+    if (theme !== "dark") return icon;
+
+    // if it's not an svg or already has -dark, return as-is
+    if (!icon.endsWith(".svg") || icon.includes("-dark.svg")) {
+        return icon;
+    }
+
+    // insert -dark before .svg
+    return icon.replace(/\.svg$/, "-dark.svg");
+}
