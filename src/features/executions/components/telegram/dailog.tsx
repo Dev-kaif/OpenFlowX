@@ -25,6 +25,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { InfoIcon, ExternalLinkIcon } from "lucide-react";
+import Link from "next/link";
+
 
 const formSchema = z.object({
     variableName: z
@@ -85,6 +88,29 @@ export const TelegramDialog = ({
                         Send a message to the connected Telegram account
                     </DialogDescription>
                 </DialogHeader>
+                <div className="rounded-lg border bg-muted/40 px-4 py-3 text-sm">
+                    <div className="flex items-start gap-2">
+                        <InfoIcon className="h-4 w-4 mt-0.5 text-muted-foreground" />
+                        <div className="space-y-1">
+                            <p className="font-medium">
+                                Telegram not connected yet?
+                            </p>
+                            <p className="text-muted-foreground">
+                                Go to <b>Settings → Integrations</b> and connect your Telegram
+                                account before using this step.
+                            </p>
+
+                            <Link
+                                href="/settings/#integration"
+                                className="inline-flex items-center gap-1 text-primary hover:underline mt-1"
+                            >
+                                Open Integrations
+                                <ExternalLinkIcon className="h-3 w-3" />
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+
 
                 <Form {...form}>
                     <form

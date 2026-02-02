@@ -4,6 +4,11 @@ import { toast } from "sonner";
 
 export const useGetSettings = () => {
     const trpc = useTRPC()
+    return useQuery(trpc.settings.getSettings.queryOptions());
+}
+
+export const useGetSuspenseSettings = () => {
+    const trpc = useTRPC()
     return useSuspenseQuery(trpc.settings.getSettings.queryOptions());
 }
 

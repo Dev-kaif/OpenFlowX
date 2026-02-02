@@ -14,7 +14,8 @@ import {
     Monitor,
     Sun,
     Moon,
-    Trash2
+    Trash2,
+    Plug
 } from 'lucide-react';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -28,7 +29,7 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { Select, SelectValue, SelectTrigger, SelectItem, SelectContent } from '@/components/ui/select';
 import { EntityContainer, EntityHeader, ErrorView, LoadingView } from '@/components/entity/entityComponents';
-import { useDeleteTelegramConnection, useDisconnectTelegram, useGetSettings, useGetTelegramLink, useGetTelegramStatus, useRevokeSession, useUnlinkAccount } from './hooks/hooks';
+import { useDeleteTelegramConnection, useDisconnectTelegram, useGetSuspenseSettings, useGetTelegramLink, useGetTelegramStatus, useRevokeSession, useUnlinkAccount } from './hooks/hooks';
 import { TelegramConnectDialog } from './TelegramConnectDialog';
 
 
@@ -67,7 +68,7 @@ const getInitials = (name?: string) => {
 
 export default function SettingsPage() {
 
-    const { data: user } = useGetSettings();
+    const { data: user } = useGetSuspenseSettings();
     const revokeSession = useRevokeSession();
     const unlinkAccount = useUnlinkAccount();
     const { data: telegramData, isLoading } = useGetTelegramLink();
@@ -80,7 +81,7 @@ export default function SettingsPage() {
 
 
     const { setTheme, theme } = useTheme();
-    const [name, setName] = useState(user?.name);
+    const [name, setName] = useState(user.name);
     const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
 
 
@@ -169,7 +170,7 @@ export default function SettingsPage() {
 
     // Helper to check if a provider is connected
     const isConnected = (provider: string) =>
-        user?.accounts.some(acc => acc.providerId === provider);
+        user.accounts.some(acc => acc.providerId === provider);
 
     return (
         <>
@@ -299,7 +300,7 @@ export default function SettingsPage() {
                         <div className="flex flex-col sm:flex-row gap-6 items-start">
                             {/* Avatar */}
                             <div className="shrink-0">
-                                {user?.image ? (
+                                {user.image ? (
                                     <img
                                         src={user.image}
                                         alt={user.name}
@@ -308,7 +309,7 @@ export default function SettingsPage() {
                                 ) : (
                                     <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center border">
                                         <span className="text-xl font-semibold text-muted-foreground">
-                                            {getInitials(user?.name)}
+                                            {getInitials(user.name)}
                                         </span>
                                     </div>
                                 )}
@@ -320,7 +321,7 @@ export default function SettingsPage() {
                                     <Label htmlFor="name">Name</Label>
                                     <Input
                                         id="name"
-                                        value={user?.name}
+                                        value={user.name}
                                         onChange={(e) => setName(e.target.value)}
                                     />
                                 </div>
@@ -329,7 +330,7 @@ export default function SettingsPage() {
                                     <Label htmlFor="email">Email</Label>
                                     <Input
                                         id="email"
-                                        value={user?.email}
+                                        value={user.email}
                                         disabled
                                         className="bg-muted"
                                     />
@@ -345,13 +346,99 @@ export default function SettingsPage() {
                         <Button
                             size="sm"
                             onClick={handleUpdateProfile}
-                            disabled={isUpdatingProfile || name === user?.name}
+                            disabled={isUpdatingProfile || name === user.name}
                         >
                             {isUpdatingProfile && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                             Save Changes
                         </Button>
                     </CardFooter>
                 </Card>
+
+                {/* INTEGRATIONS */}
+                <Card id="integrations">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <Plug className="w-5 h-5" /> Integrations
+                        </CardTitle>
+                        <CardDescription>
+                            Connect external services used inside workflows and automations.
+                        </CardDescription>
+                    </CardHeader>
+
+                    <CardContent className="space-y-4">
+                        {/* TELEGRAM */}
+                        <div className="flex items-center justify-between p-4 border rounded-lg">
+                            <div className="flex items-start gap-3">
+                                <div className="w-9 h-9 rounded-full bg-sky-100 flex items-center justify-center shrink-0">
+                                    <img src="/telegram.svg" alt="Telegram" className="w-5 h-5" />
+                                </div>
+
+                                <div className="space-y-1">
+                                    <p className="font-medium">Telegram</p>
+
+                                    <p className="text-xs text-muted-foreground max-w-sm">
+                                        Used by the <b>Telegram node</b> to send messages in your
+                                        workflows. You must connect Telegram before using it.
+                                    </p>
+
+                                    <p className="text-xs">
+                                        Status:{" "}
+                                        <span
+                                            className={cn(
+                                                "font-medium",
+                                                telegramStatus?.connected
+                                                    ? "text-green-600"
+                                                    : "text-muted-foreground"
+                                            )}
+                                        >
+                                            {telegramStatus?.connected
+                                                ? "Connected"
+                                                : "Not connected"}
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+
+                            {telegramStatus?.connected ? (
+                                <div className="flex gap-2">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={handleDisconnectTelegram}
+                                        disabled={disconnectTelegram.isPending}
+                                    >
+                                        {disconnectTelegram.isPending ? (
+                                            <Loader2 className="w-3.5 h-3.5 mr-2 animate-spin" />
+                                        ) : (
+                                            <Unlink className="w-3.5 h-3.5 mr-2" />
+                                        )}
+                                        Disconnect
+                                    </Button>
+
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={handleDeleteTelegram}
+                                        disabled={deleteTelegram.isPending}
+                                        className="text-red-500 hover:text-red-600"
+                                    >
+                                        <Trash2 className="w-4 h-4" />
+                                    </Button>
+                                </div>
+                            ) : (
+                                <Button
+                                    size="sm"
+                                    onClick={() => setTelegramOpen(true)}
+                                    disabled={isTelegramLoading}
+                                >
+                                    <LinkIcon className="w-4 h-4 mr-2" />
+                                    Connect Telegram
+                                </Button>
+                            )}
+                        </div>
+                    </CardContent>
+                </Card>
+
 
                 {/* PASSWORD & SECURITY */}
                 <Card>
@@ -364,14 +451,14 @@ export default function SettingsPage() {
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <Label className="text-base font-semibold">Change Password</Label>
-                                {!user?.hasPassword && (
+                                {!user.hasPassword && (
                                     <span className="text-xs bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 px-2 py-1 rounded-full font-medium">
                                         Third-Party Account
                                     </span>
                                 )}
                             </div>
 
-                            {user?.hasPassword ? (
+                            {user.hasPassword ? (
                                 // OPTION A: Show Form if they have a password
                                 <div className="grid gap-4 md:grid-cols-2">
                                     <div className="space-y-2">
@@ -432,7 +519,7 @@ export default function SettingsPage() {
                         <div className="space-y-4">
                             <Label className="text-base">Active Sessions</Label>
                             <div className="rounded-md border divide-y">
-                                {user?.sessions.map((session) => (
+                                {user.sessions.map((session) => (
                                     <div key={session.id} className="flex items-center justify-between p-4">
                                         <div className="flex items-center gap-4">
                                             <div className={`p-2 rounded-full ${session.isCurrent ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
@@ -479,72 +566,12 @@ export default function SettingsPage() {
                     </CardHeader>
                     <CardContent className="space-y-4">
 
-                        {/* Telegram */}
-                        <div className="flex items-center justify-between p-3 border rounded-lg">
-                            <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-full bg-sky-100 flex items-center justify-center">
-                                    <img
-                                        src="/telegram.svg"
-                                        alt="Telegram"
-                                        className="w-5 h-5"
-                                    />
-                                </div>
-
-                                <div>
-                                    <p className="font-medium">Telegram</p>
-                                    <p className="text-xs text-muted-foreground">
-                                        {telegramStatus?.connected
-                                            ? "Connected"
-                                            : "Not connected"}
-                                    </p>
-                                </div>
-                            </div>
-
-                            {telegramStatus?.connected ? (
-                                <div className="flex gap-2">
-                                    {/* Soft disconnect */}
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={handleDisconnectTelegram}
-                                        disabled={disconnectTelegram.isPending}
-                                    >
-                                        {disconnectTelegram.isPending ? (
-                                            <Loader2 className="w-3.5 h-3.5 mr-2 animate-spin" />
-                                        ) : (
-                                            <Unlink className="w-3.5 h-3.5 mr-2" />
-                                        )}
-                                        Disconnect
-                                    </Button>
-
-                                    {/* Hard delete */}
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={handleDeleteTelegram}
-                                        disabled={deleteTelegram.isPending}
-                                        className="text-red-500 hover:text-red-600"
-                                    >
-                                        <Trash2 className="w-3.5 h-3.5" />
-                                    </Button>
-                                </div>
-                            ) : (
-                                <Button
-                                    size="sm"
-                                    onClick={() => setTelegramOpen(true)}
-                                    disabled={isTelegramLoading}
-                                >
-                                    <LinkIcon className="w-3.5 h-3.5 mr-2" />
-                                    Connect
-                                </Button>
-                            )}
-                        </div>
-
-
                         {/* Google */}
                         <div className="flex items-center justify-between p-3 border rounded-lg">
                             <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">G</div>
+                                <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0">
+                                    <img src="/Logos/google.svg" alt="Google" className="w-5 h-5" />
+                                </div>
                                 <div>
                                     <p className="font-medium">Google</p>
                                     <p className="text-xs text-muted-foreground">
@@ -598,7 +625,6 @@ export default function SettingsPage() {
                         </div>
                     </CardContent>
                 </Card>
-
             </div>
         </>
 
