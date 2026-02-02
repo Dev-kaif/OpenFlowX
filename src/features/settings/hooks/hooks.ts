@@ -4,7 +4,7 @@ import { toast } from "sonner";
 
 export const useGetSettings = () => {
     const trpc = useTRPC()
-    return useQuery(trpc.settings.getSettings.queryOptions());
+    return useSuspenseQuery(trpc.settings.getSettings.queryOptions());
 }
 
 export const useRevokeSession = () => {
@@ -39,7 +39,7 @@ export const useGetTelegramLink = () => {
 
 export const useGetTelegramStatus = () => {
     const trpc = useTRPC();
-    return useQuery(
+    return useSuspenseQuery(
         trpc.settings.getTelegramStatus.queryOptions(),
     );
 };

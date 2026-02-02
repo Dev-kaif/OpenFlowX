@@ -13,7 +13,6 @@ import {
     LoadingView
 } from '@/components/entity/entityComponents';
 import { useRouter } from 'next/navigation';
-import { useUpgradeModal } from '@/hooks/useUpgradeModal';
 import { useWorkflowParams } from '../hooks/useWorkflowParams';
 import { useEntitySearch } from '@/hooks/useEntitySearch';
 import type { Workflow } from '@/generated/prisma/client';
@@ -36,7 +35,6 @@ export const WorkflowList = () => {
 export const WorkflowHeader = ({ disabled }: { disabled?: boolean }) => {
     const createWorkflow = useCreateWorkflow();
     const router = useRouter();
-    const { modal, handleError } = useUpgradeModal();
 
     const handleCreate = () => {
         createWorkflow.mutate(undefined, {
@@ -44,14 +42,13 @@ export const WorkflowHeader = ({ disabled }: { disabled?: boolean }) => {
                 router.push(`/workflows/${data.id}`);
             },
             onError: (error) => {
-                handleError(error)
+                toast.error(error.message || "Error Happened while creating workflow")
             },
         });
     };
 
     return (
         <>
-            {modal}
             <EntityHeader
                 title='Workflows'
                 discription='Create and Manage Workflows'
@@ -120,7 +117,6 @@ export const WorkflowError = () => {
 
 export const WorkflowEmpty = () => {
     const createWorkflow = useCreateWorkflow();
-    const { modal, handleError } = useUpgradeModal();
     const router = useRouter();
 
     const handleCreate = () => {
@@ -129,14 +125,13 @@ export const WorkflowEmpty = () => {
                 router.push(`/workflows/${data.id}`);
             },
             onError: (error) => {
-                handleError(error);
+                toast.error(error.message || "Error Happened while creating workflow")
             }
         })
     }
 
     return (
         <>
-            {modal}
             <EmptyView
                 onNew={handleCreate}
                 message="Looks like there are no workflows here right now"

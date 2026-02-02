@@ -30,8 +30,6 @@
     "@inngest/realtime": "^0.4.5",
     "@monaco-editor/react": "^4.7.0",
     "@paralleldrive/cuid2": "^3.0.4",
-    "@polar-sh/better-auth": "^1.6.1",
-    "@polar-sh/sdk": "^0.41.5",
     "@prisma/adapter-pg": "^7.1.0",
     "@prisma/client": "^7.2.0",
     "@radix-ui/react-accordion": "^1.2.12",
