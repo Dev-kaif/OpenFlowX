@@ -1,6 +1,6 @@
 "use client"
 import React from 'react'
-import { useCreateWorkflow, useRemoveWorkflow, useSuspenseWorkflows } from '@/features/workflows/hooks/useWorkflows';
+import { useCreateWorkflow, useRemoveWorkflow, useSuspenseWorkflows, workflowNode } from '@/features/workflows/hooks/useWorkflows';
 import {
     EmptyView,
     EntityContainer,
@@ -15,10 +15,14 @@ import {
 import { useRouter } from 'next/navigation';
 import { useWorkflowParams } from '../hooks/useWorkflowParams';
 import { useEntitySearch } from '@/hooks/useEntitySearch';
-import type { Workflow } from '@/generated/prisma/client';
+import { NodeType, Workflow } from '@/generated/prisma/client';
 import { WorkflowIcon } from 'lucide-react';
 import { formatDistanceToNow } from "date-fns";
 import { toast } from 'sonner';
+import { NodeIcon } from '@/lib/icon';
+import { cn } from '@/lib/utils';
+
+
 
 export const WorkflowList = () => {
     const workflows = useSuspenseWorkflows();
@@ -31,6 +35,47 @@ export const WorkflowList = () => {
         />
     )
 }
+
+export const WorkflowItem = ({ data }: { data: workflowNode }) => {
+    const removeWorkflow = useRemoveWorkflow()
+
+    const handleRemove = () => {
+        removeWorkflow.mutate({ id: data.id })
+    }
+
+    return (
+        <EntityItem
+            href={`/workflows/${data.id}`}
+            title={data.name}
+            subtitle={
+                <div className="flex flex-col gap-1">
+                    <span className="text-xs text-muted-foreground">
+                        Updated {formatDistanceToNow(data.updatedAt, { addSuffix: true })} •{' '}
+                        Created {formatDistanceToNow(data.createdAt, { addSuffix: true })}
+                    </span>
+
+                    {data.nodes?.length > 0 && (
+                        <div className="flex items-center gap-1 mt-0.5">
+                            {data.nodes.length > 3 && (
+                                <span className="text-xs text-muted-foreground ml-1">
+                                    +{data.nodes.length - 3}
+                                </span>
+                            )}
+                        </div>
+                    )}
+                </div>
+            }
+            image={
+                data.nodes?.length ? (
+                    <StackedNodeIcons nodes={data.nodes} />
+                ) : null
+            }
+            onRemove={handleRemove}
+            isRemoving={removeWorkflow.isPending}
+        />
+    )
+}
+
 
 export const WorkflowHeader = ({ disabled }: { disabled?: boolean }) => {
     const createWorkflow = useCreateWorkflow();
@@ -51,8 +96,8 @@ export const WorkflowHeader = ({ disabled }: { disabled?: boolean }) => {
         <>
             <EntityHeader
                 title='Workflows'
-                discription='Create and Manage Workflows'
-                newButtonLable='New Workflows'
+                discription='Automate tasks and integrations'
+                newButtonLable='Create Workflows'
                 onNewFunction={handleCreate}
                 disabled={disabled}
                 isCreating={createWorkflow.isPending}
@@ -141,25 +186,40 @@ export const WorkflowEmpty = () => {
 };
 
 
-export const WorkflowItem = ({ data }: { data: Workflow }) => {
-    const removeWorkflow = useRemoveWorkflow();
-
-    const handleRemove = () => {
-        removeWorkflow.mutate({ id: data.id })
-    };
+export const StackedNodeIcons = ({
+    nodes,
+}: {
+    nodes: { type: NodeType }[]
+}) => {
+    const preview = nodes.slice(0, 3)
 
     return (
-        <EntityItem
-            href={`/workflows/${data.id}`}
-            title={data.name}
-            subtitle={`Updated ${formatDistanceToNow(data.updatedAt, { addSuffix: true })} • Created ${formatDistanceToNow(data.createdAt, { addSuffix: true })}`}
-            image={
-                <div className="size-8 flex items-center justify-center">
-                    <WorkflowIcon className="size-5 text-muted-foreground" />
-                </div>
-            }
-            onRemove={handleRemove}
-            isRemoving={removeWorkflow.isPending}
-        />
-    );
-};
+        <div className="relative h-6 w-12 flex items-center">
+            {preview.map((node, index) => {
+                const isInitial = node.type === "INITIAL"
+                if (isInitial) {
+                    return (
+                        <div key={node.type} className="size-8 flex items-center justify-center">
+                            <WorkflowIcon className="size-5 text-muted-foreground" />
+                        </div>
+                    )
+                }
+
+                return (
+                    <div
+                        key={`${node.type}-${index}`}
+                        className="absolute flex h-5 w-5 items-center justify-center rounded-full bg-background ring-2 ring-background shadow-sm"
+                        style={{
+                            left: index * 13,
+                            top: index * 2,
+                            zIndex: 10 - index,
+                        }}
+                    >
+                        <NodeIcon type={node.type} />
+                    </div>
+                )
+            })}
+        </div>
+    )
+}
+

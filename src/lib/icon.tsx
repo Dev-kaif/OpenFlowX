@@ -9,6 +9,7 @@ import {
     PlusIcon,
 } from "lucide-react";
 import { NodeType } from "@/generated/prisma/enums";
+import Image from "next/image";
 
 type NodeIconType =
     | React.ComponentType<{ className?: string }>
@@ -50,4 +51,29 @@ export const NODE_ICONS: Record<NodeType, NodeIconType> = {
     SCRAPER: EyeIcon,
     SEARCH: SearchIcon,
     INITIAL: PlusIcon
+};
+
+
+export const NodeIcon = ({ type }: { type: NodeType }) => {
+    const icon = NODE_ICONS[type];
+    if (!icon) return null;
+
+    return (
+        <div className="h-5 w-5 rounded-sm bg-muted flex items-center justify-center">
+            {typeof icon === "string" ? (
+                <Image
+                    src={icon}
+                    alt=""
+                    width={16}
+                    height={16}
+                    className="object-contain"
+                />
+            ) : (
+                (() => {
+                    const Icon = icon;
+                    return <Icon className="h-4 w-4 text-foreground" />;
+                })()
+            )}
+        </div>
+    );
 };

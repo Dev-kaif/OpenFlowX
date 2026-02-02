@@ -2,6 +2,7 @@ import { useTRPC } from "@/trpc/client";
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useWorkflowParams } from "./useWorkflowParams";
+import { RouterOutputs } from "@/trpc/types";
 
 export const useSuspenseWorkflows = () => {
   const trpc = useTRPC();
@@ -10,9 +11,11 @@ export const useSuspenseWorkflows = () => {
   return useSuspenseQuery(trpc.workflows.getMany.queryOptions(params));
 };
 
-export const useSuspenseWorkflow = (id:string) => {
+export type workflowNode = RouterOutputs["workflows"]["getMany"]["items"][0]
+
+export const useSuspenseWorkflow = (id: string) => {
   const trpc = useTRPC();
-  return useSuspenseQuery(trpc.workflows.getOne.queryOptions({id}));
+  return useSuspenseQuery(trpc.workflows.getOne.queryOptions({ id }));
 };
 
 

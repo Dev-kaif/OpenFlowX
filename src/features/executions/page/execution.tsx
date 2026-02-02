@@ -9,13 +9,12 @@ import {
     ChevronDownIcon,
     ChevronRightIcon,
 } from "lucide-react";
-import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { useSuspenseExecution } from "../hooks/useExecution";
-import { ExecutionStatus, NodeType } from "@/generated/prisma/enums";
+import { ExecutionStatus } from "@/generated/prisma/enums";
 
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -23,9 +22,8 @@ import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { NODE_ICONS } from "@/lib/icon";
+import { NodeIcon } from "@/lib/icon";
 
-/* ---------------- utils ---------------- */
 
 const statusBadgeVariant = (status: ExecutionStatus) => {
     switch (status) {
@@ -59,7 +57,7 @@ const statusIcon = (status: ExecutionStatus) => {
 
 const formatDuration = (startedAt: Date, completedAt: Date | null) => {
     if (!completedAt) return "—";
-    return `${completedAt.getTime() - startedAt.getTime()} ms`;
+    return `${(completedAt.getTime() - startedAt.getTime()) / 1000} s`;
 };
 
 const copyJSON = async (data: unknown) => {
@@ -67,36 +65,12 @@ const copyJSON = async (data: unknown) => {
     toast.success("Copied to clipboard");
 };
 
-const NodeIcon = ({ type }: { type: NodeType }) => {
-    const icon = NODE_ICONS[type];
-    if (!icon) return null;
-
-    return (
-        <div className="h-5 w-5 rounded-sm bg-muted flex items-center justify-center">
-            {typeof icon === "string" ? (
-                <Image
-                    src={icon}
-                    alt=""
-                    width={16}
-                    height={16}
-                    className="object-contain"
-                />
-            ) : (
-                (() => {
-                    const Icon = icon;
-                    return <Icon className="h-4 w-4 text-foreground" />;
-                })()
-            )}
-        </div>
-    );
-};
 
 
 export const ExecutionView = ({ executionId }: { executionId: string }) => {
     const { data: execution } = useSuspenseExecution(executionId);
 
     const [selectedStepId, setSelectedStepId] = useState<string | null>(null);
-    const [collapsed, setCollapsed] = useState(false);
     const [showInput, setShowInput] = useState(true);
     const [showOutput, setShowOutput] = useState(true);
 

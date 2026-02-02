@@ -230,7 +230,8 @@ export const workflowsRouter = createTRPCRouter({
       search: z.string().default("")
     }))
     .query(async ({ ctx, input }) => {
-      const { page, pageSize, search } = input;
+      let { page, pageSize, search } = input;
+      pageSize = pageSize - 1;
 
       const [items, totalCount] = await Promise.all([
         prisma.workflow.findMany({
@@ -242,6 +243,19 @@ export const workflowsRouter = createTRPCRouter({
               contains: search,
               mode: "insensitive"
             }
+          },
+          include: {
+            nodes: {
+              orderBy: {
+                createdAt: 'asc',
+              },
+              take: 2,
+              select: {
+                id: true,
+                type: true,
+                createdAt: true,
+              },
+            },
           },
           orderBy: {
             updatedAt: "desc"
