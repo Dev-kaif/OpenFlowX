@@ -114,8 +114,6 @@ enum NodeType {
   FILE
   S3
   R2
-  CLOUDINARY
-  NOTION
   SCHEDULE
   JSON_PARSE
 }
@@ -169,8 +167,6 @@ enum CredentialType {
   GOOGLESHEETS
   S3
   R2
-  CLOUDINARY
-  NOTION
   RESEND
 }
 
