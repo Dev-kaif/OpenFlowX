@@ -190,6 +190,7 @@ model Credential {
 }
 
 enum ExecutionStatus {
+  SKIPPED
   RUNNING
   SUCCESS
   FAILED
@@ -211,6 +212,32 @@ model Execution {
   inngestEventId String @unique
 
   output Json?
+
+  executionSteps ExecutionStep[]
+}
+
+model ExecutionStep {
+  id String @id @default(cuid())
+
+  executionId String
+  execution   Execution @relation(fields: [executionId], references: [id], onDelete: Cascade)
+
+  nodeId    String
+  nodeType  NodeType
+  nodeName  String
+  stepIndex Int
+
+  status ExecutionStatus @default(RUNNING)
+
+  startedAt   DateTime  @default(now())
+  completedAt DateTime?
+
+  input      Json?
+  output     Json?
+  error      String? @db.Text
+  errorStack String? @db.Text
+
+  @@index([executionId])
 }
 
 model Schedule {

@@ -25,9 +25,6 @@ export async function POST(req: Request) {
     const body = await req.json();
     const message = body?.message;
 
-    console.log("TELEGRAM MESSAGE:", JSON.stringify(message, null, 2));
-
-
     if (!message) {
         return Response.json({ ok: true });
     }

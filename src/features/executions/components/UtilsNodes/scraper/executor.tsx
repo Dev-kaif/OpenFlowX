@@ -197,9 +197,6 @@ export const ScraperExecutor: NodeExecutor<ScraperNodeData> = async ({
             resolved = compiled(context);
         }
 
-        console.log("Resolved type:", typeof resolved);
-        console.log("Resolved value:", Array.isArray(resolved) ? `Array(${resolved.length})` : resolved);
-
         // Extract URLs from various input formats
         let allUrls: string[] = [];
 
@@ -243,20 +240,17 @@ export const ScraperExecutor: NodeExecutor<ScraperNodeData> = async ({
             );
         }
 
-        console.log(`Found ${allUrls.length} valid URLs to scrape`);
 
         const result = await step.run("scrape-pages", async () => {
             const successfulPages = [];
             const failedPages = [];
 
             for (const url of allUrls) {
-                console.log(`Attempting to scrape: ${url}`);
 
                 const pageResult = await scrapeSingleUrl(url);
 
                 if (pageResult.success && pageResult.contentLength >= minContentLength) {
                     successfulPages.push(pageResult);
-                    console.log(`✓ Successfully scraped: ${url} (${pageResult.contentLength} chars)`);
 
                     if (successfulPages.length >= 2) {
                         break;

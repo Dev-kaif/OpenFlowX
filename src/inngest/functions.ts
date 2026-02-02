@@ -37,6 +37,16 @@ const TRIGGER_NODE_TYPES: NodeType[] = [
     NodeType.SCHEDULE,
 ];
 
+const OUTPUT_PERSIST_NODES = new Set<NodeType>([
+    NodeType.IFELSE,
+    NodeType.HTTP_REQUEST,
+    NodeType.OPENAI,
+    NodeType.GEMINI,
+    NodeType.DEEPSEEK,
+    NodeType.DISCORD,
+    NodeType.SLACK,
+]);
+
 const BRANCH_CONDITIONS = ["true", "false"];
 
 export const executeWorkflow = inngest.createFunction(
@@ -85,7 +95,7 @@ export const executeWorkflow = inngest.createFunction(
         }
 
         // Create execution
-        await step.run("create-execution", () =>
+        const execution = await step.run("create-execution", () =>
             prisma.execution.create({
                 data: { workflowId, inngestEventId },
             })
@@ -138,62 +148,132 @@ export const executeWorkflow = inngest.createFunction(
         // Track disabled nodes
         let disabledIds: string[] = [];
 
+        let stepIndex = 0;
+
         for (const node of sortedNodes) {
+            stepIndex++;
 
-            // Skip nodes that were disabled by If/Else branches
-            if (disabledIds.includes(node.id)) {
-                continue;
-            }
-
-            const executor = getExecutor(node.type as NodeType);
-
-            if (!executor) {
-                throw new NonRetriableError(
-                    `No executor registered for node type ${node.type}`
-                );
-            }
+            const isDisabled = disabledIds.includes(node.id);
 
             const context = triggerNodeIds.includes(node.id)
                 ? event.data.initialData || {}
                 : buildNodeInput(node.id, parentsMap, nodeOutputs, triggerNodeIds);
 
-            const output = await executor({
-                nodeId: node.id,
-                data: node.data as Record<string, unknown>,
-                context,
-                userId,
-                step,
-                publish,
+            const safeInput = JSON.parse(JSON.stringify(context ?? {}));
+
+            // SKIPPED nodes
+            if (isDisabled) {
+                void prisma.executionStep.create({
+                    data: {
+                        executionId: execution.id,
+                        nodeId: node.id,
+                        nodeType: node.type as NodeType,
+                        nodeName: node.name ?? node.type,
+                        stepIndex,
+                        status: ExecutionStatus.SKIPPED,
+                        input: safeInput,
+                        startedAt: new Date(),
+                        completedAt: new Date(),
+                    },
+                });
+                continue;
+            }
+
+            // Create RUNNING step
+            const executionStep = await prisma.executionStep.create({
+                data: {
+                    executionId: execution.id,
+                    nodeId: node.id,
+                    nodeType: node.type as NodeType,
+                    nodeName: node.name ?? node.type,
+                    stepIndex,
+                    status: ExecutionStatus.RUNNING,
+                    input: safeInput,
+                    startedAt: new Date(),
+                },
             });
 
-            nodeOutputs[node.id] = output;
+            const executor = getExecutor(node.type as NodeType);
 
-            // If Else logic
-            // Check for outgoing connections that represent true or flase decision
+            if (!executor) {
+                await prisma.executionStep.update({
+                    where: { id: executionStep.id },
+                    data: {
+                        status: ExecutionStatus.FAILED,
+                        error: `No executor registered for node type ${node.type}`,
+                        completedAt: new Date(),
+                    },
+                });
+
+                throw new NonRetriableError(
+                    `No executor registered for node type ${node.type}`
+                );
+            }
+
+            let output: any;
+
+            try {
+                output = await executor({
+                    nodeId: node.id,
+                    data: node.data as Record<string, unknown>,
+                    context,
+                    userId,
+                    step,
+                    publish,
+                });
+
+                nodeOutputs[node.id] = output;
+
+                const shouldPersistOutput = OUTPUT_PERSIST_NODES.has(node.type as NodeType);
+
+
+                await prisma.executionStep.update({
+                    where: { id: executionStep.id },
+                    data: {
+                        status: ExecutionStatus.SUCCESS,
+                        output: shouldPersistOutput ? output : undefined,
+                        completedAt: new Date(),
+                    },
+                });
+
+            } catch (err: any) {
+                await prisma.executionStep.update({
+                    where: { id: executionStep.id },
+                    data: {
+                        status: ExecutionStatus.FAILED,
+                        error: err?.message ?? "Execution failed",
+                        errorStack: err?.stack,
+                        completedAt: new Date(),
+                    },
+                });
+
+                throw err;
+            }
+
+            // IF / ELSE logic 
             const outgoingChoices = executableConnections.filter(
-                (c) => c.fromNodeId === node.id &&
+                (c) =>
+                    c.fromNodeId === node.id &&
                     c.fromOutput &&
                     BRANCH_CONDITIONS.includes(c.fromOutput)
             );
 
             if (outgoingChoices.length > 0) {
 
-                // Calculate which paths to disable based on the node's result
                 const branchDisabled = await step.run(`branch-check-${node.id}`, () => {
 
                     const currentDisabled = new Set<string>();
 
-                    // Safely extract boolean result (default to false if missing)
                     const key = Object.keys(output)[0];
                     const result = Boolean(output[key]?.result);
 
                     for (const c of outgoingChoices) {
-                        // Logic: Is this the path we should take?
+
                         const shouldRun =
                             (c.fromOutput === "true" && result) ||
                             (c.fromOutput === "false" && !result);
 
-                        // If not, recursively disable that entire subtree
+
                         if (!shouldRun) {
                             disableSubtree(
                                 c.toNodeId,
@@ -205,7 +285,6 @@ export const executeWorkflow = inngest.createFunction(
                     return Array.from(currentDisabled);
                 });
 
-                // Update the persisted list of disabled nodes
                 disabledIds = [...new Set([...disabledIds, ...branchDisabled])];
             }
         }

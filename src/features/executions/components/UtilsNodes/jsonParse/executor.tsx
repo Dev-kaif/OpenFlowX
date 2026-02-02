@@ -52,8 +52,6 @@ export const JsonParseExecutor: NodeExecutor<JsonParseNodeData> = async ({
             const cleaned = stripJsonFences(rendered)
 
             try {
-
-                console.log(JSON.parse(cleaned))
                 return JSON.parse(cleaned);
             } catch (err: any) {
                 throw new Error(`Invalid JSON: ${err.message}`);

@@ -107,7 +107,6 @@ export const GeminiExecutor: NodeExecutor<GeminiProps> = async ({
         );
 
         const text = extractTextFromSteps(steps);
-        console.log(text)
 
         await publish(
             geminiChannel().status({

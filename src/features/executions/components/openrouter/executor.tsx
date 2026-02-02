@@ -95,7 +95,6 @@ export const OpenRouterExecutor: NodeExecutor<OpenrouterProps> = async ({
         );
 
         const text = extractTextFromSteps(steps);
-        console.log(text)
 
         await publish(
             openRouterChannel().status({
