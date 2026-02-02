@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { useSuspenseWorkflow, useUpdateWorkflow, useUpdateWorkflowName } from "@/features/workflows/hooks/useWorkflows";
 import { useAtomValue } from "jotai";
-import { SaveIcon } from "lucide-react"
+import { EditIcon, SaveIcon } from "lucide-react"
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { editorAtom } from "../store/Atoms";
@@ -150,7 +150,12 @@ export const EditorNameInput = ({ workflowId }: { workflowId: string }) => {
             onClick={() => setIsEditing(true)}
             className="cursor-pointer hover:text-foreground transition-colors"
         >
-            {workflow.name}
+            <div className="flex gap-x-2 items-center">
+                <span>
+                    {workflow.name}
+                </span>
+                <EditIcon className="size-3.5" />
+            </div>
         </BreadcrumbItem>
     )
 }
