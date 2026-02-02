@@ -24,6 +24,7 @@ import { GoogleSheetsExecutor } from "../components/googleSheets/executor";
 import { ScheduleExecutor } from "@/features/trigger/components/schedule/executor";
 import { ResendExecutor } from "../components/resend/executor";
 import { JsonParseExecutor } from "../components/UtilsNodes/jsonParse/executor";
+import { FileExecutor } from "../components/UtilsNodes/file/executor";
 
 
 export const executorRegistory: Record<NodeType, NodeExecutor> = {
@@ -52,6 +53,7 @@ export const executorRegistory: Record<NodeType, NodeExecutor> = {
     [NodeType.SCHEDULE]: ScheduleExecutor,
     [NodeType.EMAIL_RESEND]: ResendExecutor,
     [NodeType.JSON_PARSE]: JsonParseExecutor,
+    [NodeType.FILE]: FileExecutor,
 };
 
 

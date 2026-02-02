@@ -1,6 +1,6 @@
 import { NodeType } from "@/generated/prisma/enums";
 import { createId } from "@paralleldrive/cuid2";
-import { CodeIcon, EyeIcon, FileText, GlobeIcon, MousePointerIcon, Search } from "lucide-react";
+import { CodeIcon, EyeIcon, FileIcon, FileText, GlobeIcon, MousePointerIcon, Search } from "lucide-react";
 import React, { useCallback } from "react";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "../ui/sheet";
 import { Separator } from "../ui/separator";
@@ -160,6 +160,12 @@ const executionNode: NodeTypeOption[] = [
         lable: "Json Parsing",
         description: "Read or write data from a Postgres database",
         icon: "/utils/json.svg",
+    },
+    {
+        type: NodeType.FILE,
+        lable: "File Transform",
+        description: "Read or write data from a Postgres database",
+        icon: FileIcon,
     },
 ];
 
