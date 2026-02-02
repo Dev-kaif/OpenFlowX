@@ -311,7 +311,7 @@ export const EntityItem = ({
 
     return (
         <Link href={href}>
-            <Card className={cn("p-4 shadow-none hover:shadow cursor-pointer",
+            <Card className={cn("px-4 py-3 shadow-none hover:shadow cursor-pointer",
                 isRemoving && "opacity-50 cursor-not-allowed",
                 className
             )}>
