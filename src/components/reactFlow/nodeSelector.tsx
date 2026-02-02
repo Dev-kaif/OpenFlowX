@@ -2,10 +2,12 @@ import { NodeType } from "@/generated/prisma/enums";
 import { createId } from "@paralleldrive/cuid2";
 import {
     CodeIcon,
+    EyeIcon,
     FileIcon,
     FileText,
     GlobeIcon,
     MousePointerIcon,
+    SearchIcon,
 } from "lucide-react";
 import React, { useCallback, useState } from "react";
 import {
@@ -24,7 +26,7 @@ import { toast } from "sonner";
 
 export type NodeTypeOption = {
     type: NodeType;
-    lable: string;
+    label: string;
     description: string;
     icon: React.ComponentType<{ className?: string }> | string;
 };
@@ -33,31 +35,31 @@ export type NodeTypeOption = {
 const triggerNodes: NodeTypeOption[] = [
     {
         type: NodeType.MANUAL_TRIGGER,
-        lable: "Manual Trigger",
+        label: "Manual Trigger",
         description: "Start the workflow manually with a button click",
         icon: MousePointerIcon,
     },
     {
         type: NodeType.GOOGLE_FORM_TRIGGER,
-        lable: "Google Form",
+        label: "Google Form",
         description: "Trigger when a Google Form is submitted",
         icon: "/googleform.svg",
     },
     {
         type: NodeType.STRIPE_TRIGGER,
-        lable: "Stripe",
+        label: "Stripe",
         description: "Trigger on Stripe events like payments",
         icon: "/stripe.svg",
     },
     {
         type: NodeType.POLAR_TRIGGER,
-        lable: "Polar",
+        label: "Polar",
         description: "Trigger on Polar events",
         icon: "/polar.svg",
     },
     {
         type: NodeType.SCHEDULE,
-        lable: "Schedule",
+        label: "Schedule",
         description: "Run the workflow automatically on a schedule",
         icon: "/utils/schedule.svg",
     },
@@ -66,91 +68,103 @@ const triggerNodes: NodeTypeOption[] = [
 const executionNodes: NodeTypeOption[] = [
     {
         type: NodeType.HTTP_REQUEST,
-        lable: "HTTP Request",
+        label: "HTTP Request",
         description: "Send HTTP requests to APIs",
         icon: GlobeIcon,
     },
     {
+        type: NodeType.SEARCH,
+        label: "Search",
+        description: "Search the web or indexed sources and return relevant results as structured data",
+        icon: SearchIcon,
+    },
+    {
+        type: NodeType.SCRAPER,
+        label: "Scraper",
+        description: "Extract content and metadata from web pages using selectors or AI-based parsing",
+        icon: EyeIcon,
+    },
+    {
         type: NodeType.GEMINI,
-        lable: "Gemini",
+        label: "Gemini",
         description: "Generate text or structured output using Gemini",
         icon: "/gemini.svg",
     },
     {
         type: NodeType.OPENROUTER,
-        lable: "OpenRouter",
+        label: "OpenRouter",
         description: "Call multiple LLM providers via OpenRouter",
         icon: "/openrouter.svg",
     },
     {
         type: NodeType.OPENAI,
-        lable: "OpenAI",
+        label: "OpenAI",
         description: "Generate text or JSON using OpenAI models",
         icon: "/openai.svg",
     },
     {
         type: NodeType.DEEPSEEK,
-        lable: "DeepSeek",
+        label: "DeepSeek",
         description: "Reasoning and code-focused LLM execution",
         icon: "/deepseek.svg",
     },
     {
         type: NodeType.ANTHROPIC,
-        lable: "Anthropic",
+        label: "Anthropic",
         description: "Generate responses using Claude models",
         icon: "/anthropic.svg",
     },
     {
         type: NodeType.XAI,
-        lable: "Grok",
+        label: "Grok",
         description: "Generate text using xAI Grok models",
         icon: "/grok.svg",
     },
     {
         type: NodeType.DISCORD,
-        lable: "Discord",
+        label: "Discord",
         description: "Send messages or notifications to Discord",
         icon: "/discord.svg",
     },
     {
         type: NodeType.SLACK,
-        lable: "Slack",
+        label: "Slack",
         description: "Send messages or alerts to Slack",
         icon: "/slack.svg",
     },
     {
         type: NodeType.TELEGRAM,
-        lable: "Telegram",
+        label: "Telegram",
         description: "Send messages or alerts to Telegram",
         icon: "/telegram.svg",
     },
     {
         type: NodeType.EMAIL_RESEND,
-        lable: "Resend Email",
+        label: "Resend Email",
         description: "Send transactional emails using Resend",
         icon: "/resend.svg",
     },
     {
         type: NodeType.POSTGRESS,
-        lable: "Postgres",
+        label: "Postgres",
         description: "Read or write data in a Postgres database",
         icon: "/postgress.svg",
     },
     {
         type: NodeType.GOOGLESHEETS,
-        lable: "Google Sheets",
+        label: "Google Sheets",
         description: "Read or write rows in Google Sheets",
         icon: "/sheets.svg",
     },
     {
         type: NodeType.S3,
-        lable: "AWS S3",
+        label: "AWS S3",
         description: "Upload files to Amazon S3",
         icon: "/aws.svg",
     },
     {
         type: NodeType.R2,
-        lable: "Cloudflare R2",
+        label: "Cloudflare R2",
         description: "Upload files to Cloudflare R2",
         icon: "/cloudflare.svg",
     },
@@ -159,37 +173,37 @@ const executionNodes: NodeTypeOption[] = [
 const utilNodes: NodeTypeOption[] = [
     {
         type: NodeType.IFELSE,
-        lable: "If / Else",
+        label: "If / Else",
         description: "Branch execution based on a condition",
         icon: "/utils/ifelse.svg",
     },
     {
         type: NodeType.DELAY,
-        lable: "Delay",
+        label: "Delay",
         description: "Pause workflow execution for a duration",
         icon: "/utils/delay.svg",
     },
     {
         type: NodeType.CODE,
-        lable: "Code",
+        label: "Code",
         description: "Run custom JavaScript logic",
         icon: CodeIcon,
     },
     {
         type: NodeType.TEMPLATE,
-        lable: "Template",
+        label: "Template",
         description: "Render text using Handlebars templates",
         icon: FileText,
     },
     {
         type: NodeType.JSON_PARSE,
-        lable: "JSON Parse",
+        label: "JSON Parse",
         description: "Parse a JSON string into structured data",
         icon: "/utils/json.svg",
     },
     {
         type: NodeType.FILE,
-        lable: "File",
+        label: "File",
         description: "Normalize files from URL, base64, or metadata",
         icon: FileIcon,
     },
@@ -213,7 +227,7 @@ export const NodeSelector = ({
     const filterBySearch = (nodes: NodeTypeOption[]) => {
         if (!search.trim()) return nodes;
         return nodes.filter((n) =>
-            n.lable.toLowerCase().includes(search.toLowerCase())
+            n.label.toLowerCase().includes(search.toLowerCase())
         );
     };
 
@@ -353,12 +367,12 @@ const NodeItem = ({
         >
             <div className="flex gap-6 items-center">
                 {typeof Icon === "string" ? (
-                    <img src={Icon} alt={node.lable} className="size-5" />
+                    <img src={Icon} alt={node.label} className="size-5" />
                 ) : (
                     <Icon className="size-5" />
                 )}
                 <div>
-                    <div className="font-medium text-sm">{node.lable}</div>
+                    <div className="font-medium text-sm">{node.label}</div>
                     <div className="text-xs text-muted-foreground">
                         {node.description}
                     </div>

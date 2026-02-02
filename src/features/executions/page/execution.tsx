@@ -1,159 +1,274 @@
 'use client';
 
-import { CheckCircle2Icon, ClockIcon, Loader2Icon, XCircleIcon } from "lucide-react";
-import { formatDistanceToNow } from 'date-fns';
-import Link from 'next/link';
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
 import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardDescription,
-    CardTitle,
-} from "@/components/ui/card";
+    CheckCircle2Icon,
+    ClockIcon,
+    Loader2Icon,
+    XCircleIcon,
+    CopyIcon,
+    ChevronDownIcon,
+    ChevronRightIcon,
+} from "lucide-react";
+import Image from "next/image";
+import { formatDistanceToNow } from "date-fns";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
-import {
-    Collapsible,
-    CollapsibleContent,
-    CollapsibleTrigger,
-} from "@/components/ui/collapsible";
 import { useSuspenseExecution } from "../hooks/useExecution";
-import { ExecutionStatus } from "@/generated/prisma/enums";
+import { ExecutionStatus, NodeType } from "@/generated/prisma/enums";
 
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { NODE_ICONS } from "@/lib/icon";
 
-const getStatusIcon = (status: ExecutionStatus) => {
+/* ---------------- utils ---------------- */
+
+const statusBadgeVariant = (status: ExecutionStatus) => {
     switch (status) {
         case ExecutionStatus.SUCCESS:
-            return <CheckCircle2Icon className="size-5 text-green-600" />;
+            return "default";
         case ExecutionStatus.FAILED:
-            return <XCircleIcon className="size-5 text-red-600" />;
+            return "destructive";
         case ExecutionStatus.RUNNING:
-            return <Loader2Icon className="size-5 text-blue-600 animate-spin" />;
+            return "secondary";
+        case ExecutionStatus.SKIPPED:
+            return "outline";
         default:
-            return <ClockIcon className="size-5 text-muted-foreground" />;
+            return "outline";
     }
-}
+};
 
-const formatStatus = (status: ExecutionStatus) => {
-    return status.charAt(0) + status.slice(1).toLowerCase();
-}
+const statusIcon = (status: ExecutionStatus) => {
+    switch (status) {
+        case ExecutionStatus.SUCCESS:
+            return <CheckCircle2Icon className="h-4 w-4 text-green-600" />;
+        case ExecutionStatus.FAILED:
+            return <XCircleIcon className="h-4 w-4 text-red-600" />;
+        case ExecutionStatus.RUNNING:
+            return <Loader2Icon className="h-4 w-4 text-blue-600 animate-spin" />;
+        case ExecutionStatus.SKIPPED:
+            return <ClockIcon className="h-4 w-4 text-muted-foreground" />;
+        default:
+            return null;
+    }
+};
+
+const formatDuration = (startedAt: Date, completedAt: Date | null) => {
+    if (!completedAt) return "—";
+    return `${completedAt.getTime() - startedAt.getTime()} ms`;
+};
+
+const copyJSON = async (data: unknown) => {
+    await navigator.clipboard.writeText(JSON.stringify(data, null, 2));
+    toast.success("Copied to clipboard");
+};
+
+const NodeIcon = ({ type }: { type: NodeType }) => {
+    const icon = NODE_ICONS[type];
+    if (!icon) return null;
+
+    return (
+        <div className="h-5 w-5 rounded-sm bg-muted flex items-center justify-center">
+            {typeof icon === "string" ? (
+                <Image
+                    src={icon}
+                    alt=""
+                    width={16}
+                    height={16}
+                    className="object-contain"
+                />
+            ) : (
+                (() => {
+                    const Icon = icon;
+                    return <Icon className="h-4 w-4 text-foreground" />;
+                })()
+            )}
+        </div>
+    );
+};
+
 
 export const ExecutionView = ({ executionId }: { executionId: string }) => {
     const { data: execution } = useSuspenseExecution(executionId);
-    const [showStackTrace, setShowStackTrace] = useState(false);
 
-    const duration = execution.completedAt
-        ? Math.round(
-            (new Date(execution.completedAt).getTime() - new Date(execution.startedAt).getTime()) / 1000,
-        )
-        : null;
+    const [selectedStepId, setSelectedStepId] = useState<string | null>(null);
+    const [collapsed, setCollapsed] = useState(false);
+    const [showInput, setShowInput] = useState(true);
+    const [showOutput, setShowOutput] = useState(true);
+
+    useEffect(() => {
+        if (!selectedStepId && execution.executionSteps?.length) {
+            setSelectedStepId(execution.executionSteps[0].id);
+        }
+    }, [execution.executionSteps, selectedStepId]);
+
+    const selectedStep = execution.executionSteps.find(
+        (s) => s.id === selectedStepId
+    );
 
     return (
-        <Card className="shadow-none">
-            <CardHeader>
-                <div className="flex items-center gap-3">
-                    {getStatusIcon(execution.status)}
-                    <div>
-                        <CardTitle>
-                            {formatStatus(execution.status)}
-                        </CardTitle>
-                        <CardDescription>
-                            Execution for {execution.workflow.name}
-                        </CardDescription>
-                    </div>
-                </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                    <div>
-                        <p className="text-sm font-medium text-muted-foreground">
-                            Workflow
-                        </p>
-                        <Link
-                            prefetch
-                            className="text-sm hover:underline text-primary"
-                            href={`/workflows/${execution.workflowId}`}>
-                            {execution.workflow.name}
-                        </Link>
-                    </div>
-                    <div>
-                        <p className="text-sm font-medium text-muted-foreground">Status</p>
-                        <p className="text-sm">{formatStatus(execution.status)}</p>
-                    </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
-                    <div>
-                        <p className="text-sm font-medium text-muted-foreground">Started</p>
-                        <p className="text-sm">{formatDistanceToNow(execution.startedAt, { addSuffix: true })}</p>
-                    </div>
-
-                    {execution.completedAt ? (
+            {/* HEADER */}
+            <Card className="lg:col-span-3">
+                <CardHeader className="flex flex-row items-center justify-between px-3 py-2">
+                    <div className="flex items-center gap-2">
+                        {statusIcon(execution.status)}
                         <div>
-                            <p className="text-sm font-medium text-muted-foreground">Completed</p>
-                            <p className="text-sm">{formatDistanceToNow(execution.completedAt, { addSuffix: true })}</p>
-                        </div>
-                    ) : null}
-
-                    {duration !== null ? (
-                        <div>
-                            <p className="text-sm font-medium text-muted-foreground">Duration</p>
-                            <p className="text-sm">{duration}s</p>
-                        </div>
-                    ) : null}
-
-
-                    <div>
-                        <p className="text-sm font-medium text-muted-foreground">Event ID</p>
-                        <p className="text-sm">{execution.inngestEventId}</p>
-                    </div>
-                </div>
-
-                {execution.error && (
-                    <div className="mt-6 p-4 bg-red-50 rounded-md space-y-3">
-                        <div>
-                            <p className="text-sm font-medium text-red-900 mb-2">
-                                Error
+                            <CardTitle className="text-base">
+                                {execution.workflow.name}
+                            </CardTitle>
+                            <p className="text-xs text-muted-foreground">
+                                Execution {execution.id}
                             </p>
-                            <p className="text-sm text-red-800 font-mono">{execution.error}</p>
                         </div>
+                    </div>
 
-                        {execution.errorStack && (
-                            <Collapsible
-                                open={showStackTrace}
-                                onOpenChange={setShowStackTrace}
+                    <div className="flex gap-2">
+                        <Badge variant={statusBadgeVariant(execution.status)}>
+                            {execution.status}
+                        </Badge>
+                        <Badge variant="outline" className="text-xs">
+                            {formatDistanceToNow(execution.startedAt, { addSuffix: true })}
+                        </Badge>
+                    </div>
+                </CardHeader>
+            </Card>
+
+            {/* TIMELINE */}
+            <Card>
+                <CardHeader className="flex justify-between px-3 py-2">
+                    <CardTitle className="text-sm">Execution Timeline</CardTitle>
+                </CardHeader>
+
+                <ScrollArea className="h-[70vh]">
+                    <div className="px-2 space-y-1">
+                        {execution.executionSteps.map(step => (
+                            <button
+                                key={step.id}
+                                onClick={() => setSelectedStepId(step.id)}
+                                className={cn(
+                                    "w-full text-left px-2 py-1.5 rounded-sm border-l-2 transition",
+                                    step.id === selectedStepId
+                                        ? "bg-muted/50 border-l-primary"
+                                        : "border-l-transparent hover:bg-muted/30"
+                                )}
                             >
-                                <CollapsibleTrigger asChild>
-                                    <Button
-                                        variant={'ghost'}
-                                        size={'sm'}
-                                        className="text-red-900 hover:bg-red-100"
-                                    >
-                                        {showStackTrace
-                                            ? 'Hide Stack Trace'
-                                            : 'Show Stack Trace'
-                                        }
-                                    </Button>
-                                </CollapsibleTrigger>
-                                <CollapsibleContent>
-                                    <pre className="text-xs mt-2 p-2 bg-red-100 rounded text-red-800 font-mono overflow-auto">
-                                        {execution.errorStack}
-                                    </pre>
-                                </CollapsibleContent>
-                            </Collapsible>
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-xs font-medium">
+                                            #{step.stepIndex}
+                                        </span>
+                                        <NodeIcon type={step.nodeType} />
+                                        <span className="text-xs font-medium">
+                                            {step.nodeName}
+                                        </span>
+                                    </div>
+                                    <span className="text-[10px] text-muted-foreground">
+                                        {formatDuration(step.startedAt, step.completedAt)}
+                                    </span>
+                                </div>
+                            </button>
+                        ))}
+                    </div>
+                </ScrollArea>
+            </Card>
+
+            {/* DETAILS */}
+            <Card className="lg:col-span-2 min-w-0">
+                <CardHeader className="sticky top-0 z-10 bg-background px-3 border-b">
+                    <CardTitle className="text-sm flex gap-x-2">
+                        <NodeIcon type={selectedStep?.nodeType!} />
+                        {selectedStep?.nodeName ?? "Step details"}
+                    </CardTitle>
+                </CardHeader>
+                <ScrollArea className="h-[70vh]">
+                    <div className="px-3 py-2 space-y-3">
+                        {selectedStep && (
+                            <>
+                                <div className="flex gap-2 flex-wrap">
+                                    <Badge variant={statusBadgeVariant(selectedStep.status)}>
+                                        Node {selectedStep.status}
+                                    </Badge>
+                                </div>
+                                <Separator />
+                                {/* INPUT */}
+                                {selectedStep.input && (
+                                    <div className="space-y-1">
+                                        <button
+                                            className="flex items-center gap-1 text-xs font-medium"
+                                            onClick={() => setShowInput(v => !v)}
+                                        >
+                                            {showInput ? (
+                                                <ChevronDownIcon className="h-3 w-3" />
+                                            ) : (
+                                                <ChevronRightIcon className="h-3 w-3" />
+                                            )}
+                                            Input
+                                        </button>
+
+                                        {showInput && (
+                                            <div className="relative">
+                                                <Button
+                                                    size="icon"
+                                                    variant="ghost"
+                                                    className="absolute top-1 right-1 h-6 w-6 text-muted-foreground hover:text-foreground"
+                                                    onClick={() => copyJSON(selectedStep.input)}
+                                                >
+                                                    <CopyIcon className="h-3 w-3" />
+                                                </Button>
+
+                                                <pre className="text-[11px] bg-muted/40 border rounded-md px-3 py-2 max-h-[240px] overflow-auto font-mono whitespace-pre-wrap wrap-break-word pr-8">
+                                                    {JSON.stringify(selectedStep.input, null, 2)}
+                                                </pre>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
+                                {/* OUTPUT */}
+                                {selectedStep.output && (
+                                    <div className="space-y-1">
+                                        <button
+                                            className="flex items-center gap-1 text-xs font-medium"
+                                            onClick={() => setShowOutput(v => !v)}
+                                        >
+                                            {showOutput ? (
+                                                <ChevronDownIcon className="h-3 w-3" />
+                                            ) : (
+                                                <ChevronRightIcon className="h-3 w-3" />
+                                            )}
+                                            Output
+                                        </button>
+
+                                        {showOutput && (
+                                            <div className="relative">
+                                                <Button
+                                                    size="icon"
+                                                    variant="ghost"
+                                                    className="absolute top-1 right-1 h-6 w-6 text-muted-foreground hover:text-foreground"
+                                                    onClick={() => copyJSON(selectedStep.output)}
+                                                >
+                                                    <CopyIcon className="h-3 w-3" />
+                                                </Button>
+
+                                                <pre className=" text-[11px] bg-muted/40 border rounded-md px-3 py-2 max-h-[240px] overflow-auto font-mono whitespace-pre-wrap wrap-break-word pr-8">
+                                                    {JSON.stringify(selectedStep.output, null, 2)}
+                                                </pre>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
+                            </>
                         )}
                     </div>
-                )}
-
-                {execution.output && (
-                    <div className="mt-6 p-4 bg-muted rounded-md">
-                        <p className="text-sm font-medium mb-2">Output</p>
-                        <pre className="text-xs font-mono overflow-auto">
-                            {JSON.stringify(execution.output, null, 2)}
-                        </pre>
-                    </div>
-                )}
-            </CardContent>
-        </Card>
-    )
-
+                </ScrollArea>
+            </Card>
+        </div>
+    );
 };

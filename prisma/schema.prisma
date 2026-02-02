@@ -237,6 +237,7 @@ model ExecutionStep {
   error      String? @db.Text
   errorStack String? @db.Text
 
+  @@unique([executionId, nodeId])
   @@index([executionId])
 }
 

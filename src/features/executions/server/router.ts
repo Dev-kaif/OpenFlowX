@@ -18,6 +18,9 @@ export const executionsRouter = createTRPCRouter({
                             id: true,
                             name: true,
                         },
+                    },
+                    executionSteps: {
+                        orderBy: { stepIndex: "asc" },
                     }
                 },
             });
@@ -79,4 +82,6 @@ export const executionsRouter = createTRPCRouter({
                 hasPreviousPage,
             };
         }),
+
+
 })
