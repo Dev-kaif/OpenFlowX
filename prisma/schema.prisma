@@ -8,17 +8,19 @@ datasource db {
 }
 
 model User {
-  id            String       @id
-  name          String
-  email         String
-  emailVerified Boolean      @default(false)
-  image         String?
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-  sessions      Session[]
-  accounts      Account[]
-  workflows     Workflow[]
-  credentials   Credential[]
+  id                  String               @id
+  name                String
+  email               String
+  emailVerified       Boolean              @default(false)
+  image               String?
+  telegramConnected   Boolean              @default(false)
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  sessions            Session[]
+  accounts            Account[]
+  workflows           Workflow[]
+  credentials         Credential[]
+  telegramConnections TelegramConnection[]
 
   @@unique([email])
   @@map("user")
@@ -116,6 +118,7 @@ enum NodeType {
   R2
   SCHEDULE
   JSON_PARSE
+  TELEGRAM
 }
 
 model Node {
@@ -227,4 +230,25 @@ model Schedule {
   updatedAt DateTime  @updatedAt
 
   workflow Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+}
+
+model TelegramConnection {
+  id String @id @default(cuid())
+
+  userId         String
+  telegramUserId String @unique
+  chatId         String @unique
+
+  username  String?
+  firstName String?
+  lastName  String?
+
+  isActive Boolean @default(true)
+
+  connectedAt   DateTime  @default(now())
+  lastMessageAt DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }

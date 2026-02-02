@@ -1,86 +1,103 @@
 import { NodeType } from "@/generated/prisma/enums";
 import { createId } from "@paralleldrive/cuid2";
-import { CodeIcon, EyeIcon, FileIcon, FileText, GlobeIcon, MousePointerIcon, Search } from "lucide-react";
-import React, { useCallback } from "react";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "../ui/sheet";
+import {
+    CodeIcon,
+    FileIcon,
+    FileText,
+    GlobeIcon,
+    MousePointerIcon,
+} from "lucide-react";
+import React, { useCallback, useState } from "react";
+import {
+    Sheet,
+    SheetContent,
+    SheetDescription,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger,
+} from "../ui/sheet";
 import { Separator } from "../ui/separator";
+import { Input } from "../ui/input";
 import { useReactFlow } from "@xyflow/react";
 import { toast } from "sonner";
+
+
 export type NodeTypeOption = {
-    type: NodeType,
+    type: NodeType;
     lable: string;
     description: string;
     icon: React.ComponentType<{ className?: string }> | string;
-}
+};
 
-const triggerNode: NodeTypeOption[] = [
+
+const triggerNodes: NodeTypeOption[] = [
     {
         type: NodeType.MANUAL_TRIGGER,
-        lable: "Trigger Manually",
-        description: "Runs the flow on clicking a button. Good for getting started quickly",
+        lable: "Manual Trigger",
+        description: "Start the workflow manually with a button click",
         icon: MousePointerIcon,
     },
     {
         type: NodeType.GOOGLE_FORM_TRIGGER,
         lable: "Google Form",
-        description: "Runs the flow when a google form is submitted",
+        description: "Trigger when a Google Form is submitted",
         icon: "/googleform.svg",
     },
     {
         type: NodeType.STRIPE_TRIGGER,
         lable: "Stripe",
-        description: "Runs the flow when a Stripe event is received.",
+        description: "Trigger on Stripe events like payments",
         icon: "/stripe.svg",
     },
     {
         type: NodeType.POLAR_TRIGGER,
         lable: "Polar",
-        description: "Runs the flow when a Polar event is received.",
+        description: "Trigger on Polar events",
         icon: "/polar.svg",
     },
     {
         type: NodeType.SCHEDULE,
         lable: "Schedule",
-        description: "Runs the flow when a Polar event is received.",
+        description: "Run the workflow automatically on a schedule",
         icon: "/utils/schedule.svg",
     },
-]
+];
 
-const executionNode: NodeTypeOption[] = [
+const executionNodes: NodeTypeOption[] = [
     {
         type: NodeType.HTTP_REQUEST,
         lable: "HTTP Request",
-        description: "Send an HTTP request to any REST API and use the response in your workflow",
+        description: "Send HTTP requests to APIs",
         icon: GlobeIcon,
     },
     {
         type: NodeType.GEMINI,
         lable: "Gemini",
-        description: "Generate text or structured output using Google Gemini models",
+        description: "Generate text or structured output using Gemini",
         icon: "/gemini.svg",
     },
     {
         type: NodeType.OPENROUTER,
         lable: "OpenRouter",
-        description: "Call LLMs from multiple providers through the OpenRouter API",
+        description: "Call multiple LLM providers via OpenRouter",
         icon: "/openrouter.svg",
     },
     {
         type: NodeType.OPENAI,
         lable: "OpenAI",
-        description: "Generate text or data using OpenAI models like GPT-4",
+        description: "Generate text or JSON using OpenAI models",
         icon: "/openai.svg",
     },
     {
         type: NodeType.DEEPSEEK,
         lable: "DeepSeek",
-        description: "Run reasoning or code-focused prompts using DeepSeek models",
+        description: "Reasoning and code-focused LLM execution",
         icon: "/deepseek.svg",
     },
     {
         type: NodeType.ANTHROPIC,
         lable: "Anthropic",
-        description: "Generate responses using Anthropic Claude models",
+        description: "Generate responses using Claude models",
         icon: "/anthropic.svg",
     },
     {
@@ -92,97 +109,95 @@ const executionNode: NodeTypeOption[] = [
     {
         type: NodeType.DISCORD,
         lable: "Discord",
-        description: "Send messages or notifications to a Discord channel",
+        description: "Send messages or notifications to Discord",
         icon: "/discord.svg",
     },
     {
         type: NodeType.SLACK,
         lable: "Slack",
-        description: "Post messages or alerts to a Slack workspace",
+        description: "Send messages or alerts to Slack",
         icon: "/slack.svg",
     },
     {
-        type: NodeType.IFELSE,
-        lable: "If / Else",
-        description: "Branch workflow execution based on a boolean condition",
-        icon: "/utils/ifelse.svg",
+        type: NodeType.TELEGRAM,
+        lable: "Telegram",
+        description: "Send messages or alerts to Telegram",
+        icon: "/telegram.svg",
     },
     {
-        type: NodeType.DELAY,
-        lable: "Delay",
-        description: "Pause workflow execution for a specified amount of time",
-        icon: "/utils/delay.svg",
-    },
-    {
-        type: NodeType.CODE,
-        lable: "Code",
-        description: "Run custom JavaScript logic inside the workflow",
-        icon: CodeIcon,
-    },
-    {
-        type: NodeType.TEMPLATE,
-        lable: "Template",
-        description: "Create reusable text or data by rendering a template with workflow variables",
-        icon: FileText,
-    },
-    {
-        type: NodeType.SEARCH,
-        lable: "Search",
-        description: "Create reusable text or data by rendering a template with workflow variables",
-        icon: Search,
-    },
-    {
-        type: NodeType.SCRAPER,
-        lable: "Scraper",
-        description: "Create reusable text or data by rendering a template with workflow variables",
-        icon: EyeIcon,
+        type: NodeType.EMAIL_RESEND,
+        lable: "Resend Email",
+        description: "Send transactional emails using Resend",
+        icon: "/resend.svg",
     },
     {
         type: NodeType.POSTGRESS,
         lable: "Postgres",
-        description: "Read or write data from a Postgres database",
+        description: "Read or write data in a Postgres database",
         icon: "/postgress.svg",
     },
     {
         type: NodeType.GOOGLESHEETS,
         lable: "Google Sheets",
-        description: "Read or write data from a Postgres database",
+        description: "Read or write rows in Google Sheets",
         icon: "/sheets.svg",
-    },
-    {
-        type: NodeType.EMAIL_RESEND,
-        lable: "Resend",
-        description: "Read or write data from a Postgres database",
-        icon: "/resend.svg",
-    },
-    {
-        type: NodeType.JSON_PARSE,
-        lable: "Json Parsing",
-        description: "Read or write data from a Postgres database",
-        icon: "/utils/json.svg",
-    },
-    {
-        type: NodeType.FILE,
-        lable: "File Transform",
-        description: "Read or write data from a Postgres database",
-        icon: FileIcon,
     },
     {
         type: NodeType.S3,
         lable: "AWS S3",
-        description: "Read or write data from a Postgres database",
+        description: "Upload files to Amazon S3",
         icon: "/aws.svg",
     },
     {
         type: NodeType.R2,
         lable: "Cloudflare R2",
-        description: "Read or write data from a Postgres database",
+        description: "Upload files to Cloudflare R2",
         icon: "/cloudflare.svg",
     },
 ];
 
-interface NodeSelectorPros {
-    open: boolean,
+const utilNodes: NodeTypeOption[] = [
+    {
+        type: NodeType.IFELSE,
+        lable: "If / Else",
+        description: "Branch execution based on a condition",
+        icon: "/utils/ifelse.svg",
+    },
+    {
+        type: NodeType.DELAY,
+        lable: "Delay",
+        description: "Pause workflow execution for a duration",
+        icon: "/utils/delay.svg",
+    },
+    {
+        type: NodeType.CODE,
+        lable: "Code",
+        description: "Run custom JavaScript logic",
+        icon: CodeIcon,
+    },
+    {
+        type: NodeType.TEMPLATE,
+        lable: "Template",
+        description: "Render text using Handlebars templates",
+        icon: FileText,
+    },
+    {
+        type: NodeType.JSON_PARSE,
+        lable: "JSON Parse",
+        description: "Parse a JSON string into structured data",
+        icon: "/utils/json.svg",
+    },
+    {
+        type: NodeType.FILE,
+        lable: "File",
+        description: "Normalize files from URL, base64, or metadata",
+        icon: FileIcon,
+    },
+];
+
+
+interface NodeSelectorProps {
+    open: boolean;
     onOpenChange: (open: boolean) => void;
     children: React.ReactNode;
 }
@@ -190,137 +205,165 @@ interface NodeSelectorPros {
 export const NodeSelector = ({
     open,
     onOpenChange,
-    children
-}: NodeSelectorPros) => {
+    children,
+}: NodeSelectorProps) => {
     const { getNodes, setNodes, screenToFlowPosition } = useReactFlow();
+    const [search, setSearch] = useState("");
 
-    const handleNodeSelect = useCallback((selection: NodeTypeOption) => {
-        if (selection.type == NodeType.MANUAL_TRIGGER) {
-            const nodes = getNodes();
+    const filterBySearch = (nodes: NodeTypeOption[]) => {
+        if (!search.trim()) return nodes;
+        return nodes.filter((n) =>
+            n.lable.toLowerCase().includes(search.toLowerCase())
+        );
+    };
 
-            const hasManualTrigger = nodes.some((node) => (
-                node.type == NodeType.MANUAL_TRIGGER
-            ));
-
-            if (hasManualTrigger) {
-                toast.error("There can be only one Manual Trigger");
-                return;
+    const handleNodeSelect = useCallback(
+        (selection: NodeTypeOption) => {
+            if (selection.type === NodeType.MANUAL_TRIGGER) {
+                const nodes = getNodes();
+                if (nodes.some((n) => n.type === NodeType.MANUAL_TRIGGER)) {
+                    toast.error("There can be only one Manual Trigger");
+                    return;
+                }
             }
-        }
-        setNodes((nodes) => {
-            const hasInitialNode = nodes.some((node) => (
-                node.type == NodeType.INITIAL
-            ));
 
-            const CenterX = window.innerWidth / 2;
-            const CenterY = window.innerHeight / 2;
+            setNodes((nodes) => {
+                const hasInitialNode = nodes.some(
+                    (n) => n.type === NodeType.INITIAL
+                );
 
-            const flowPosition = screenToFlowPosition({
-                x: CenterX + (Math.random() - 0.5) * 200,
-                y: CenterY + (Math.random() - 0.5) * 200
+                const centerX = window.innerWidth / 2;
+                const centerY = window.innerHeight / 2;
+
+                const position = screenToFlowPosition({
+                    x: centerX + (Math.random() - 0.5) * 200,
+                    y: centerY + (Math.random() - 0.5) * 200,
+                });
+
+                const newNode = {
+                    id: createId(),
+                    data: {},
+                    position,
+                    type: selection.type,
+                };
+
+                // 🔥 PRESERVED LOGIC
+                if (hasInitialNode) return [newNode];
+
+                return [...nodes, newNode];
             });
 
-            const newNode = {
-                id: createId(),
-                data: {},
-                position: flowPosition,
-                type: selection.type
-            };
+            onOpenChange(false);
+        },
+        [getNodes, onOpenChange, screenToFlowPosition, setNodes]
+    );
 
-            if (hasInitialNode) {
-                return [newNode]
-            }
-
-            return [...nodes, newNode]
-        })
-
-        onOpenChange(false);
-
-    }, [getNodes, onOpenChange, screenToFlowPosition, setNodes]);
+    const hasResults =
+        filterBySearch(triggerNodes).length ||
+        filterBySearch(executionNodes).length ||
+        filterBySearch(utilNodes).length;
 
     return (
         <Sheet open={open} onOpenChange={onOpenChange}>
-            <SheetTrigger asChild>
-                {children}
-            </SheetTrigger>
+            <SheetTrigger asChild>{children}</SheetTrigger>
+
             <SheetContent side="right" className="w-full sm:max-w-md overflow-y-auto">
                 <SheetHeader>
-                    <SheetTitle>
-                        what triggers this workflow?
-                    </SheetTitle>
+                    <SheetTitle>Add a node</SheetTitle>
                     <SheetDescription>
-                        A trigger is step that starts your workflow
+                        Choose what happens in your workflow
                     </SheetDescription>
                 </SheetHeader>
-                <div>
-                    {triggerNode.map((nodeType, index) => {
-                        const Icon = nodeType.icon;
-                        return (
-                            <div
-                                key={index}
-                                className="w-full justify-start h-auto py-5 px-4 rounded-none cursor-pointer border-l-2 border-transparent hover:border-l-primary"
-                                onClick={() => handleNodeSelect(nodeType)}
-                            >
-                                <div className="flex items-center overflow-hidden w-full gap-6">
-                                    {typeof Icon == "string" ? (
-                                        // eslint-disable-next-line @next/next/no-img-element
-                                        <img
-                                            src={Icon}
-                                            alt={nodeType.lable}
-                                            className="size-5 object-contain rounded-sm"
-                                        />
-                                    ) : (
-                                        <Icon className="size-5" />
-                                    )}
-                                    <div className="flex flex-col items-start text-left">
-                                        <span className="font-medium text-sm">
-                                            {nodeType.lable}
-                                        </span>
-                                        <span className="text-xs text-muted-foreground">
-                                            {nodeType.description}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        );
-                    })}
+
+                {/* Search */}
+                <div className="px-4 py-2">
+                    <Input
+                        placeholder="Search nodes..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        className="h-9"
+                    />
                 </div>
+
+                {/* Triggers */}
+                <Section title="Triggers">
+                    {filterBySearch(triggerNodes).map((n, i) => (
+                        <NodeItem key={i} node={n} onClick={handleNodeSelect} />
+                    ))}
+                </Section>
+
                 <Separator />
-                <div>
-                    {executionNode.map((nodeType, index) => {
-                        const Icon = nodeType.icon;
-                        return (
-                            <div
-                                key={index}
-                                className="w-full justify-start h-auto py-5 px-4 rounded-none cursor-pointer border-l-2 border-transparent hover:border-l-primary"
-                                onClick={() => handleNodeSelect(nodeType)}
-                            >
-                                <div className="flex items-center overflow-hidden w-full gap-6">
-                                    {typeof Icon == "string" ? (
-                                        // eslint-disable-next-line @next/next/no-img-element
-                                        <img
-                                            src={Icon}
-                                            alt={nodeType.lable}
-                                            className="size-5 object-contain rounded-sm"
-                                        />
-                                    ) : (
-                                        <Icon className="size-5" />
-                                    )}
-                                    <div className="flex flex-col items-start text-left">
-                                        <span className="font-medium text-sm">
-                                            {nodeType.lable}
-                                        </span>
-                                        <span className="text-xs text-muted-foreground">
-                                            {nodeType.description}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
+
+                {/* Actions */}
+                <Section title="Actions">
+                    {filterBySearch(executionNodes).map((n, i) => (
+                        <NodeItem key={i} node={n} onClick={handleNodeSelect} />
+                    ))}
+                </Section>
+
+                <Separator />
+
+                {/* Utils */}
+                <Section title="Utils">
+                    {filterBySearch(utilNodes).map((n, i) => (
+                        <NodeItem key={i} node={n} onClick={handleNodeSelect} />
+                    ))}
+                </Section>
+
+                {/* Empty State */}
+                {!hasResults && search && (
+                    <div className="px-4 py-6 text-sm text-muted-foreground text-center">
+                        No nodes found for “{search}”
+                    </div>
+                )}
             </SheetContent>
         </Sheet>
     );
-}
+};
 
+
+const Section = ({
+    title,
+    children,
+}: {
+    title: string;
+    children: React.ReactNode;
+}) => (
+    <div className="mt-2">
+        <div className="px-4 py-2 text-xs font-semibold text-muted-foreground uppercase">
+            {title}
+        </div>
+        {children}
+    </div>
+);
+
+const NodeItem = ({
+    node,
+    onClick,
+}: {
+    node: NodeTypeOption;
+    onClick: (node: NodeTypeOption) => void;
+}) => {
+    const Icon = node.icon;
+
+    return (
+        <div
+            className="w-full py-4 px-4 cursor-pointer border-l-2 border-transparent hover:border-l-primary"
+            onClick={() => onClick(node)}
+        >
+            <div className="flex gap-6 items-center">
+                {typeof Icon === "string" ? (
+                    <img src={Icon} alt={node.lable} className="size-5" />
+                ) : (
+                    <Icon className="size-5" />
+                )}
+                <div>
+                    <div className="font-medium text-sm">{node.lable}</div>
+                    <div className="text-xs text-muted-foreground">
+                        {node.description}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};

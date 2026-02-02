@@ -27,6 +27,7 @@ import { JsonParseExecutor } from "../components/UtilsNodes/jsonParse/executor";
 import { FileExecutor } from "../components/UtilsNodes/file/executor";
 import { S3Executor } from "../components/s3/executor";
 import { R2Executor } from "../components/r2/executor";
+import { TelegramExecutor } from "../components/telegram/executor";
 
 
 export const executorRegistory: Record<NodeType, NodeExecutor> = {
@@ -58,6 +59,7 @@ export const executorRegistory: Record<NodeType, NodeExecutor> = {
     [NodeType.FILE]: FileExecutor,
     [NodeType.S3]: S3Executor,
     [NodeType.R2]: R2Executor,
+    [NodeType.TELEGRAM]: TelegramExecutor,
 };
 
 

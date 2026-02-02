@@ -10,7 +10,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar'
-import { CreditCardIcon, FolderOpenIcon, HistoryIcon, KeyIcon, LogOutIcon, StarIcon } from 'lucide-react'
+import { CreditCardIcon, FolderOpenIcon, HistoryIcon, KeyIcon, LogOutIcon, SettingsIcon, StarIcon } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
@@ -43,6 +43,11 @@ function AppSidebar() {
                     title: "Execution",
                     icons: HistoryIcon,
                     url: "/executions"
+                },
+                {
+                    title: "Settings",
+                    icons: SettingsIcon,
+                    url: "/settings"
                 },
             ]
         }
