@@ -89,7 +89,7 @@ export default function SignUpForm() {
         await authClient.signIn.social(
             {
                 provider,
-                callbackURL: "/dashboard",
+                callbackURL: "/workflows",
             },
             {
                 onError: (ctx) => {

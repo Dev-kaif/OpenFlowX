@@ -6,6 +6,7 @@ import { useTheme } from "next-themes";
 import Image from "next/image";
 import { motion } from "motion/react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 const HEADER_HEIGHT = 64;
 
@@ -17,7 +18,16 @@ const navItems = [
 ];
 
 export const Header = () => {
+
   const { resolvedTheme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
   const isDark = resolvedTheme === "dark";
 
   const toggleTheme = () => {

@@ -208,23 +208,26 @@ interface EmptyViewProps extends StateViewProps {
 
 export const EmptyView = ({
     message,
-    onNew
+    onNew,
 }: EmptyViewProps) => {
     return (
-        <Empty className='border border-dashed border-primary bg-white'>
+        <Empty className="border border-dashed border-border bg-card">
             <EmptyHeader>
-                <EmptyMedia variant={"icon"}>
-                    <PackageOpenIcon className='text-primary' />
+                <EmptyMedia variant="icon">
+                    <PackageOpenIcon className="text-primary" />
                 </EmptyMedia>
             </EmptyHeader>
+
             <EmptyTitle>
-                no items
+                No items
             </EmptyTitle>
+
             {!!message && (
                 <EmptyDescription>
                     {message}
                 </EmptyDescription>
             )}
+
             {!!onNew && (
                 <EmptyContent>
                     <Button onClick={onNew}>
@@ -235,6 +238,7 @@ export const EmptyView = ({
         </Empty>
     );
 };
+
 
 interface EntityListProps<T> {
     items: T[];
