@@ -25,6 +25,12 @@ export const DelayExecutor: NodeExecutor<DelayNodeData> = async ({
     );
 
     if (!data.mode) {
+        await publish(
+            delayChannel().status({
+                nodeId,
+                status: "error",
+            }),
+        );
         throw new NonRetriableError("Delay Node: mode is required");
     }
 
