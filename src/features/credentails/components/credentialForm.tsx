@@ -36,6 +36,7 @@ import Link from "next/link";
 import { CredentialType } from "@/generated/prisma/enums";
 import { getThemedIcon } from "@/lib/icon";
 import { useTheme } from "next-themes";
+import { ShieldCheck } from "lucide-react";
 
 const formSchema = z.object({
     name: z.string().min(1, 'Name is required'),
@@ -241,6 +242,20 @@ export const CredentialForm = ({ initialData }: CredentialFormProps) => {
                                 </FormItem>
                             )}
                         />
+
+                        <div className="flex gap-3 p-3.5 rounded-xl bg-blue-50/50 border border-blue-100 dark:bg-blue-950/20 dark:border-blue-900/30">
+                            <ShieldCheck className="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
+                            <div className="space-y-1">
+                                <p className="text-sm font-semibold text-blue-900 dark:text-blue-300">
+                                    Enterprise-Grade Security
+                                </p>
+                                <p className="text-xs leading-relaxed text-blue-800/70 dark:text-blue-400/70">
+                                    Your sensitive data is protected using <b>AES-256 encryption</b>.
+                                    API keys are encrypted at the database level and are only decrypted
+                                    during execution. We never store or log your keys in plain text.
+                                </p>
+                            </div>
+                        </div>
 
                         <div className="flex gap-4">
                             <Button
