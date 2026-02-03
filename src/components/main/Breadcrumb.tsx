@@ -15,6 +15,9 @@ function getBreadcrumbTitle(pathname: string) {
   if (pathname.startsWith("/executions")) {
     return "Execution History";
   }
+  if (pathname.startsWith("/credentials")) {
+    return "Credential";
+  }
 
   return ROUTE_TITLES[pathname] ?? "Workflows";
 }

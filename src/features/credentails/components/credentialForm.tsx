@@ -1,7 +1,6 @@
 'use client';
 
 import { useRouter } from "next/navigation";
-import Image from 'next/image';
 import { useCreateCredential, useSuspenseCredential, useUpdateCredential } from "../hooks/useCredentials";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";

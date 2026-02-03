@@ -121,7 +121,7 @@ function AppSidebar() {
                                             <div className="font-semibold text-sm capitalize truncate">
                                                 {data?.name}
                                             </div>
-                                            <div className="text-sm text-muted-foreground truncate max-w-[160px]">
+                                            <div className="text-sm text-muted-foreground truncate max-w-40">
                                                 {data?.email}
                                             </div>
                                         </div>
