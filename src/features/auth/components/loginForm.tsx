@@ -8,7 +8,8 @@ import { z } from "zod";
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {  Card,
+import {
+    Card,
     CardHeader,
     CardFooter,
     CardTitle,
@@ -17,7 +18,8 @@ import {  Card,
 } from "@/components/ui/card";
 
 
-import {  Form,
+import {
+    Form,
     FormItem,
     FormLabel,
     FormControl,
@@ -27,18 +29,19 @@ import {  Form,
 
 import { authClient } from "@/lib/auth-client";
 import { Separator } from "@/components/ui/separator";
-import {Eye, EyeOff, Github } from "lucide-react";
+import { Eye, EyeOff, Github } from "lucide-react";
 import { FaGoogle } from "react-icons/fa";
 import { useState } from "react";
+import Image from "next/image";
 
 const loginSchema = z.object({
-  email: z.email("Please enter a valid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+    email: z.email("Please enter a valid email address"),
+    password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
 type loginFormValues = z.infer<typeof loginSchema>;
 
-export default function LoginForm() { 
+export default function LoginForm() {
 
     const router = useRouter();
     const [isPasswordHidden, setIsPasswordHidden] = useState(true)
@@ -53,17 +56,17 @@ export default function LoginForm() {
 
     const onSubmit = async (values: loginFormValues) => {
         await authClient.signIn.email({
-                email: values.email,
-                password: values.password,
-                callbackURL: "/",
-            }, {
-                onSuccess: () => {
-                    router.push("/workflows")
-                },
-                onError: (ctx) => {
-                    toast.error(ctx.error.message)
-                }
-            });
+            email: values.email,
+            password: values.password,
+            callbackURL: "/",
+        }, {
+            onSuccess: () => {
+                router.push("/workflows")
+            },
+            onError: (ctx) => {
+                toast.error(ctx.error.message)
+            }
+        });
     }
 
 
@@ -89,7 +92,7 @@ export default function LoginForm() {
                                         type="button"
                                         disabled={isPending}
                                     >
-                                        <Github className="w-5 h-5" />
+                                        <Image className="h-5 w-fit" height={10} width={10} alt="github" src={"/Logos/github.svg"} />
                                         Continue with GitHub
                                     </Button>
 
@@ -99,11 +102,11 @@ export default function LoginForm() {
                                         type="button"
                                         disabled={isPending}
                                     >
-                                        <FaGoogle className="w-5 h-5" />
+                                        <Image className="h-5 w-fit" height={10} width={10} alt="github" src={"/Logos/google.svg"} />
                                         Continue with Google
                                     </Button>
                                 </div>
-                                <Separator/>
+                                <Separator />
                                 <div className="grid gap-6">
                                     <FormField
                                         control={form.control}
@@ -130,7 +133,7 @@ export default function LoginForm() {
                                                             type={isPasswordHidden ? "password" : "text"}
                                                             placeholder="********"
                                                             {...field}
-                                                            className="pr-10" 
+                                                            className="pr-10"
                                                         />
                                                         <button
                                                             type="button"
@@ -159,12 +162,12 @@ export default function LoginForm() {
                         </form>
                     </Form>
                     <CardFooter className="flex gap-2 justify-center items-center mt-2">
-                            <div>
-                                Don&apos;t have an account? 
-                            </div>
-                            <Link href={"/signUp"} className="underline underline-offset-4">
-                                Sign Up
-                            </Link>
+                        <div>
+                            Don&apos;t have an account?
+                        </div>
+                        <Link href={"/signUp"} className="underline underline-offset-4">
+                            Sign Up
+                        </Link>
                     </CardFooter>
                 </CardContent>
             </Card>

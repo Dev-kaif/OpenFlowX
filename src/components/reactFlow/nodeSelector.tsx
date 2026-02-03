@@ -40,7 +40,7 @@ export type NodeTypeOption = {
 }
 
 
-const triggerNodes: NodeTypeOption[] = [
+export const triggerNodes: NodeTypeOption[] = [
     {
         type: NodeType.MANUAL_TRIGGER,
         label: "Manual Trigger",
@@ -85,7 +85,7 @@ const triggerNodes: NodeTypeOption[] = [
     },
 ];
 
-const executionNodes: NodeTypeOption[] = [
+export const executionNodes: NodeTypeOption[] = [
     {
         type: NodeType.HTTP_REQUEST,
         label: "HTTP Request",
@@ -202,7 +202,7 @@ const executionNodes: NodeTypeOption[] = [
     },
 ];
 
-const utilNodes: NodeTypeOption[] = [
+export const utilNodes: NodeTypeOption[] = [
     {
         type: NodeType.IFELSE,
         label: "If / Else",
