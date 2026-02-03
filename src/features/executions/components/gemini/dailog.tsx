@@ -242,7 +242,7 @@ export const GeminiDialog = ({
                                     <FormControl>
                                         <Textarea
                                             placeholder="You are a helpful assistant..."
-                                            className="min-h-[80px]"
+                                            className="min-h-20"
                                             {...field}
                                         />
                                     </FormControl>

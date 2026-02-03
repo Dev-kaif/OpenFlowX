@@ -172,6 +172,7 @@ enum CredentialType {
   S3
   R2
   RESEND
+  TAVILY
 }
 
 model Credential {
