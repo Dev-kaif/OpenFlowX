@@ -43,10 +43,10 @@ export const UseCases = () => {
               className="group relative p-6 rounded-xl border border-border bg-card hover:border-primary/40 transition-all duration-300"
             >
               {/* Subtle gradient on hover */}
-              <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              
+              <div className="absolute inset-0 rounded-xl bg-linear-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+
               <div className="relative flex gap-4">
-                <div 
+                <div
                   className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
                   style={{
                     background: "linear-gradient(135deg, hsl(168 76% 42% / 0.15), hsl(156 68% 28% / 0.1))",

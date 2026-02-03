@@ -43,10 +43,10 @@ export const Features = () => {
               className="group relative p-6 rounded-xl border border-border bg-card hover:border-primary/50 transition-all duration-300"
             >
               {/* Hover glow */}
-              <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              
+              <div className="absolute inset-0 rounded-xl bg-linear-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+
               <div className="relative">
-                <div 
+                <div
                   className="w-12 h-12 rounded-lg flex items-center justify-center mb-4"
                   style={{
                     background: "linear-gradient(135deg, hsl(168 76% 42% / 0.15), hsl(156 68% 28% / 0.1))",
