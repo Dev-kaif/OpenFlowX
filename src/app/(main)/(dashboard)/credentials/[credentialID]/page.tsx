@@ -16,14 +16,8 @@ interface PageProps {
 const Page = async ({ params }: PageProps) => {
   await RequiredAuth();
 
-  const resolvedParams = await params;
-
-  const credentialId = resolvedParams.credentialId;
-
-  if (!credentialId) {
-    console.error("CRITICAL: credentialId is undefined in Server Component");
-  }
-  prefetchCredential(credentialId);
+  const { credentialId } = await params;
+  // prefetchCredential(credentialId);
 
   return (
     <div className="p-4 md:px-10 md:py-6 h-full">
