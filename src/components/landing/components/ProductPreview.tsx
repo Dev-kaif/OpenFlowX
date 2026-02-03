@@ -2,8 +2,8 @@ import { useTheme } from "next-themes";
 import Image from "next/image";
 
 export const ProductPreview = () => {
-  const { theme } = useTheme();
-  const isDark = theme === "dark";
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
 
   return (
     <section className="py-28 relative overflow-hidden">

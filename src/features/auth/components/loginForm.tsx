@@ -42,8 +42,8 @@ const loginSchema = z.object({
 type loginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginForm() {
-    const { theme } = useTheme();
-    const isDark = theme === "dark";
+    const { resolvedTheme } = useTheme();
+    const isDark = resolvedTheme === "dark";
 
     const router = useRouter();
     const [isPasswordHidden, setIsPasswordHidden] = useState(true);

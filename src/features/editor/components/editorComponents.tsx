@@ -50,8 +50,8 @@ export const EditorError = () => {
 
 export const Editor = ({ workflowId }: { workflowId: string }) => {
     const { data: workflow } = useSuspenseWorkflow(workflowId);
-    const { theme } = useTheme();
-    const isDark = theme === "dark";
+    const { resolvedTheme } = useTheme();
+    const isDark = resolvedTheme === "dark";
 
     const setEditorState = useSetAtom(editorAtom);
 

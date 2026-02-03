@@ -29,8 +29,8 @@ type IfNodeType = Node<IfNodeData>;
 export const IfElseNode = memo((props: NodeProps<IfNodeType>) => {
     const { id, data } = props;
     const { setNodes, setEdges } = useReactFlow();
-    const { theme } = useTheme();
-    const currentTheme = theme === "dark" ? "dark" : "light"
+    const { resolvedTheme } = useTheme();
+    const currentTheme = resolvedTheme === "dark" ? "dark" : "light"
 
 
     const [dialogOpen, setDialogOpen] = useState(false);

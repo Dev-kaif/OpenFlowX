@@ -9,8 +9,8 @@ export default function Layout({
 }: {
   children: React.ReactNode;
 }) {
-  const { theme } = useTheme();
-  const isDark = theme === "dark";
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
 
   return (
     <div className="flex min-h-svh items-center justify-center bg-muted p-6 md:p-10 max-h-screen overflow-y-hidden">

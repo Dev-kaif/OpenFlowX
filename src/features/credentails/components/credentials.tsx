@@ -134,8 +134,8 @@ export const CredentialEmpty = () => {
 
 export const CredentialItem = ({ data }: { data: Credential }) => {
     const removeCredential = useRemoveCredential();
-    const { theme } = useTheme();
-    const currentTheme = theme === "dark" ? "dark" : "light"
+    const { resolvedTheme } = useTheme();
+    const currentTheme = resolvedTheme === "dark" ? "dark" : "light"
 
     const handleRemove = () => {
         removeCredential.mutate({ id: data.id });
