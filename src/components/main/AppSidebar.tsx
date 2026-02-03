@@ -66,7 +66,7 @@ function AppSidebar() {
         <Sidebar>
             <SidebarHeader>
                 <SidebarMenuItem>
-                    <Link className='flex items-center w-full mt-1 mb-5' href={"/workflows"} prefetch>
+                    <Link className='flex items-center w-full mt-1 mb-2' href={"/workflows"} prefetch>
                         <Image alt='OpenFlowX' className='w-fit h-10' width={100} height={100} src={theme === "dark" ? "/main/logo-dark.png" : "/main/logo.png"} />
                     </Link>
                 </SidebarMenuItem>
