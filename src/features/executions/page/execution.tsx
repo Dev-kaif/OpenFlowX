@@ -1,5 +1,4 @@
 'use client';
-
 import {
     CheckCircle2Icon,
     ClockIcon,
@@ -8,14 +7,13 @@ import {
     CopyIcon,
     ChevronDownIcon,
     ChevronRightIcon,
+    AlertTriangleIcon,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-
 import { useSuspenseExecution } from "../hooks/useExecution";
 import { ExecutionStatus } from "@/generated/prisma/enums";
-
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -23,7 +21,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { NodeIcon } from "@/lib/icon";
-
 
 const statusBadgeVariant = (status: ExecutionStatus) => {
     switch (status) {
@@ -65,14 +62,18 @@ const copyJSON = async (data: unknown) => {
     toast.success("Copied to clipboard");
 };
 
-
+const copyText = async (text: string) => {
+    await navigator.clipboard.writeText(text);
+    toast.success("Copied to clipboard");
+};
 
 export const ExecutionView = ({ executionId }: { executionId: string }) => {
     const { data: execution } = useSuspenseExecution(executionId);
-
     const [selectedStepId, setSelectedStepId] = useState<string | null>(null);
     const [showInput, setShowInput] = useState(true);
     const [showOutput, setShowOutput] = useState(true);
+    const [showError, setShowError] = useState(true);
+    const [showErrorStack, setShowErrorStack] = useState(false);
 
     useEffect(() => {
         if (!selectedStepId && execution.executionSteps?.length) {
@@ -86,7 +87,6 @@ export const ExecutionView = ({ executionId }: { executionId: string }) => {
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-
             {/* HEADER */}
             <Card className="lg:col-span-3">
                 <CardHeader className="flex flex-row items-center justify-between px-3 py-2">
@@ -101,7 +101,6 @@ export const ExecutionView = ({ executionId }: { executionId: string }) => {
                             </p>
                         </div>
                     </div>
-
                     <div className="flex gap-2">
                         <Badge variant={statusBadgeVariant(execution.status)}>
                             {execution.status}
@@ -118,7 +117,6 @@ export const ExecutionView = ({ executionId }: { executionId: string }) => {
                 <CardHeader className="flex justify-between px-3 py-2">
                     <CardTitle className="text-sm">Execution Timeline</CardTitle>
                 </CardHeader>
-
                 <ScrollArea className="h-[70vh]">
                     <div className="px-2 space-y-1">
                         {execution.executionSteps.map(step => (
@@ -129,11 +127,15 @@ export const ExecutionView = ({ executionId }: { executionId: string }) => {
                                     "w-full text-left px-2 py-1.5 rounded-sm border-l-2 transition",
                                     step.id === selectedStepId
                                         ? "bg-muted/50 border-l-primary"
-                                        : "border-l-transparent hover:bg-muted/30"
+                                        : "border-l-transparent hover:bg-muted/30",
+                                    step.status === ExecutionStatus.FAILED && "bg-red-50/50 dark:bg-red-950/20"
                                 )}
                             >
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
+                                        {step.status === ExecutionStatus.FAILED && (
+                                            <AlertTriangleIcon className="h-3 w-3 text-red-600" />
+                                        )}
                                         <span className="text-xs font-medium">
                                             #{step.stepIndex}
                                         </span>
@@ -170,6 +172,75 @@ export const ExecutionView = ({ executionId }: { executionId: string }) => {
                                     </Badge>
                                 </div>
                                 <Separator />
+
+                                {/* ERROR DISPLAY */}
+                                {selectedStep.error && (
+                                    <>
+                                        <div className="space-y-1">
+                                            <button
+                                                className="flex items-center gap-1 text-xs font-medium text-red-600"
+                                                onClick={() => setShowError(v => !v)}
+                                            >
+                                                {showError ? (
+                                                    <ChevronDownIcon className="h-3 w-3" />
+                                                ) : (
+                                                    <ChevronRightIcon className="h-3 w-3" />
+                                                )}
+                                                <AlertTriangleIcon className="h-3 w-3" />
+                                                Error
+                                            </button>
+                                            {showError && (
+                                                <div className="relative">
+                                                    <Button
+                                                        size="icon"
+                                                        variant="ghost"
+                                                        className="absolute top-1 right-1 h-6 w-6 text-muted-foreground hover:text-foreground"
+                                                        onClick={() => copyText(selectedStep.error!)}
+                                                    >
+                                                        <CopyIcon className="h-3 w-3" />
+                                                    </Button>
+                                                    <div className="text-[11px] bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900 rounded-md px-3 py-2 font-mono whitespace-pre-wrap wrap-break-word pr-8 text-red-900 dark:text-red-200">
+                                                        {selectedStep.error}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* ERROR STACK */}
+                                        {selectedStep.errorStack && (
+                                            <div className="space-y-1">
+                                                <button
+                                                    className="flex items-center gap-1 text-xs font-medium text-red-600"
+                                                    onClick={() => setShowErrorStack(v => !v)}
+                                                >
+                                                    {showErrorStack ? (
+                                                        <ChevronDownIcon className="h-3 w-3" />
+                                                    ) : (
+                                                        <ChevronRightIcon className="h-3 w-3" />
+                                                    )}
+                                                    Stack Trace
+                                                </button>
+                                                {showErrorStack && (
+                                                    <div className="relative">
+                                                        <Button
+                                                            size="icon"
+                                                            variant="ghost"
+                                                            className="absolute top-1 right-1 h-6 w-6 text-muted-foreground hover:text-foreground"
+                                                            onClick={() => copyText(selectedStep.errorStack!)}
+                                                        >
+                                                            <CopyIcon className="h-3 w-3" />
+                                                        </Button>
+                                                        <pre className="text-[11px] bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900 rounded-md px-3 py-2 max-h-60 overflow-auto font-mono whitespace-pre-wrap wrap-break-word pr-8 text-red-900 dark:text-red-200">
+                                                            {selectedStep.errorStack}
+                                                        </pre>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                        <Separator />
+                                    </>
+                                )}
+
                                 {/* INPUT */}
                                 {selectedStep.input && (
                                     <div className="space-y-1">
@@ -184,7 +255,6 @@ export const ExecutionView = ({ executionId }: { executionId: string }) => {
                                             )}
                                             Input
                                         </button>
-
                                         {showInput && (
                                             <div className="relative">
                                                 <Button
@@ -195,7 +265,6 @@ export const ExecutionView = ({ executionId }: { executionId: string }) => {
                                                 >
                                                     <CopyIcon className="h-3 w-3" />
                                                 </Button>
-
                                                 <pre className="text-[11px] bg-muted/40 border rounded-md px-3 py-2 max-h-60 overflow-auto font-mono whitespace-pre-wrap wrap-break-word pr-8">
                                                     {JSON.stringify(selectedStep.input, null, 2)}
                                                 </pre>
@@ -218,7 +287,6 @@ export const ExecutionView = ({ executionId }: { executionId: string }) => {
                                             )}
                                             Output
                                         </button>
-
                                         {showOutput && (
                                             <div className="relative">
                                                 <Button
@@ -229,15 +297,13 @@ export const ExecutionView = ({ executionId }: { executionId: string }) => {
                                                 >
                                                     <CopyIcon className="h-3 w-3" />
                                                 </Button>
-
-                                                <pre className=" text-[11px] bg-muted/40 border rounded-md px-3 py-2 max-h-60 overflow-auto font-mono whitespace-pre-wrap wrap-break-word pr-8">
+                                                <pre className="text-[11px] bg-muted/40 border rounded-md px-3 py-2 max-h-60 overflow-auto font-mono whitespace-pre-wrap wrap-break-word pr-8">
                                                     {JSON.stringify(selectedStep.output, null, 2)}
                                                 </pre>
                                             </div>
                                         )}
                                     </div>
                                 )}
-
                             </>
                         )}
                     </div>
