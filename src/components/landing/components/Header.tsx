@@ -1,11 +1,12 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Github, Moon, Sun } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import { motion } from "motion/react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 const HEADER_HEIGHT = 64;
 
@@ -17,8 +18,13 @@ const navItems = [
 ];
 
 export const Header = () => {
-  const { theme, setTheme } = useTheme();
-  const isDark = theme === "dark";
+  const { setTheme } = useTheme();
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    const isDarkMode = document.documentElement.classList.contains("dark");
+    setIsDark(isDarkMode);
+  }, []);
 
   const toggleTheme = () => {
     setTheme(isDark ? "light" : "dark");
@@ -109,7 +115,7 @@ export const Header = () => {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <Image className="h-4 w-fit" height={10} width={10} alt="github" src={"/Logos/github.svg"} />
+                <Image className="h-4 w-fit" height={10} width={10} alt="github" src={isDark ? "/Logos/github-dark.svg" : "/Logos/github.svg"} />
                 <span className="hidden sm:inline">GitHub</span>
               </a>
             </Button>

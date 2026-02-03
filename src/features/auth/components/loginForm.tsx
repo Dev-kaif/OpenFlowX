@@ -29,10 +29,10 @@ import {
 
 import { authClient } from "@/lib/auth-client";
 import { Separator } from "@/components/ui/separator";
-import { Eye, EyeOff, Github } from "lucide-react";
-import { FaGoogle } from "react-icons/fa";
+import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import Image from "next/image";
+import { useTheme } from "next-themes";
 
 const loginSchema = z.object({
     email: z.email("Please enter a valid email address"),
@@ -42,9 +42,12 @@ const loginSchema = z.object({
 type loginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginForm() {
+    const { theme } = useTheme();
+    const isDark = theme === "dark";
 
     const router = useRouter();
-    const [isPasswordHidden, setIsPasswordHidden] = useState(true)
+    const [isPasswordHidden, setIsPasswordHidden] = useState(true);
+    const [isSocialPending, setIsSocialPending] = useState(false);
 
     const form = useForm<loginFormValues>({
         resolver: zodResolver(loginSchema),
@@ -55,6 +58,9 @@ export default function LoginForm() {
     });
 
     const onSubmit = async (values: loginFormValues) => {
+        toast.error("Email Login is disabled for a while");
+        return;
+
         await authClient.signIn.email({
             email: values.email,
             password: values.password,
@@ -69,8 +75,24 @@ export default function LoginForm() {
         });
     }
 
+    const handleSocialSignIn = async (provider: "github" | "google") => {
+        setIsSocialPending(true);
+        await authClient.signIn.social(
+            {
+                provider,
+                callbackURL: "/workflows",
+            },
+            {
+                onError: (ctx) => {
+                    toast.error(ctx.error.message);
+                    setIsSocialPending(false);
+                }
+            }
+        );
+    };
 
-    const isPending = form.formState.isSubmitting;
+
+    const isPending = form.formState.isSubmitting || isSocialPending;
 
     return (
         <div className="flex flex-col gap-6">
@@ -90,9 +112,10 @@ export default function LoginForm() {
                                         variant="outline"
                                         className="w-full flex items-center gap-2 py-5 text-[15px]"
                                         type="button"
+                                        onClick={() => handleSocialSignIn("github")}
                                         disabled={isPending}
                                     >
-                                        <Image className="h-5 w-fit" height={10} width={10} alt="github" src={"/Logos/github.svg"} />
+                                        <Image className="h-5 w-fit" height={10} width={10} alt="github" src={isDark ? "/Logos/github-dark.svg" : "/Logos/github.svg"} />
                                         Continue with GitHub
                                     </Button>
 
@@ -100,6 +123,7 @@ export default function LoginForm() {
                                         variant="outline"
                                         className="w-full flex items-center gap-2 py-5 text-[15px] bg-white hover:bg-neutral-100"
                                         type="button"
+                                        onClick={() => handleSocialSignIn("google")}
                                         disabled={isPending}
                                     >
                                         <Image className="h-5 w-fit" height={10} width={10} alt="github" src={"/Logos/google.svg"} />

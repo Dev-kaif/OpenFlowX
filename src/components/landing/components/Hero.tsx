@@ -1,10 +1,12 @@
 import { Button } from "@/components/ui/button";
-import { Github, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 
 export const Hero = () => {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
@@ -114,7 +116,7 @@ export const Hero = () => {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <Image className="h-5 w-fit" height={10} width={10} alt="github" src={"/Logos/github.svg"} />
+                <Image className="h-5 w-fit" height={10} width={10} alt="github" src={isDark ? "/Logos/github-dark.svg" : "/Logos/github.svg"} />
                 View on GitHub
               </a>
             </Button>

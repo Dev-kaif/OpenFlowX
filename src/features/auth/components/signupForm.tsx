@@ -28,10 +28,10 @@ import {
 } from "@/components/ui/form";
 import { authClient } from "@/lib/auth-client";
 import { Separator } from "@/components/ui/separator";
-import { Eye, EyeOff, Github } from "lucide-react";
-import { FaGoogle } from "react-icons/fa";
+import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import Image from "next/image";
+import { useTheme } from "next-themes";
 
 const SignUpSchema = z.object({
     name: z.string().min(1, "At least one character required"),
@@ -46,8 +46,12 @@ const SignUpSchema = z.object({
 type SignUpFormValues = z.infer<typeof SignUpSchema>;
 
 export default function SignUpForm() {
-    const [isPasswordHidden, setIsPasswordHidden] = useState(true)
-    const [isConfirmPasswordHidden, setIsConfirmPasswordHidden] = useState(true)
+    const [isPasswordHidden, setIsPasswordHidden] = useState(true);
+    const [isConfirmPasswordHidden, setIsConfirmPasswordHidden] = useState(true);
+    const [isSocialPending, setIsSocialPending] = useState(false);
+
+    const { theme } = useTheme();
+    const isDark = theme === "dark";
 
     const router = useRouter();
 
@@ -62,6 +66,9 @@ export default function SignUpForm() {
     });
 
     const onSubmit = async (values: SignUpFormValues) => {
+        toast.error("Email sign up is disabled for a while");
+        return;
+
         await authClient.signUp.email({
             name: values.name,
             email: values.email,
@@ -75,10 +82,26 @@ export default function SignUpForm() {
                 toast.error(ctx.error.message)
             }
         });
-    }
+    };
+
+    const handleSocialSignIn = async (provider: "github" | "google") => {
+        setIsSocialPending(true);
+        await authClient.signIn.social(
+            {
+                provider,
+                callbackURL: "/dashboard",
+            },
+            {
+                onError: (ctx) => {
+                    toast.error(ctx.error.message);
+                    setIsSocialPending(false);
+                },
+            }
+        );
+    };
 
 
-    const isPending = form.formState.isSubmitting;
+    const isPending = form.formState.isSubmitting || isSocialPending;
 
     return (
         <div className="flex flex-col gap-6">
@@ -99,8 +122,9 @@ export default function SignUpForm() {
                                         className="w-full flex items-center gap-2 py-5 text-[15px]"
                                         type="button"
                                         disabled={isPending}
+                                        onClick={() => handleSocialSignIn("github")}
                                     >
-                                        <Image className="h-5 w-fit" height={10} width={10} alt="github" src={"/Logos/github.svg"} />
+                                        <Image className="h-5 w-fit" height={10} width={10} alt="github" src={isDark ? "/Logos/github-dark.svg" : "/Logos/github.svg"} />
                                         Continue with GitHub
                                     </Button>
 
@@ -109,6 +133,7 @@ export default function SignUpForm() {
                                         className="w-full flex items-center gap-2 py-5 text-[15px] bg-white hover:bg-neutral-100"
                                         type="button"
                                         disabled={isPending}
+                                        onClick={() => handleSocialSignIn("google")}
                                     >
                                         <Image className="h-5 w-fit" height={10} width={10} alt="github" src={"/Logos/google.svg"} />
                                         Continue with Google
