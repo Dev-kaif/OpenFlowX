@@ -34,7 +34,6 @@ import {
 import { Button } from '@/components/ui/button';
 import Link from "next/link";
 import { CredentialType } from "@/generated/prisma/enums";
-import { useState } from "react";
 import { getThemedIcon } from "@/lib/icon";
 import { useTheme } from "next-themes";
 
@@ -91,6 +90,11 @@ export const credentialTypeOptions = [
         value: CredentialType.RESEND,
         label: "Resend",
         logo: "/resend.svg",
+    },
+    {
+        value: CredentialType.TAVILY,
+        label: "TAVILY",
+        logo: "/tavily.svg",
     },
 ];
 
