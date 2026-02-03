@@ -1,4 +1,4 @@
-import { prefetch, trpc } from '@/trpc/server';
+import { caller, prefetch, trpc } from '@/trpc/server';
 import type { inferInput } from '@trpc/tanstack-react-query';
 
 type Input = inferInput<typeof trpc.credentials.getMany>
@@ -11,4 +11,21 @@ export const prefetchCredentials = (params: Input) => {
 
 export const prefetchCredential = (id: string) => {
     return prefetch(trpc.credentials.getOne.queryOptions({ id }));
+}
+
+export const prefetchCredentialsWithDetails = async (params: Input) => {
+    // First prefetch the list
+    await prefetchCredentials(params);
+
+    // Get the data
+    const credentials = await caller.credentials.getMany(params);
+
+    // Prefetch all individual credentials in parallel
+    const prefetchPromises = credentials.items.map((credential) =>
+        prefetchCredential(credential.id)
+    );
+
+    await Promise.all(prefetchPromises);
+
+    return credentials;
 }

@@ -1,6 +1,6 @@
 import { CredentialContainer, CredentialList } from '@/features/credentails/components/credentials';
 import { credentialsParamLoader } from '@/features/credentails/server/paramsLoader';
-import { prefetchCredentials } from '@/features/credentails/server/prefetch';
+import { prefetchCredentials, prefetchCredentialsWithDetails } from '@/features/credentails/server/prefetch';
 import type { SearchParams } from 'nuqs/server';
 import { HydrateClient } from '@/trpc/server';
 import { ErrorBoundary } from "react-error-boundary";
@@ -17,7 +17,7 @@ async function Page({ searchParams }: Props) {
 
   const props = await credentialsParamLoader(searchParams);
 
-  prefetchCredentials(props);
+  prefetchCredentialsWithDetails(props);
   return (
     <CredentialContainer>
       <HydrateClient>
