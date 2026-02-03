@@ -108,8 +108,8 @@ export const CredentialForm = ({ initialData }: CredentialFormProps) => {
     const router = useRouter();
     const createCredential = useCreateCredential();
     const updateCredential = useUpdateCredential();
-    const { resolvedTheme } = useTheme();
-    const currentTheme = resolvedTheme === "dark" ? "dark" : "light"
+    const { theme } = useTheme();
+    const currentTheme = theme === "dark" ? "dark" : "light"
 
     const isEdit = !!initialData?.id;
 

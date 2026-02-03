@@ -34,8 +34,8 @@ export const BaseTriggerNode = memo(({
 }: BaseTriggerProps) => {
 
     const { setNodes, setEdges } = useReactFlow();
-    const { resolvedTheme } = useTheme();
-    const currentTheme = resolvedTheme === "dark" ? "dark" : "light"
+    const { theme } = useTheme();
+    const currentTheme = theme === "dark" ? "dark" : "light"
 
     const handleDelete = () => {
         setNodes((currentNodes) => {

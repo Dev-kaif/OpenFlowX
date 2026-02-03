@@ -3,8 +3,8 @@ import { useTheme } from "next-themes";
 import Image from "next/image";
 
 export const Footer = () => {
-  const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
 
   return (
     <footer className="relative mt-32 border-t border-border bg-background">

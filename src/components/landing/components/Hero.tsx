@@ -5,8 +5,8 @@ import { useTheme } from "next-themes";
 import Link from "next/link";
 
 export const Hero = () => {
-  const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">

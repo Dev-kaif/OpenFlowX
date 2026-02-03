@@ -61,8 +61,8 @@ export const NodeIcon = ({ type }: { type: NodeType }) => {
     const icon = NODE_ICONS[type];
     if (!icon) return null;
 
-    const { resolvedTheme } = useTheme();
-    const currentTheme = resolvedTheme === "dark" ? "dark" : "light"
+    const { theme } = useTheme();
+    const currentTheme = theme === "dark" ? "dark" : "light"
 
 
     return (
@@ -135,8 +135,8 @@ export const NodeIconRenderer = ({
     return <Icon className={cn(className, "text-foreground")} />
 }
 
-export function getThemedIcon(icon: string, resolvedTheme: "light" | "dark") {
-    if (resolvedTheme !== "dark") return icon;
+export function getThemedIcon(icon: string, theme: "light" | "dark") {
+    if (theme !== "dark") return icon;
 
     // if it's not an svg or already has -dark, return as-is
     if (!icon.endsWith(".svg") || icon.includes("-dark.svg")) {

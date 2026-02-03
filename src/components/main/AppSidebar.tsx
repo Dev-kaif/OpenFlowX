@@ -31,7 +31,7 @@ function AppSidebar() {
     const router = useRouter();
     const pathName = usePathname();
     const { data } = useGetSettings();
-    const { resolvedTheme } = useTheme();
+    const { theme } = useTheme();
 
     const menuItems = [
         {
@@ -67,7 +67,7 @@ function AppSidebar() {
             <SidebarHeader>
                 <SidebarMenuItem>
                     <Link className='flex items-center w-full mt-1 mb-5' href={"/workflows"} prefetch>
-                        <Image alt='OpenFlowX' className='w-fit h-10' width={100} height={100} src={resolvedTheme === "dark" ? "/main/logo-dark.png" : "/main/logo.png"} />
+                        <Image alt='OpenFlowX' className='w-fit h-10' width={100} height={100} src={theme === "dark" ? "/main/logo-dark.png" : "/main/logo.png"} />
                     </Link>
                 </SidebarMenuItem>
             </SidebarHeader>
