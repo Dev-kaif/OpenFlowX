@@ -7,6 +7,6 @@ export const { GET, POST, PUT } = serve({
   client: inngest,
   functions: [
     executeWorkflow,
-    scheduleRunner
+    // scheduleRunner
   ],
 });

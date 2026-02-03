@@ -212,15 +212,15 @@ export const utilNodes: NodeTypeOption[] = [
             darkSrc: "/utils/ifelse-dark.svg"
         },
     },
-    {
-        type: NodeType.DELAY,
-        label: "Delay",
-        description: "Pause workflow execution for a duration",
-        icon: {
-            src: "/utils/delay.svg",
-            darkSrc: "/utils/delay-dark.svg"
-        },
-    },
+    // {
+    //     type: NodeType.DELAY,
+    //     label: "Delay",
+    //     description: "Pause workflow execution for a duration",
+    //     icon: {
+    //         src: "/utils/delay.svg",
+    //         darkSrc: "/utils/delay-dark.svg"
+    //     },
+    // },
     {
         type: NodeType.CODE,
         label: "Code",
