@@ -50,6 +50,7 @@ export const NODE_ICONS: Record<NodeType, NodeIconType> = {
     CODE: CodeIcon,
     TEMPLATE: FileText,
     JSON_PARSE: "/utils/json.svg",
+    DOCUMENT_READER: "/utils/document.svg",
     FILE: FileIcon,
     SCRAPER: EyeIcon,
     SEARCH: SearchIcon,
