@@ -206,7 +206,7 @@ export default function SettingsPage() {
                             <div className="sm:hidden w-35">
                                 <Select
                                     value={theme}
-                                    onValueChange={(v) => setTheme(v as "light" | "dark" | "system")}
+                                    onValueChange={(v) => setTheme(v as "light" | "dark")}
                                 >
                                     <SelectTrigger>
                                         <SelectValue placeholder="Theme" />
@@ -222,12 +222,6 @@ export default function SettingsPage() {
                                         <SelectItem value="dark">
                                             <div className="flex items-center gap-2">
                                                 <Moon className="h-4 w-4" /> Dark
-                                            </div>
-                                        </SelectItem>
-
-                                        <SelectItem value="system">
-                                            <div className="flex items-center gap-2">
-                                                <Monitor className="h-4 w-4" /> System
                                             </div>
                                         </SelectItem>
                                     </SelectContent>
@@ -266,22 +260,6 @@ export default function SettingsPage() {
                                 >
                                     <Moon className="w-4 h-4" />
                                     <span className="text-xs font-medium">Dark</span>
-                                </Button>
-
-                                {/* System */}
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => setTheme("system")}
-                                    className={cn(
-                                        "flex items-center justify-center gap-2 px-3 h-8 rounded-md transition-all",
-                                        theme === "system"
-                                            ? "bg-background shadow-sm text-foreground"
-                                            : "text-muted-foreground hover:bg-transparent hover:text-foreground"
-                                    )}
-                                >
-                                    <Monitor className="w-4 h-4" />
-                                    <span className="text-xs font-medium">System</span>
                                 </Button>
                             </div>
                         </div>
