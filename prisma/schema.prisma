@@ -251,6 +251,7 @@ model Schedule {
   mode            String
   timezone        String
   isDraft         Boolean @default(true)
+  version         Int     @default(1)
   intervalMinutes Int?
   time            String?
   days            Int[]

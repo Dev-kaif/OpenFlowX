@@ -117,11 +117,6 @@ export const SchedulerRouter = createTRPCRouter({
         .mutation(async ({ ctx, input }) => {
             const { nodeId } = input;
 
-            console.log("[ACTIVATE] called", {
-                nodeId,
-                at: new Date().toISOString(),
-            });
-
             // ownership check
             await prisma.node.findFirstOrThrow({
                 where: {
@@ -140,13 +135,6 @@ export const SchedulerRouter = createTRPCRouter({
                 throw new Error("Schedule not found");
             }
 
-            console.log("[ACTIVATE] fetched schedule", {
-                scheduleId: schedule.id,
-                isDraft: schedule.isDraft,
-                enabled: schedule.enabled,
-                lastRunAt: schedule.lastRunAt,
-            });
-
 
             // activate schedule
             const activeSchedule = await prisma.schedule.update({
@@ -154,31 +142,27 @@ export const SchedulerRouter = createTRPCRouter({
                 data: {
                     isDraft: false,
                     enabled: true,
+                    version: {
+                        increment: 1
+                    }
                 },
             });
 
             // compute first run
             const nextRunAt = calculateNextRun(activeSchedule);
 
-            console.log("[ACTIVATE] calculated nextRunAt", {
-                scheduleId: activeSchedule.id,
-                nextRunAt: nextRunAt?.toISOString(),
-                now: new Date().toISOString(),
-            });
-
             if (!nextRunAt) {
                 return activeSchedule;
             }
 
-            console.log("[ACTIVATE] scheduling FIRST event", {
-                scheduleId: activeSchedule.id,
-                ts: nextRunAt.getTime(),
-            });
-
             // schedule first execution
             await inngest.send({
                 name: "workflow/run.at",
-                data: { scheduleId: activeSchedule.id },
+                data: {
+                    scheduleId: activeSchedule.id,
+                    version: activeSchedule.version,
+                    scheduledAt: nextRunAt.getTime(),
+                },
                 ts: nextRunAt.getTime(),
             });
 

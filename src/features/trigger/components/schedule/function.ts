@@ -82,22 +82,14 @@ export function calculateNextRun(schedule: Schedule): Date | null {
 export const runScheduledWorkflow = inngest.createFunction(
     {
         id: "run-scheduled-workflow",
-        concurrency: {
-            key: "event.data.scheduleId",
-            limit: 1,
-        },
-
     },
     { event: "workflow/run.at" },
     async ({ event, step }) => {
-        const { scheduleId } = event.data as { scheduleId: string };
-
-
-        console.log("[RUNNER] fired", {
-            scheduleId,
-            firedAt: new Date().toISOString(),
-            eventTs: event.ts ? new Date(event.ts).toISOString() : null,
-        });
+        const { scheduleId, version, scheduledAt } = event.data as {
+            scheduleId: string;
+            version: number;
+            scheduledAt: number;
+        };
 
         // always fetch fresh state
         const schedule = await prisma.schedule.findUnique({
@@ -105,7 +97,7 @@ export const runScheduledWorkflow = inngest.createFunction(
         });
 
         // hard guards
-        if (!schedule || schedule.isDraft || !schedule.enabled) {
+        if (!schedule || schedule.isDraft || !schedule.enabled || schedule.version !== version) {
             console.log("[RUNNER] guard exit", {
                 scheduleId,
                 exists: !!schedule,
@@ -115,12 +107,13 @@ export const runScheduledWorkflow = inngest.createFunction(
             return;
         }
 
-        console.log("[RUNNER] running workflow", {
-            scheduleId,
-            workflowId: schedule.workflowId,
-            lastRunAt: schedule.lastRunAt,
-        });
-
+        if (schedule.lastRunAt && schedule.lastRunAt.getTime() >= scheduledAt) {
+            console.log("[RUNNER] Skipping execution - already ran", {
+                lastRunAt: schedule.lastRunAt,
+                scheduledAt: new Date(scheduledAt)
+            });
+            return;
+        }
 
         const now = new Date();
 
@@ -142,25 +135,17 @@ export const runScheduledWorkflow = inngest.createFunction(
         // Schedule NEXT execution
         const nextRunAt = calculateNextRun(updatedSchedule);
 
-        console.log("[RUNNER] calculated nextRunAt", {
-            scheduleId,
-            nextRunAt: nextRunAt?.toISOString(),
-            now: now.toISOString(),
-        });
-
         if (!nextRunAt) {
-            console.log("[RUNNER] no next run, stopping");
             return;
         }
 
-        console.log("[RUNNER] scheduling NEXT event", {
-            scheduleId: updatedSchedule.id,
-            ts: nextRunAt.getTime(),
-        });
-
         await step.sendEvent("schedule-next-run", {
             name: "workflow/run.at",
-            data: { scheduleId: updatedSchedule.id },
+            data: {
+                scheduleId: updatedSchedule.id,
+                version: updatedSchedule.version,
+                scheduledAt: nextRunAt.getTime()
+            },
             ts: nextRunAt.getTime(),
         });
     }
