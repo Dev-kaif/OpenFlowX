@@ -29,6 +29,7 @@ import { S3Executor } from "../components/s3/executor";
 import { R2Executor } from "../components/r2/executor";
 import { TelegramExecutor } from "../components/telegram/executor";
 import { telegramExecutionTrigger } from "@/features/trigger/components/telegramTrigger/executor";
+import { DocumentReaderExecutor } from "../components/UtilsNodes/reader/executor";
 
 
 export const executorRegistory: Record<NodeType, NodeExecutor> = {
@@ -62,6 +63,7 @@ export const executorRegistory: Record<NodeType, NodeExecutor> = {
     [NodeType.S3]: S3Executor,
     [NodeType.R2]: R2Executor,
     [NodeType.TELEGRAM]: TelegramExecutor,
+    [NodeType.DOCUMENT_READER]: DocumentReaderExecutor,
 };
 
 

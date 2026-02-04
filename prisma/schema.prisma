@@ -120,6 +120,7 @@ enum NodeType {
   SCHEDULE
   JSON_PARSE
   TELEGRAM
+  DOCUMENT_READER
 }
 
 model Node {

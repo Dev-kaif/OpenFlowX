@@ -248,6 +248,12 @@ export const utilNodes: NodeTypeOption[] = [
         description: "Normalize files from URL, base64, or metadata",
         icon: FileIcon,
     },
+    {
+        type: NodeType.DOCUMENT_READER,
+        label: "Document Reader",
+        description: "Read Documents from URL",
+        icon: "/utils/document.svg",
+    },
 ];
 
 
