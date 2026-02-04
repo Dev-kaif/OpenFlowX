@@ -8,9 +8,12 @@ import "./globals.css";
 import { ThemeProvider } from "next-themes";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://openflowx.run"),
+
   title: "OpenFlowX | Workflow Automation & Data Orchestration",
   description:
     "OpenFlowX is a modern platform for building, automating, and orchestrating workflows. Design powerful data flows, integrate services, and scale with ease.",
+
   keywords: [
     "workflow automation",
     "data orchestration",
@@ -19,18 +22,20 @@ export const metadata: Metadata = {
     "developer tools",
     "integration workflows",
     "flow-based programming",
-    "OpenFlowX"
+    "OpenFlowX",
   ],
+
   authors: [{ name: "OpenFlowX Team" }],
+
   openGraph: {
     title: "OpenFlowX | Build & Orchestrate Workflows Visually",
     description:
       "Create scalable workflows and data pipelines with OpenFlowX. Open-source, developer-friendly, and built for modern systems.",
-    url: "https://openflowx.dev",
+    url: "https://openflowx.run",
     siteName: "OpenFlowX",
     images: [
       {
-        url: "/og-preview.png",
+        url: "/main/og-preview.png",
         width: 1200,
         height: 630,
         alt: "OpenFlowX Workflow Automation Platform",
@@ -39,16 +44,19 @@ export const metadata: Metadata = {
     locale: "en_US",
     type: "website",
   },
+
   twitter: {
     card: "summary_large_image",
     title: "OpenFlowX | Open-Source Workflow Automation",
     description:
       "Design, automate, and scale workflows with OpenFlowX. A modern flow-based automation platform for developers.",
-    images: ["/og-preview.png"],
+    images: ["/main/og-preview.png"],
   },
+
   alternates: {
-    canonical: "https://openflowx.dev",
+    canonical: "https://openflowx.run",
   },
+
   icons: {
     icon: "/main/favicon.ico",
   },

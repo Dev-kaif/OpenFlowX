@@ -58,22 +58,23 @@ export default function LoginForm() {
     });
 
     const onSubmit = async (values: loginFormValues) => {
-        toast.error("Email Login is disabled for a while");
-        return;
-
-        await authClient.signIn.email({
-            email: values.email,
-            password: values.password,
-            callbackURL: "/",
-        }, {
-            onSuccess: () => {
-                router.push("/workflows")
+        await authClient.signIn.email(
+            {
+                email: values.email,
+                password: values.password,
+                callbackURL: "/workflows",
             },
-            onError: (ctx) => {
-                toast.error(ctx.error.message)
+            {
+                onError: (ctx) => {
+                    if (ctx.error.status === 403) {
+                        toast.error("Please verify Your account");
+                        return;
+                    }
+                    toast.error(ctx.error.message);
+                },
             }
-        });
-    }
+        );
+    };
 
     const handleSocialSignIn = async (provider: "github" | "google") => {
         setIsSocialPending(true);

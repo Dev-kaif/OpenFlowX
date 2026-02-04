@@ -66,22 +66,23 @@ export default function SignUpForm() {
     });
 
     const onSubmit = async (values: SignUpFormValues) => {
-        toast.error("Email sign up is disabled for a while");
-        return;
-
-        await authClient.signUp.email({
-            name: values.name,
-            email: values.email,
-            password: values.password,
-            callbackURL: "/",
-        }, {
-            onSuccess: () => {
-                router.push("/workflows")
+        await authClient.signUp.email(
+            {
+                name: values.name,
+                email: values.email,
+                password: values.password,
+                callbackURL: "/dashboard",
             },
-            onError: (ctx) => {
-                toast.error(ctx.error.message)
+            {
+                onSuccess: () => {
+                    form.reset()
+                    toast.error("Please Check email for Verification");
+                },
+                onError: (ctx) => {
+                    toast.error(ctx.error.message);
+                },
             }
-        });
+        );
     };
 
     const handleSocialSignIn = async (provider: "github" | "google") => {

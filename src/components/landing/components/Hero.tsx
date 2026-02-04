@@ -9,19 +9,19 @@ export const Hero = () => {
   const isDark = theme === "dark";
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden mt-10 md:mt-0">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden mt-5 md:mt-0 px-4 md:px-0">
       {/* Background glow */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-float" />
+        <div className="absolute top-1/4 left-1/4 w-72 h-72 md:w-96 md:h-96 bg-primary/10 rounded-full blur-3xl animate-float" />
         <div
-          className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-primary/5 rounded-full blur-3xl animate-float"
+          className="absolute bottom-1/4 right-1/4 w-60 h-60 md:w-80 md:h-80 bg-primary/5 rounded-full blur-3xl animate-float"
           style={{ animationDelay: "1s" }}
         />
       </div>
 
+      {/* Grid */}
       <div
-        className="absolute inset-0 pointer-events-none
-                   opacity-[0.04] dark:opacity-[0.06]"
+        className="absolute inset-0 pointer-events-none opacity-[0.04] dark:opacity-[0.06]"
         style={{
           backgroundImage: `
             linear-gradient(rgba(0,0,0,0.6) 1px, transparent 1px),
@@ -32,8 +32,7 @@ export const Hero = () => {
       />
 
       <div
-        className="absolute inset-0 pointer-events-none hidden dark:block
-                   opacity-[0.06]"
+        className="absolute inset-0 pointer-events-none hidden dark:block opacity-[0.06]"
         style={{
           backgroundImage: `
             linear-gradient(rgba(255,255,255,0.8) 1px, transparent 1px),
@@ -44,33 +43,33 @@ export const Hero = () => {
       />
 
       <div className="container relative z-10">
-        <div className="max-w-4xl mx-auto text-center">
+        <div className="max-w-3xl md:max-w-4xl mx-auto text-center">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border bg-muted/50 mb-8 animate-fade-in">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-full border border-border bg-muted/50 mb-6 md:mb-8 animate-fade-in">
             <span className="w-2 h-2 rounded-full bg-primary animate-flow-pulse" />
-            <span className="text-sm text-muted-foreground">
+            <span className="text-xs md:text-sm text-muted-foreground">
               Open Source AI Orchestration
             </span>
           </div>
 
           {/* Icon */}
           <div
-            className="flex justify-center mb-8 animate-fade-in"
+            className="flex justify-center mb-6 md:mb-8 animate-fade-in"
             style={{ animationDelay: "0.1s" }}
           >
             <Image
               alt="OpenFlowX"
-              className="h-20 w-auto"
+              className="h-14 md:h-20 w-auto"
               width={120}
               height={40}
-              src={"/main/favicon.png"}
+              src="/main/favicon.png"
               priority
             />
           </div>
 
-          {/* Headline */}
+          {/* Headline (desktop untouched) */}
           <h1
-            className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-6 animate-fade-in text-balance"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4 md:mb-6 animate-fade-in text-balance"
             style={{ animationDelay: "0.2s" }}
           >
             Orchestrate AI Workflows Across{" "}
@@ -81,7 +80,7 @@ export const Hero = () => {
 
           {/* Subheading */}
           <p
-            className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 animate-fade-in text-balance"
+            className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 md:mb-10 animate-fade-in text-balance"
             style={{ animationDelay: "0.3s" }}
           >
             Build, connect, and control AI-powered workflows using multiple LLMs,
@@ -90,15 +89,15 @@ export const Hero = () => {
 
           {/* CTAs */}
           <div
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in"
+            className="flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4 animate-fade-in"
             style={{ animationDelay: "0.4s" }}
           >
-            <Link href={"/signUp"} prefetch>
+            <Link href="/signUp" prefetch>
               <Button
                 size="lg"
                 className="bg-linear-to-r from-[hsl(168,76%,42%)] via-[hsl(160,82%,35%)] to-[hsl(156,68%,28%)]
-              text-primary-foreground hover:opacity-90 transition-opacity
-              gap-2 px-8 h-12 text-base"
+                text-primary-foreground hover:opacity-90 transition-opacity
+                gap-2 px-6 md:px-8 h-11 md:h-12 text-sm md:text-base"
               >
                 Get Started
                 <ArrowRight className="h-4 w-4" />
@@ -108,7 +107,7 @@ export const Hero = () => {
             <Button
               variant="outline"
               size="lg"
-              className="gap-2 px-4 h-12 text-base border-border hover:bg-muted"
+              className="gap-2 px-4 h-11 md:h-12 text-sm md:text-base border-border hover:bg-muted"
               asChild
             >
               <a
@@ -116,7 +115,13 @@ export const Hero = () => {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <Image className="h-5 w-fit" height={10} width={10} alt="github" src={isDark ? "/Logos/github-dark.svg" : "/Logos/github.svg"} />
+                <Image
+                  className="h-4 md:h-5 w-auto"
+                  height={16}
+                  width={16}
+                  alt="github"
+                  src={isDark ? "/Logos/github-dark.svg" : "/Logos/github.svg"}
+                />
                 View on GitHub
               </a>
             </Button>
@@ -125,7 +130,7 @@ export const Hero = () => {
       </div>
 
       {/* Bottom fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-linear-to-t from-background to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-24 md:h-32 bg-linear-to-t from-background to-transparent" />
     </section>
   );
 };
