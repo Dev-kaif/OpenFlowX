@@ -46,8 +46,13 @@ const formSchema = z.object({
     endpoint: z.string().min(1, { message: "Please enter a valid URL" }),
     method: z.enum(["GET", "POST", "PUT", "PATCH", "DELETE"]),
     body: z.string().optional(),
-    variableName: z.string().min(1, { message: "Variable Name is required" })
-        .regex(/^[A-Za-z-$][A-Za-z0-9_$]*$/, { message: "Variable Name must start with letter , underscore and contain only letters numbers and underscores" }),
+    variableName: z
+        .string()
+        .min(1, { message: "Variable Name is required" })
+        .regex(/^[A-Za-z_$][A-Za-z0-9_$]*$/, {
+            message:
+                "Variable name must start with a letter or underscore and can contain letters, numbers, or underscores only",
+        }),
 });
 
 export const HttpRequestDialog = ({
@@ -56,7 +61,6 @@ export const HttpRequestDialog = ({
     onSubmit,
     defaultValues = {},
 }: Props) => {
-
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -78,9 +82,8 @@ export const HttpRequestDialog = ({
         }
     }, [open, form, defaultValues]);
 
-    // eslint-disable-next-line react-hooks/incompatible-library
     const watchMethod = form.watch("method");
-    const watchVaribleName = form.watch("variableName") || "MyAPIcall";
+    const watchVariableName = form.watch("variableName") || "myApiCall";
     const showBodyField = ["POST", "PUT", "PATCH"].includes(watchMethod);
 
     const handleSubmit = (values: z.infer<typeof formSchema>) => {
@@ -88,16 +91,21 @@ export const HttpRequestDialog = ({
         onOpenChange(false);
     };
 
-
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>HTTP Request</DialogTitle>
-                    <DialogDescription>Trigger the workflow manually</DialogDescription>
+                    <DialogDescription>
+                        Call an API and use its response in your workflow
+                    </DialogDescription>
                 </DialogHeader>
+
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6 mt-4">
+                    <form
+                        onSubmit={form.handleSubmit(handleSubmit)}
+                        className="space-y-6 mt-4"
+                    >
                         <FormField
                             control={form.control}
                             name="variableName"
@@ -105,23 +113,35 @@ export const HttpRequestDialog = ({
                                 <FormItem>
                                     <FormLabel>Variable Name</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="MyAPIcall" {...field} />
+                                        <Input placeholder="myApiCall" {...field} />
                                     </FormControl>
                                     <FormDescription>
-                                        Use this name to reference he result in other nodes:{" "}
-                                        {`{{${watchVaribleName}.httpRespone.data}}`}
+                                        This step saves the API response as data (not text).
+                                        <br />
+                                        Use it like this in other steps:
+                                        <code className="block mt-1 text-xs">
+                                            {`{{${watchVariableName}.httpResponse.data}}`}
+                                        </code>
+                                        Or pick a specific value:
+                                        <code className="block mt-1 text-xs">
+                                            {`{{${watchVariableName}.httpResponse.data.text}}`}
+                                        </code>
                                     </FormDescription>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
+
                         <FormField
                             control={form.control}
                             name="method"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Method</FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <Select
+                                        onValueChange={field.onChange}
+                                        defaultValue={field.value}
+                                    >
                                         <FormControl>
                                             <SelectTrigger className="w-full">
                                                 <SelectValue placeholder="Select a method" />
@@ -136,12 +156,13 @@ export const HttpRequestDialog = ({
                                         </SelectContent>
                                     </Select>
                                     <FormDescription>
-                                        The HTTP method to use
+                                        Choose how the request should be sent
                                     </FormDescription>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
+
                         <FormField
                             control={form.control}
                             name="endpoint"
@@ -149,15 +170,26 @@ export const HttpRequestDialog = ({
                                 <FormItem>
                                     <FormLabel>Endpoint</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="https://api.example.com/endpoint" {...field} />
+                                        <Input
+                                            placeholder="https://api.example.com/endpoint"
+                                            {...field}
+                                        />
                                     </FormControl>
                                     <FormDescription>
-                                        Static URL or use {"{{variables}}"} for simple values or {"{{json variable}}"} to stringify objects
+                                        You can insert values from previous steps:
+                                        <br />
+                                        <code className="text-xs">
+                                            {"{{user.id}}"}
+                                        </code>
+                                        <br />
+                                        Use <code className="text-xs">{"{{json someVar}}"}</code>{" "}
+                                        only when placing data inside a JSON body.
                                     </FormDescription>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
+
                         {showBodyField && (
                             <FormField
                                 control={form.control}
@@ -167,22 +199,35 @@ export const HttpRequestDialog = ({
                                         <FormLabel>Request Body</FormLabel>
                                         <FormControl>
                                             <Textarea
-                                                placeholder={`Enter JSON request body:\n {\n \t"userId\": \"{{httpResponse.data.id}}\",\n \t"name\": \"{{httpResponse.data.name}}\",\n \t"items\": \"{{json httpResponse.data.items}}\"\n}`}
-                                                className="min-h-[100px] p-2 text-sm font-mono"
+                                                className="min-h-[120px] p-2 text-sm font-mono"
+                                                placeholder={`{
+  "userId": "{{user.id}}",
+  "message": "{{apiResult.httpResponse.data.text}}",
+  "fullData": {{json apiResult.httpResponse.data}}
+}`}
                                                 {...field}
                                             />
                                         </FormControl>
                                         <FormDescription>
-                                            JSON with template variables. Use {"{{Variables}}"} for simple values or {"{{json variable}}"} to stringify objects
+                                            Must be valid JSON.
+                                            <br />
+                                            Use <code>{"{{value}}"}</code> for simple text
+                                            <br />
+                                            Use <code>{"{{json value}}"}</code> for full data
                                         </FormDescription>
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
                         )}
+
                         <DialogFooter className="mt-4">
-                            <DialogClose className="mr-2 bg-accent p-2 rounded-md">Cancel</DialogClose>
-                            <Button type="submit" className="bg-primary p-2 rounded-md">Save</Button>
+                            <DialogClose className="mr-2 bg-accent p-2 rounded-md">
+                                Cancel
+                            </DialogClose>
+                            <Button type="submit" className="bg-primary p-2 rounded-md">
+                                Save
+                            </Button>
                         </DialogFooter>
                     </form>
                 </Form>
