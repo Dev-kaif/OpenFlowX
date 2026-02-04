@@ -87,6 +87,8 @@ export const TelegramExecutor: NodeExecutor<TelegramProps> = async ({
         noEscape: true,
     })(context);
 
+    const safeMessage = message.slice(0, 4096);
+
     try {
         const result = await step.run("telegram-send-message", async () => {
             const res = await fetch(
@@ -98,7 +100,7 @@ export const TelegramExecutor: NodeExecutor<TelegramProps> = async ({
                     },
                     body: JSON.stringify({
                         chat_id: chatId,
-                        text: message,
+                        text: safeMessage,
                         parse_mode: "HTML",
                     }),
                 },
