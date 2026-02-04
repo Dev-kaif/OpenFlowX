@@ -74,15 +74,15 @@ export const triggerNodes: NodeTypeOption[] = [
         description: "Trigger on telegram events",
         icon: "/telegram.svg",
     },
-    // {
-    //     type: NodeType.SCHEDULE,
-    //     label: "Schedule",
-    //     description: "Run the workflow automatically on a schedule",
-    //     icon: {
-    //         src: "/utils/schedule.svg",
-    //         darkSrc: "/utils/schedule-dark.svg"
-    //     },
-    // },
+    {
+        type: NodeType.SCHEDULE,
+        label: "Schedule",
+        description: "Run the workflow automatically on a schedule",
+        icon: {
+            src: "/utils/schedule.svg",
+            darkSrc: "/utils/schedule-dark.svg"
+        },
+    },
 ];
 
 export const executionNodes: NodeTypeOption[] = [

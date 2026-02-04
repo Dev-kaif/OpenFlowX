@@ -2,6 +2,8 @@ import { PAGINATION } from "@/config/constant";
 import prisma from "@/lib/db";
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import z from "zod";
+import { calculateNextRun } from "./function";
+import { inngest } from "@/inngest/client";
 
 export const SchedulerRouter = createTRPCRouter({
     create: protectedProcedure
@@ -115,6 +117,12 @@ export const SchedulerRouter = createTRPCRouter({
         .mutation(async ({ ctx, input }) => {
             const { nodeId } = input;
 
+            console.log("[ACTIVATE] called", {
+                nodeId,
+                at: new Date().toISOString(),
+            });
+
+            // ownership check
             await prisma.node.findFirstOrThrow({
                 where: {
                     id: nodeId,
@@ -123,13 +131,57 @@ export const SchedulerRouter = createTRPCRouter({
                 select: { workflowId: true },
             });
 
-            return prisma.schedule.update({
+            // fetch schedule
+            const schedule = await prisma.schedule.findUnique({
                 where: { nodeId },
+            });
+
+            if (!schedule) {
+                throw new Error("Schedule not found");
+            }
+
+            console.log("[ACTIVATE] fetched schedule", {
+                scheduleId: schedule.id,
+                isDraft: schedule.isDraft,
+                enabled: schedule.enabled,
+                lastRunAt: schedule.lastRunAt,
+            });
+
+
+            // activate schedule
+            const activeSchedule = await prisma.schedule.update({
+                where: { id: schedule.id },
                 data: {
                     isDraft: false,
                     enabled: true,
                 },
             });
-        })
 
+            // compute first run
+            const nextRunAt = calculateNextRun(activeSchedule);
+
+            console.log("[ACTIVATE] calculated nextRunAt", {
+                scheduleId: activeSchedule.id,
+                nextRunAt: nextRunAt?.toISOString(),
+                now: new Date().toISOString(),
+            });
+
+            if (!nextRunAt) {
+                return activeSchedule;
+            }
+
+            console.log("[ACTIVATE] scheduling FIRST event", {
+                scheduleId: activeSchedule.id,
+                ts: nextRunAt.getTime(),
+            });
+
+            // schedule first execution
+            await inngest.send({
+                name: "workflow/run.at",
+                data: { scheduleId: activeSchedule.id },
+                ts: nextRunAt.getTime(),
+            });
+
+            return activeSchedule;
+        }),
 })
