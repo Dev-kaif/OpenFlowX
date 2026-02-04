@@ -5,7 +5,7 @@ export const MIN_MEANINGFUL_CONTENT = 200;
 const SCRAPINGBEE_API = "https://app.scrapingbee.com/api/v1/";
 const SCRAPINGBEE_KEY = process.env.SCRAPINGBEE_API_KEY;
 
-export async function scrapeSingleUrl(url: string): Promise<{
+export async function scrapeSingleUrl(url: string, p0: { apiKey: string; source: string; }): Promise<{
     text: string;
     metadata: any;
     success: boolean;

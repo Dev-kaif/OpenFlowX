@@ -173,6 +173,7 @@ enum CredentialType {
   R2
   RESEND
   TAVILY
+  SCRAPINGBEE
 }
 
 model Credential {

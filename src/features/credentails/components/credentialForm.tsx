@@ -90,8 +90,13 @@ export const credentialTypeOptions = [
     },
     {
         value: CredentialType.TAVILY,
-        label: "TAVILY",
+        label: "Tavily",
         logo: "/tavily.svg",
+    },
+    {
+        value: CredentialType.SCRAPINGBEE,
+        label: "Scraping Bee",
+        logo: "/scarpingbee.jpeg",
     },
 ];
 

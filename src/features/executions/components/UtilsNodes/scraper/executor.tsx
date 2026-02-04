@@ -2,48 +2,94 @@ import type { NodeExecutor } from "@/features/executions/types";
 import { NonRetriableError } from "inngest";
 import Handlebars from "handlebars";
 import { scraperChannel } from "@/inngest/channels/scraper";
-import { extractUrl, MIN_MEANINGFUL_CONTENT, resolveVariablePath, scrapeSingleUrl } from "./utils";
+import prisma from "@/lib/db";
+import { decryptApiKey } from "@/lib/crypto";
+import {
+    extractUrl,
+    MIN_MEANINGFUL_CONTENT,
+    resolveVariablePath,
+    scrapeSingleUrl,
+} from "./utils";
 
 type ScraperNodeData = {
     url?: string;
     variableName?: string;
+    credentialId?: string;
     minContentLength?: number;
     maxUrls?: number;
 };
 
-
-
 export const ScraperExecutor: NodeExecutor<ScraperNodeData> = async ({
     data,
     nodeId,
+    userId,
     context,
     step,
     publish,
 }) => {
-    await publish(scraperChannel().status({ nodeId, status: "loading" }));
+    await publish(
+        scraperChannel().status({
+            nodeId,
+            status: "loading",
+        })
+    );
 
-    if (!data.url) {
-        await publish(scraperChannel().status({ nodeId, status: "error" }));
-        throw new NonRetriableError("Scraper Node: URL required");
+    // Validation
+    if (!data.variableName) {
+        await publish(
+            scraperChannel().status({ nodeId, status: "error" })
+        );
+        throw new NonRetriableError("Scraper Node: variableName is required");
     }
 
-    if (!data.variableName) {
-        await publish(scraperChannel().status({ nodeId, status: "error" }));
-        throw new NonRetriableError("Scraper Node: variableName required");
+    if (!data.url) {
+        await publish(
+            scraperChannel().status({ nodeId, status: "error" })
+        );
+        throw new NonRetriableError("Scraper Node: url is required");
     }
 
     try {
-        const minContentLength = data.minContentLength || MIN_MEANINGFUL_CONTENT;
-        const maxUrlsToTry = data.maxUrls || 3;
+        const apiKey = await step.run("get-scrapingbee-api-key", async () => {
+            // User-provided credential
+            if (data.credentialId) {
+                const cred = await prisma.credential.findUnique({
+                    where: {
+                        id: data.credentialId,
+                        userId,
+                    },
+                    select: { value: true },
+                });
+
+                if (cred) {
+                    return decryptApiKey(cred.value);
+                }
+            }
+
+            // Fallback to system key
+            const systemKey = process.env.SCRAPINGBEE_API_KEY;
+            if (!systemKey) {
+                throw new Error(
+                    "No ScrapingBee API key found (System or User)"
+                );
+            }
+
+            return systemKey;
+        });
 
         let resolved: any;
 
-        if (data.url.trim().startsWith("{{") && data.url.trim().endsWith("}}")) {
-            resolved = resolveVariablePath(data.url, context);
+        const rawUrl = data.url.trim();
+
+        if (rawUrl.startsWith("{{") && rawUrl.endsWith("}}")) {
+            resolved = resolveVariablePath(rawUrl, context);
         } else {
-            const compiled = Handlebars.compile(data.url, { noEscape: true });
-            resolved = compiled(context);
+            resolved = Handlebars.compile(rawUrl, { noEscape: true })(context);
         }
+
+        const maxUrlsToTry = data.maxUrls ?? 3;
+        const minContentLength =
+            data.minContentLength ?? MIN_MEANINGFUL_CONTENT;
 
         let allUrls: string[] = [];
 
@@ -52,44 +98,55 @@ export const ScraperExecutor: NodeExecutor<ScraperNodeData> = async ({
                 .map(extractUrl)
                 .filter(
                     (u): u is string =>
-                        typeof u === "string" &&
-                        u.startsWith("http")
+                        typeof u === "string" && u.startsWith("http")
                 )
                 .slice(0, maxUrlsToTry);
         } else if (typeof resolved === "string" && resolved.startsWith("http")) {
             allUrls = [resolved];
         } else if (resolved && typeof resolved === "object") {
-            const url = extractUrl(resolved);
-            if (url.startsWith("http")) allUrls = [url];
+            const extracted = extractUrl(resolved);
+            if (extracted.startsWith("http")) {
+                allUrls = [extracted];
+            }
         }
 
         if (allUrls.length === 0) {
-            await publish(scraperChannel().status({ nodeId, status: "error" }));
             throw new NonRetriableError(
                 "Scraper Node: No valid URLs found in input"
             );
         }
 
+
         const result = await step.run("scrape-pages", async () => {
-            const successfulPages = [];
-            const failedPages = [];
+            const successfulPages: any[] = [];
+            const failedPages: any[] = [];
 
             for (const url of allUrls) {
-                const page = await scrapeSingleUrl(url);
+                const page = await scrapeSingleUrl(url, {
+                    apiKey,
+                    source: "scrapingbee",
+                });
 
-                if (page.success && page.contentLength >= minContentLength) {
+                if (
+                    page.success &&
+                    page.contentLength >= minContentLength
+                ) {
                     successfulPages.push(page);
+
                     if (successfulPages.length >= 2) break;
                 } else {
                     failedPages.push(page);
                 }
 
+                // Small delay to avoid rate spikes
                 if (allUrls.indexOf(url) < allUrls.length - 1) {
                     await new Promise((r) => setTimeout(r, 1000));
                 }
             }
 
-            const pages = successfulPages.length ? successfulPages : failedPages;
+            const pages = successfulPages.length
+                ? successfulPages
+                : failedPages;
 
             const combinedText = pages
                 .map(
@@ -102,20 +159,41 @@ export const ScraperExecutor: NodeExecutor<ScraperNodeData> = async ({
                 text: combinedText,
                 pages,
                 successfulCount: successfulPages.length,
-                attemptedCount: successfulPages.length + failedPages.length,
+                attemptedCount:
+                    successfulPages.length + failedPages.length,
                 totalAvailableUrls: allUrls.length,
                 count: pages.length,
                 source: "scrapingbee",
             };
         });
 
-        await publish(scraperChannel().status({ nodeId, status: "success" }));
+        await publish(
+            scraperChannel().status({
+                nodeId,
+                status: "success",
+            })
+        );
 
         return {
             [data.variableName]: result,
         };
-    } catch (err: any) {
-        await publish(scraperChannel().status({ nodeId, status: "error" }));
-        throw new NonRetriableError(`Scraper Error: ${err.message}`);
+    } catch (error: any) {
+        await publish(
+            scraperChannel().status({
+                nodeId,
+                status: "error",
+            })
+        );
+
+        if (
+            error.message?.includes("401") ||
+            error.message?.includes("403")
+        ) {
+            throw new NonRetriableError(
+                `Scraper Error (Auth): ${error.message}`
+            );
+        }
+
+        throw new NonRetriableError(`Scraper Error: ${error.message}`);
     }
 };

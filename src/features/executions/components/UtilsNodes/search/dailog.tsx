@@ -32,10 +32,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Globe, Key, AlertCircle, PlusCircle } from "lucide-react";
+import { Key, AlertCircle, ExternalLink } from "lucide-react";
 import { useCredentialsByType } from "@/features/credentails/hooks/useCredentials";
 import { CredentialType } from "@/generated/prisma/enums";
-import Link from "next/link";
 
 export const searchSchema = z.object({
     variableName: z
@@ -69,7 +68,7 @@ export const SearchDialog = ({
         defaultValues: {
             variableName: defaultValues?.variableName ?? "search",
             query: defaultValues?.query ?? "",
-            credentialId: defaultValues?.credentialId ?? "system", // Use "system" as the internal key for empty/default
+            credentialId: defaultValues?.credentialId ?? "system",
         },
     });
 
@@ -90,7 +89,6 @@ export const SearchDialog = ({
             <DialogContent className="max-h-[85vh] overflow-y-auto max-w-md">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2 text-xl">
-                        <Globe className="w-5 h-5 text-blue-500" />
                         Google Search
                     </DialogTitle>
                     <DialogDescription>
@@ -101,16 +99,17 @@ export const SearchDialog = ({
                 <Form {...form}>
                     <form
                         onSubmit={form.handleSubmit((v) => {
-                            // Map "system" back to undefined/empty string for the backend
                             const payload = {
                                 ...v,
-                                credentialId: v.credentialId === "system" ? "" : v.credentialId
+                                credentialId:
+                                    v.credentialId === "system" ? "" : v.credentialId,
                             };
                             onSubmit(payload);
                             onOpenChange(false);
                         })}
                         className="space-y-5 mt-4"
                     >
+                        {/* Variable Name */}
                         <FormField
                             control={form.control}
                             name="variableName"
@@ -121,13 +120,17 @@ export const SearchDialog = ({
                                         <Input placeholder="search_results" {...field} />
                                     </FormControl>
                                     <FormDescription>
-                                        Access via: <code className="text-xs">{`{{${watchVariableName}.results}}`}</code>
+                                        Access via{" "}
+                                        <code className="text-xs">
+                                            {`{{${watchVariableName}.results}}`}
+                                        </code>
                                     </FormDescription>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
 
+                        {/* Query */}
                         <FormField
                             control={form.control}
                             name="query"
@@ -146,6 +149,7 @@ export const SearchDialog = ({
                             )}
                         />
 
+                        {/* Credential */}
                         <FormField
                             control={form.control}
                             name="credentialId"
@@ -153,11 +157,11 @@ export const SearchDialog = ({
                                 <FormItem>
                                     <FormLabel className="flex items-center gap-2">
                                         <Key className="w-3.5 h-3.5" />
-                                        Custom API Key (Optional)
+                                        Tavily API Key (Optional)
                                     </FormLabel>
+
                                     <Select
                                         onValueChange={field.onChange}
-                                        defaultValue={field.value}
                                         value={field.value}
                                     >
                                         <FormControl>
@@ -165,61 +169,85 @@ export const SearchDialog = ({
                                                 <SelectValue placeholder="Use system default" />
                                             </SelectTrigger>
                                         </FormControl>
+
                                         <SelectContent>
-                                            <SelectItem value="system">Use system default</SelectItem>
+                                            <SelectItem value="system">
+                                                Use system default
+                                            </SelectItem>
                                             {credentials?.map((cred) => (
                                                 <SelectItem key={cred.id} value={cred.id}>
                                                     {cred.name}
                                                 </SelectItem>
                                             ))}
 
-                                            {/* Empty State Action */}
-                                            {(!credentials || credentials.length === 0) && !isLoadingCredentials && (
-                                                <div className="p-2 text-center">
-                                                    <p className="text-[10px] text-muted-foreground mb-2">No custom keys found</p>
-                                                </div>
-                                            )}
+                                            {(!credentials || credentials.length === 0) &&
+                                                !isLoadingCredentials && (
+                                                    <div className="p-2 text-center">
+                                                        <p className="text-[10px] text-muted-foreground">
+                                                            No custom keys found
+                                                        </p>
+                                                    </div>
+                                                )}
                                         </SelectContent>
                                     </Select>
 
                                     <div className="flex gap-2 mt-2 p-2.5 rounded-md bg-amber-50 border border-amber-100 text-[11px] text-amber-800">
                                         <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
                                         <p>
-                                            <b>Note:</b> We provide free searches, but if you encounter failures or 403 errors, you can add your own <b>Tavily API Key</b> in the Credentials tab and select it here.
+                                            <b>Note:</b> We provide free searches, but if you
+                                            encounter failures or 403 errors, you can add your
+                                            own <b>Tavily API key</b>.
+                                            {" "}
+                                            <a
+                                                href="https://www.tavily.com/"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="inline-flex items-center gap-1 underline underline-offset-2 font-medium"
+                                            >
+                                                Get a key
+                                                <ExternalLink className="w-3 h-3" />
+                                            </a>
                                         </p>
                                     </div>
+
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
 
-                        {/* Updated Helper Reference */}
+                        {/* Data Mapping */}
                         <div className="rounded-lg bg-muted p-3 text-[11px] space-y-2">
-                            <p className="font-semibold text-muted-foreground uppercase tracking-wider">Data mapping</p>
+                            <p className="font-semibold text-muted-foreground uppercase tracking-wider">
+                                Data mapping
+                            </p>
                             <div className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-2">
-                                {/* Full Text Summary */}
                                 <code className="bg-background border px-1.5 py-0.5 rounded text-blue-600 font-medium">
                                     {`{{${watchVariableName}.text}}`}
                                 </code>
-                                <span className="text-muted-foreground">Full summary (Best for AI nodes)</span>
+                                <span className="text-muted-foreground">
+                                    Full summary (Best for AI nodes)
+                                </span>
 
-                                {/* Top Result Title */}
-                                <code className="bg-background border px-1.5 py-0.5 rounded text-foreground">
+                                <code className="bg-background border px-1.5 py-0.5 rounded">
                                     {`{{${watchVariableName}.results[0].title}}`}
                                 </code>
-                                <span className="text-muted-foreground">Title of top result</span>
+                                <span className="text-muted-foreground">
+                                    Title of top result
+                                </span>
 
-                                {/* Top Result Snippet */}
-                                <code className="bg-background border px-1.5 py-0.5 rounded text-foreground">
+                                <code className="bg-background border px-1.5 py-0.5 rounded">
                                     {`{{${watchVariableName}.results[0].snippet}}`}
                                 </code>
-                                <span className="text-muted-foreground">Key info from first link</span>
+                                <span className="text-muted-foreground">
+                                    Key info from first link
+                                </span>
 
-                                {/* Top Result URL */}
-                                <code className="bg-background border px-1.5 py-0.5 rounded text-foreground">
+                                <code className="bg-background border px-1.5 py-0.5 rounded">
                                     {`{{${watchVariableName}.results[0].url}}`}
                                 </code>
-                                <span className="text-muted-foreground">Source URL</span>
+                                <span className="text-muted-foreground">
+                                    Source URL
+                                </span>
                             </div>
                         </div>
 
