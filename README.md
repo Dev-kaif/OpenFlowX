@@ -105,18 +105,6 @@ OpenFlowX is built with a modern TypeScript-first stack:
 
 ---
 
-## 🖼 Product Screenshots
-
-### 🏠 Landing Page
-
-![Landing Page](./public/main/landing.png)
-
-### 📊 Dashboard
-
-![Dashboard](./public/Logos/dashboard.png)
-
----
-
 ## Local Setup
 
 ### 1. Clone the repo
