@@ -137,6 +137,13 @@ async function handleTelegramMessage(body: any, message: any) {
         typeof text === "string" && text.startsWith("/")
             ? text.split(" ")[0]
             : "";
+    const fullText = typeof text === "string" ? text : "";
+
+    const commandText =
+        command && fullText.startsWith(command)
+            ? fullText.slice(command.length).trim()
+            : fullText;
+
 
     const connection = await prisma.telegramConnection.findFirst({
         where: {
@@ -180,7 +187,7 @@ async function handleTelegramMessage(body: any, message: any) {
             workflowId: trigger.workflowId,
             initialData: {
                 telegram: {
-                    text,
+                    text: commandText,
                     from,
                     chat,
                     date: message.date,
