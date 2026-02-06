@@ -21,12 +21,12 @@ export const Header = () => {
   const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
 
-  // ✅ Always run hooks unconditionally
+  // Always run hooks unconditionally
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // ✅ Scroll lock for mobile menu
+  // Scroll lock for mobile menu
   useEffect(() => {
     if (open) document.body.style.overflow = "hidden";
     else document.body.style.overflow = "";
@@ -62,17 +62,18 @@ export const Header = () => {
       >
         {/* HEADER BAR */}
         <div className="container relative flex h-16 items-center justify-between px-4 md:px-10">
-          {/* Logo */}
-          <div className="flex items-center gap-3">
-            <Image
-              alt="OpenFlowX"
-              src={isDark ? "/main/logo-dark.png" : "/main/logo.png"}
-              width={120}
-              height={40}
-              className="h-9 w-auto"
-              priority
-            />
-          </div>
+          <a onClick={(e) => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+            <div className="flex items-center gap-3">
+              <Image
+                alt="OpenFlowX"
+                src={isDark ? "/main/logo-dark.png" : "/main/logo.png"}
+                width={120}
+                height={40}
+                className="h-9 w-auto"
+                priority
+              />
+            </div>
+          </a>
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-8">
             {navItems.map((item) => (
