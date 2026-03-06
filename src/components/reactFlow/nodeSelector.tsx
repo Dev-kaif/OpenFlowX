@@ -1,6 +1,7 @@
 import { NodeType } from "@/generated/prisma/enums";
 import { createId } from "@paralleldrive/cuid2";
 import {
+    Bot,
     CodeIcon,
     EyeIcon,
     FileIcon,
@@ -204,6 +205,12 @@ export const executionNodes: NodeTypeOption[] = [
 
 export const utilNodes: NodeTypeOption[] = [
     {
+        type: NodeType.AGENT,
+        label: "Agent",
+        description: "Branch execution based on a condition",
+        icon: Bot,
+    },
+    {
         type: NodeType.IFELSE,
         label: "If / Else",
         description: "Branch execution based on a condition",
@@ -253,6 +260,39 @@ export const utilNodes: NodeTypeOption[] = [
         label: "Document Reader",
         description: "Read Documents from URL",
         icon: "/utils/document.svg",
+    },
+];
+
+export const agentNodes: NodeTypeOption[] = [
+    {
+        type: NodeType.AGENT,
+        label: "Agent",
+        description: "AI agent that can reason and use tools to complete tasks",
+        icon: Bot,
+    },
+    {
+        type: NodeType.HTTP_REQUEST_TOOL,
+        label: "HTTP Request Tool",
+        description: "Send HTTP requests to APIs",
+        icon: GlobeIcon,
+    },
+    {
+        type: NodeType.SEARCH_TOOL,
+        label: "Web Search",
+        description: "Search the internet for current events, news, or factual information",
+        icon: SearchIcon,
+    },
+    {
+        type: NodeType.SCRAPER_TOOL,
+        label: "Scraper Tool",
+        description: "Extract content and metadata from web pages using selectors or AI-based parsing",
+        icon: EyeIcon,
+    },
+    {
+        type: NodeType.GOOGLESHEETS_TOOL,
+        label: "Google Sheets Tool",
+        description: "Read or write rows in Google Sheets",
+        icon: "/sheets.svg",
     },
 ];
 
@@ -358,6 +398,15 @@ export const NodeSelector = ({
                 {/* Actions */}
                 <Section title="Actions">
                     {filterBySearch(executionNodes).map((n, i) => (
+                        <NodeItem key={i} node={n} onClick={handleNodeSelect} />
+                    ))}
+                </Section>
+
+                <Separator />
+
+                {/* Actions */}
+                <Section title="Agent">
+                    {filterBySearch(agentNodes).map((n, i) => (
                         <NodeItem key={i} node={n} onClick={handleNodeSelect} />
                     ))}
                 </Section>

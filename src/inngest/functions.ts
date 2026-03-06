@@ -1,5 +1,5 @@
-import { NonRetriableError } from "inngest";
 import { inngest } from "./client";
+import { NonRetriableError } from "inngest";
 import prisma from "@/lib/db";
 
 import { topologicalSort } from "./utils/topoSort";
@@ -8,7 +8,6 @@ import { buildNodeInput, buildParentsMap } from "./utils/parents";
 
 import { ExecutionStatus, NodeType } from "@/generated/prisma/enums";
 import { getExecutor } from "@/features/executions/lib/executorRegistory";
-
 
 import { httpRequestChannel } from "./channels/httpRequest";
 import { manualTriggerChannel } from "./channels/manualTrigger";
@@ -29,6 +28,20 @@ import { delayChannel } from "./channels/delay";
 import { codeChannel } from "./channels/code";
 import { telegramChannel } from "./channels/telegram";
 import { telegramTriggerChannel } from "./channels/telegramTrigger";
+import { AGENT_TOOLS } from "@/features/executions/components/Agent/toolRegistry";
+import { agentChannel } from "./channels/agent";
+import { fileChannel } from "./channels/file";
+import { googleSheetsChannel } from "./channels/googleSheets";
+import { jsonParseChannel } from "./channels/jsonParse";
+import { postgressChannel } from "./channels/postgress";
+import { r2Channel } from "./channels/r2";
+import { s3Channel } from "./channels/s3";
+import { resendChannel } from "./channels/resend";
+import { documentReaderChannel } from "./channels/reader";
+import { scheduleChannel } from "./channels/schedule";
+import { templateChannel } from "./channels/template";
+import { searchChannel } from "./channels/search";
+import { scraperChannel } from "./channels/scraper";
 
 const TRIGGER_NODE_TYPES: NodeType[] = [
     NodeType.INITIAL,
@@ -66,6 +79,7 @@ export const executeWorkflow = inngest.createFunction(
             stripeTriggerChannel(),
             polarTriggerChannel(),
             geminiChannel(),
+            googleSheetsChannel(),
             openRouterChannel(),
             openAIChannel(),
             deepseekChannel(),
@@ -75,9 +89,21 @@ export const executeWorkflow = inngest.createFunction(
             slackChannel(),
             ifElseChannel(),
             delayChannel(),
+            jsonParseChannel(),
+            fileChannel(),
             codeChannel(),
             telegramChannel(),
             telegramTriggerChannel(),
+            postgressChannel(),
+            agentChannel(),
+            r2Channel(),
+            s3Channel(),
+            resendChannel(),
+            documentReaderChannel(),
+            scheduleChannel(),
+            templateChannel(),
+            searchChannel(),
+            scraperChannel()
         ],
     },
     async ({ event, step, publish }) => {
@@ -105,6 +131,57 @@ export const executeWorkflow = inngest.createFunction(
         );
 
         const userId = workflow.userId;
+
+        let workflowNodes = [...workflow.nodes];
+        let workflowConnections = [...workflow.connections];
+        const toolNodeIdsToRemove = new Set<string>();
+
+
+        // 1. Find all Agent Nodes
+        const agentNodes = workflowNodes.filter((n) => n.type === NodeType.AGENT);
+
+        for (const agent of agentNodes) {
+            // 2. Find ALL connections pointing to this agent
+            const incomingConnections = workflowConnections.filter(
+                (c) => c.toNodeId === agent.id
+            );
+
+            const connectedTools = incomingConnections.map((conn) => {
+                const sourceNode = workflowNodes.find((n) => n.id === conn.fromNodeId);
+                if (!sourceNode) return null;
+
+                // Option B: only treat as a tool if it's registered in AGENT_TOOLS
+                const isToolNode = Object.keys(AGENT_TOOLS).includes(sourceNode.type);
+                if (!isToolNode) return null;
+
+                // Mark for removal from main execution path
+                toolNodeIdsToRemove.add(sourceNode.id);
+
+                return {
+                    type: sourceNode.type,
+                    id: sourceNode.id,
+                    data: sourceNode.data,
+                };
+            }).filter(Boolean);
+
+            // 3. Inject tools into agent's data
+            agent.data = {
+                ...(typeof agent.data === "object" && agent.data !== null ? agent.data : {}),
+                connectedTools,
+            };
+
+            console.log(`[Workflow] Agent ${agent.id} loaded ${connectedTools.length} tool(s):`,
+                connectedTools.map((t: any) => t.type)
+            );
+        }
+
+        // 5. Remove the tool nodes from the main array so topologicalSort & reachability ignores them completely
+        workflowNodes = workflowNodes.filter(n => !toolNodeIdsToRemove.has(n.id));
+
+        // Remove their connections too, to avoid broken references
+        workflowConnections = workflowConnections.filter(c =>
+            !toolNodeIdsToRemove.has(c.fromNodeId) && !toolNodeIdsToRemove.has(c.toNodeId)
+        );
 
         // Identify triggers
         const triggerNodeIds = workflow.nodes
@@ -156,7 +233,7 @@ export const executeWorkflow = inngest.createFunction(
 
             const safeInput = JSON.parse(JSON.stringify(context ?? {}));
 
-            // 1️⃣ ENSURE STEP EXISTS (idempotent)
+
             const executionStep = await prisma.executionStep.upsert({
                 where: {
                     executionId_nodeId: {
@@ -187,7 +264,7 @@ export const executeWorkflow = inngest.createFunction(
                 },
             });
 
-            // 2️⃣ SKIPPED → nothing else to do
+            // SKIPPED
             if (isDisabled) {
                 continue;
             }
@@ -209,7 +286,7 @@ export const executeWorkflow = inngest.createFunction(
             }
 
             try {
-                // 3️⃣ EXECUTE
+                // EXECUTE
                 const output = await executor({
                     nodeId: node.id,
                     data: node.data as Record<string, unknown>,
@@ -221,7 +298,7 @@ export const executeWorkflow = inngest.createFunction(
 
                 nodeOutputs[node.id] = output;
 
-                // 4️⃣ MARK SUCCESS
+                // MARK SUCCESS
                 await prisma.executionStep.update({
                     where: { id: executionStep.id },
                     data: {
@@ -231,7 +308,7 @@ export const executeWorkflow = inngest.createFunction(
                     },
                 });
 
-                // 5️⃣ IF / ELSE LOGIC (unchanged)
+                // IF / ELSE LOGIC
                 const outgoingChoices = executableConnections.filter(
                     (c) =>
                         c.fromNodeId === node.id &&

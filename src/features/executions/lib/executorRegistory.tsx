@@ -30,6 +30,7 @@ import { R2Executor } from "../components/r2/executor";
 import { TelegramExecutor } from "../components/telegram/executor";
 import { telegramExecutionTrigger } from "@/features/trigger/components/telegramTrigger/executor";
 import { DocumentReaderExecutor } from "../components/UtilsNodes/reader/executor";
+import { AgentExecutor } from "../components/Agent/agent/executor";
 
 
 export const executorRegistory: Record<NodeType, NodeExecutor> = {
@@ -64,6 +65,13 @@ export const executorRegistory: Record<NodeType, NodeExecutor> = {
     [NodeType.R2]: R2Executor,
     [NodeType.TELEGRAM]: TelegramExecutor,
     [NodeType.DOCUMENT_READER]: DocumentReaderExecutor,
+    [NodeType.AGENT]: AgentExecutor,
+    [NodeType.HTTP_REQUEST_TOOL]: httpRequestTrigger,
+    [NodeType.SEARCH_TOOL]: SearchExecutor,
+    [NodeType.SCRAPER_TOOL]: ScraperExecutor,
+    [NodeType.POSTGRESS_TOOL]: PostgresExecutor,
+    [NodeType.GOOGLESHEETS_TOOL]: GoogleSheetsExecutor,
+    [NodeType.EMAIL_RESEND_TOOL]: ResendExecutor,
 };
 
 

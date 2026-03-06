@@ -31,6 +31,11 @@ import { R2Node } from "@/features/executions/components/r2/node";
 import { TelegramNode } from "@/features/executions/components/telegram/node";
 import { TelegramTriggerNode } from "@/features/trigger/components/telegramTrigger/node";
 import { DocumentReaderNode } from "@/features/executions/components/UtilsNodes/reader/node";
+import { AgentNode } from "@/features/executions/components/Agent/agent/node";
+import { HttpRequestToolNode } from "@/features/executions/components/Agent/Tools/http/node";
+import { SearchToolNode } from "@/features/executions/components/Agent/Tools/search/node";
+import { ScraperToolNode } from "@/features/executions/components/Agent/Tools/scraper/node";
+import { GoogleSheetsToolNode } from "@/features/executions/components/Agent/googleSheets/node";
 
 export const nodeComponents = {
     [NodeType.INITIAL]: InitialNode,
@@ -64,6 +69,12 @@ export const nodeComponents = {
     [NodeType.R2]: R2Node,
     [NodeType.TELEGRAM]: TelegramNode,
     [NodeType.DOCUMENT_READER]: DocumentReaderNode,
+    [NodeType.AGENT]: AgentNode,
+    [NodeType.HTTP_REQUEST_TOOL]: HttpRequestToolNode,
+    [NodeType.SEARCH_TOOL]: SearchToolNode,
+    [NodeType.SCRAPER_TOOL]: ScraperToolNode,
+    [NodeType.GOOGLESHEETS_TOOL]: GoogleSheetsToolNode,
+
 } as const satisfies NodeTypes;
 
 export type RegisteredNodeTypes = keyof typeof nodeComponents;

@@ -7,6 +7,7 @@ import {
     EyeIcon,
     SearchIcon,
     PlusIcon,
+    Bot,
 } from "lucide-react";
 import { NodeType } from "@/generated/prisma/enums";
 import Image from "next/image";
@@ -54,7 +55,16 @@ export const NODE_ICONS: Record<NodeType, NodeIconType> = {
     FILE: FileIcon,
     SCRAPER: EyeIcon,
     SEARCH: SearchIcon,
-    INITIAL: PlusIcon
+    INITIAL: PlusIcon,
+
+    AGENT: Bot,
+    SEARCH_TOOL: SearchIcon,
+    SCRAPER_TOOL: EyeIcon,
+    EMAIL_RESEND_TOOL: "/resend.svg",
+    POSTGRESS_TOOL: "/postgres.svg",
+    GOOGLESHEETS_TOOL: "/sheets.svg",
+
+    HTTP_REQUEST_TOOL: GlobeIcon,
 };
 
 
