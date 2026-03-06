@@ -36,6 +36,7 @@ import { HttpRequestToolNode } from "@/features/executions/components/Agent/Tool
 import { SearchToolNode } from "@/features/executions/components/Agent/Tools/search/node";
 import { ScraperToolNode } from "@/features/executions/components/Agent/Tools/scraper/node";
 import { GoogleSheetsToolNode } from "@/features/executions/components/Agent/googleSheets/node";
+import { WebhookTriggerNode } from "@/features/trigger/components/webhook/node";
 
 export const nodeComponents = {
     [NodeType.INITIAL]: InitialNode,
@@ -45,6 +46,7 @@ export const nodeComponents = {
     [NodeType.STRIPE_TRIGGER]: StripeTriggerNode,
     [NodeType.POLAR_TRIGGER]: PolarTriggerNode,
     [NodeType.TELEGRAM_TRIGGER]: TelegramTriggerNode,
+    [NodeType.WEBHOOK_TRIGGER]: WebhookTriggerNode,
     [NodeType.GEMINI]: GeminiNode,
     [NodeType.OPENROUTER]: OpenRouterNode,
     [NodeType.OPENAI]: OpenAINode,

@@ -31,6 +31,7 @@ import { TelegramExecutor } from "../components/telegram/executor";
 import { telegramExecutionTrigger } from "@/features/trigger/components/telegramTrigger/executor";
 import { DocumentReaderExecutor } from "../components/UtilsNodes/reader/executor";
 import { AgentExecutor } from "../components/Agent/agent/executor";
+import { webhookTriggerExecution } from "@/features/trigger/components/webhook/executor";
 
 
 export const executorRegistory: Record<NodeType, NodeExecutor> = {
@@ -41,6 +42,7 @@ export const executorRegistory: Record<NodeType, NodeExecutor> = {
     [NodeType.STRIPE_TRIGGER]: stripeTriggerExecution,
     [NodeType.POLAR_TRIGGER]: polarTriggerExecution,
     [NodeType.TELEGRAM_TRIGGER]: telegramExecutionTrigger,
+    [NodeType.WEBHOOK_TRIGGER]: webhookTriggerExecution,
     [NodeType.GEMINI]: GeminiExecutor,
     [NodeType.OPENROUTER]: OpenRouterExecutor,
     [NodeType.OPENAI]: OpenAIExecutor,

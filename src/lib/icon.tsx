@@ -8,6 +8,7 @@ import {
     SearchIcon,
     PlusIcon,
     Bot,
+    WebhookIcon,
 } from "lucide-react";
 import { NodeType } from "@/generated/prisma/enums";
 import Image from "next/image";
@@ -26,6 +27,7 @@ export const NODE_ICONS: Record<NodeType, NodeIconType> = {
     STRIPE_TRIGGER: "/stripe.svg",
     POLAR_TRIGGER: "/polar.svg",
     SCHEDULE: "/utils/schedule.svg",
+    WEBHOOK_TRIGGER: WebhookIcon,
 
     HTTP_REQUEST: GlobeIcon,
     OPENROUTER: "/openrouter.svg",

@@ -9,6 +9,7 @@ import {
     GlobeIcon,
     MousePointerIcon,
     SearchIcon,
+    WebhookIcon,
 } from "lucide-react";
 import React, { useCallback, useState } from "react";
 import {
@@ -47,6 +48,12 @@ export const triggerNodes: NodeTypeOption[] = [
         label: "Manual Trigger",
         description: "Start the workflow manually with a button click",
         icon: MousePointerIcon,
+    },
+    {
+        type: NodeType.WEBHOOK_TRIGGER,
+        label: "Webhook Trigger",
+        description: "Trigger when request is made to webhook",
+        icon: WebhookIcon,
     },
     {
         type: NodeType.GOOGLE_FORM_TRIGGER,

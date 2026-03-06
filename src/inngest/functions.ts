@@ -42,6 +42,7 @@ import { scheduleChannel } from "./channels/schedule";
 import { templateChannel } from "./channels/template";
 import { searchChannel } from "./channels/search";
 import { scraperChannel } from "./channels/scraper";
+import { webhookTriggerChannel } from "./channels/webhook";
 
 const TRIGGER_NODE_TYPES: NodeType[] = [
     NodeType.INITIAL,
@@ -103,7 +104,8 @@ export const executeWorkflow = inngest.createFunction(
             scheduleChannel(),
             templateChannel(),
             searchChannel(),
-            scraperChannel()
+            scraperChannel(),
+            webhookTriggerChannel(),
         ],
     },
     async ({ event, step, publish }) => {
