@@ -34,7 +34,11 @@ import Image from "next/image";
 import { useTheme } from "next-themes";
 
 const SignUpSchema = z.object({
-    name: z.string().min(1, "At least one character required"),
+    name: z
+        .string()
+        .min(1, "At least one character required")
+        .max(50, "Name must be at most 50 characters")
+        .regex(/^[A-Za-z\s]+$/, "Only letters and spaces are allowed"),
     email: z.email("Please enter a valid email address"),
     password: z.string().min(8, "Password must be at least 8 characters"),
     confirmPassword: z.string(),
@@ -52,8 +56,6 @@ export default function SignUpForm() {
 
     const { theme } = useTheme();
     const isDark = theme === "dark";
-
-    const router = useRouter();
 
     const form = useForm<SignUpFormValues>({
         resolver: zodResolver(SignUpSchema),
