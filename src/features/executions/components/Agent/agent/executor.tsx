@@ -2,11 +2,28 @@ import type { NodeExecutor } from "@/features/executions/types";
 import { NonRetriableError } from "inngest";
 import { agentChannel } from "@/inngest/channels/agent";
 import Handlebars from "handlebars";
+import { generateText, tool, stepCountIs } from "ai";
+import { createAIModel } from "@/features/ai/ai";
+import { jsonSchema } from "ai";
 import prisma from "@/lib/db";
 import { decryptApiKey } from "@/lib/crypto";
 import { getExecutor } from "@/features/executions/lib/executorRegistory";
 import { NodeType } from "@/generated/prisma/enums";
 import { AGENT_TOOLS } from "../toolRegistry";
+
+function extractTextFromSteps(steps: any[]): string {
+    for (const step of steps) {
+        if (step.text && typeof step.text === "string" && step.text.trim()) {
+            return step.text.trim();
+        }
+        for (const chunk of step.content ?? []) {
+            if (chunk.type === "text" && chunk.text) {
+                return chunk.text.trim();
+            }
+        }
+    }
+    return "";
+}
 
 export type ConnectedTool = {
     type: string;
@@ -19,6 +36,7 @@ type AgentNodeData = {
     credentialId?: string;
     variableName?: string;
     model?: string;
+    provider?: string;
     maxSteps?: number;
     connectedTools?: ConnectedTool[];
 };
@@ -59,41 +77,37 @@ export const AgentExecutor: NodeExecutor<AgentNodeData> = async ({
             return decryptApiKey(cred.value);
         });
 
-        const compiledPrompt = Handlebars.compile(data.prompt, {
-            noEscape: true,
-        })(context);
-
+        const compiledPrompt = Handlebars.compile(data.prompt, { noEscape: true })(context);
         const modelConfig = data.model || "gpt-4o-mini";
+        const provider = (data.provider || "openrouter") as any;
 
-        // Build raw tool definitions
+        const client = createAIModel({ provider, model: modelConfig, apiKey });
+
+        // Build tools using tool() with inputSchema (AI SDK v5 format)
         const aiTools: Record<string, any> = {};
         const toolsToLoad = data.connectedTools || [];
 
         for (const toolNode of toolsToLoad) {
             const registryEntry = AGENT_TOOLS[toolNode.type as NodeType];
+            if (!registryEntry) continue;
 
-            if (!registryEntry) {
-                continue;
-            }
+            // Capture for closure
+            const capturedEntry = registryEntry;
+            const capturedNode = toolNode;
 
-            aiTools[registryEntry.name] = {
-                description: registryEntry.description,
-                parameters: {
+            aiTools[capturedEntry.name] = tool({
+                description: capturedEntry.description,
+                inputSchema: jsonSchema({
                     type: "object",
-                    properties: registryEntry.schema.properties,
-                    required: registryEntry.schema.required ?? [],
-                },
+                    properties: capturedEntry.schema.properties,
+                    required: capturedEntry.schema.required ?? [],
+                }),
                 execute: async (args: any) => {
-
                     try {
-                        const executorFn = getExecutor(toolNode.type as NodeType);
+                        const executorFn = getExecutor(capturedNode.type as NodeType);
+                        if (!executorFn) return `Error: No executor found for tool type ${capturedNode.type}`;
 
-                        if (!executorFn) {
-                            return `Error: No executor found for tool type ${toolNode.type}`;
-                        }
-
-                        const mergedData = registryEntry.mapArgs(args, toolNode.data);
-
+                        const mergedData = capturedEntry.mapArgs(args, capturedNode.data);
                         const mockStep = {
                             run: async (_name: string, fn: () => Promise<any>) => await fn(),
                             sleep: async () => { },
@@ -102,7 +116,7 @@ export const AgentExecutor: NodeExecutor<AgentNodeData> = async ({
 
                         const rawOutput = await executorFn({
                             data: mergedData,
-                            nodeId: toolNode.id,
+                            nodeId: capturedNode.id,
                             userId,
                             context,
                             step: mockStep,
@@ -110,140 +124,42 @@ export const AgentExecutor: NodeExecutor<AgentNodeData> = async ({
                         });
 
                         const actualResult = rawOutput[mergedData.variableName!];
-
-                        if (actualResult === undefined || actualResult === null) {
-                            return "Tool returned no output.";
-                        }
-
+                        if (actualResult === undefined || actualResult === null) return "Tool returned no output.";
                         if (typeof actualResult === "object") {
-                            return actualResult.text
-                                ?? JSON.stringify(actualResult).substring(0, 15000);
+                            return actualResult.text ?? JSON.stringify(actualResult).substring(0, 15000);
                         }
-
                         return String(actualResult);
                     } catch (e: any) {
-                        console.error(`[Agent Tool Error] ${registryEntry.name}:`, e);
                         return `Error executing tool: ${e.message}`;
                     }
                 },
-            };
-        }
-
-
-        // Build OpenRouter-format tools array
-        const openRouterTools = Object.entries(aiTools).map(([name, toolDef]) => ({
-            type: "function",
-            function: {
-                name,
-                description: toolDef.description,
-                parameters: toolDef.parameters,
-            },
-        }));
-
-
-        // Agentic loop
-        const messages: any[] = [
-            {
-                role: "system",
-                content: "You are an autonomous AI Agent. Use your available tools to fulfill the user's request. If you do not have a tool for a specific task, try to answer to the best of your ability.",
-            },
-            {
-                role: "user",
-                content: compiledPrompt,
-            },
-        ];
-
-        let finalText = "";
-        const maxSteps = data.maxSteps ?? 10;
-
-        for (let i = 0; i < maxSteps; i++) {
-
-            const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${apiKey}`,
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    model: modelConfig,
-                    messages,
-                    tools: openRouterTools.length > 0 ? openRouterTools : undefined,
-                    tool_choice: openRouterTools.length > 0 ? "auto" : undefined,
-                }),
             });
-
-            if (!response.ok) {
-                const err = await response.text();
-                throw new Error(`OpenRouter API error (${response.status}): ${err}`);
-            }
-
-            const result = await response.json();
-            const choice = result.choices?.[0];
-            const message = choice?.message;
-
-            if (!message) {
-                throw new Error("OpenRouter returned no message in response");
-            }
-
-            // Add assistant turn to history
-            messages.push(message);
-
-            // No tool calls — agent is done
-            if (!message.tool_calls || message.tool_calls.length === 0) {
-                finalText = message.content ?? "";
-                break;
-            }
-
-
-            // Execute each tool call and collect results
-            for (const toolCall of message.tool_calls) {
-                const toolName = toolCall.function.name;
-                const toolArgs = JSON.parse(toolCall.function.arguments || "{}");
-                const toolDef = aiTools[toolName];
-
-
-                let toolResult = `Error: tool "${toolName}" not found.`;
-
-                if (toolDef?.execute) {
-                    toolResult = await toolDef.execute(toolArgs);
-                }
-
-                messages.push({
-                    role: "tool",
-                    tool_call_id: toolCall.id,
-                    content: JSON.stringify({
-                        tool: toolName,
-                        result: toolResult
-                    })
-                });
-            }
-
-            // If we hit maxSteps, extract whatever text we have
-            if (i === maxSteps - 1) {
-                finalText = message.content ?? "Agent reached maximum steps without a final answer.";
-            }
         }
+
+        // stopWhen replaces maxSteps in AI SDK v5
+        const { text, steps } = await generateText({
+            model: client,
+            system: "You are an autonomous AI Agent. Use your available tools to fulfill the user's request. If you do not have a tool for a specific task, try to answer to the best of your ability.",
+            prompt: compiledPrompt,
+            tools: Object.keys(aiTools).length > 0 ? aiTools : undefined,
+            stopWhen: stepCountIs(data.maxSteps ?? 10),
+        });
+
+        const finalText = text || extractTextFromSteps(steps);
 
         await publish(agentChannel().status({ nodeId, status: "success" }));
 
         return {
             [data.variableName]: {
                 text: finalText,
-                raw: messages,
+                raw: steps,
             },
         };
-
     } catch (error: any) {
         console.error("AGENT EXECUTOR ERROR:", error);
-        console.error("Provider response:", error?.response?.data);
-        console.error("Provider cause:", error?.cause);
-
         await publish(agentChannel().status({ nodeId, status: "error" }));
-
         throw new NonRetriableError(
-            error?.response?.data?.error?.message ||
-            error?.message ||
-            "Unknown Agent Execution Error"
+            error?.message || "Unknown Agent Execution Error"
         );
     }
 };

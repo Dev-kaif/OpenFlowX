@@ -173,9 +173,9 @@ export const executeWorkflow = inngest.createFunction(
                 connectedTools,
             };
 
-            console.log(`[Workflow] Agent ${agent.id} loaded ${connectedTools.length} tool(s):`,
-                connectedTools.map((t: any) => t.type)
-            );
+            // console.log(`[Workflow] Agent ${agent.id} loaded ${connectedTools.length} tool(s):`,
+            //     connectedTools.map((t: any) => t.type)
+            // );
         }
 
         // 5. Remove the tool nodes from the main array so topologicalSort & reachability ignores them completely

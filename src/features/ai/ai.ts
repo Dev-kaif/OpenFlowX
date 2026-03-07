@@ -33,7 +33,7 @@ export function createAIModel({ provider, model, apiKey }: CreateModelArgs): Lan
                 apiKey,
                 baseURL: "https://openrouter.ai/api/v1"
             });
-            return client(model) as unknown as LanguageModel;
+            return client.chat(model) as unknown as LanguageModel;
         }
 
         case "anthropic": {

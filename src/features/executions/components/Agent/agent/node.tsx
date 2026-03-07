@@ -1,13 +1,11 @@
 import { Position, useReactFlow, type Node, type NodeProps } from "@xyflow/react";
 import { memo, useState } from "react";
 import { Bot } from "lucide-react";
-
 import { WorkflowNode } from "@/components/reactFlow/workflowNode";
 import { BaseNode, BaseNodeContent } from "@/components/reactFlow/base-node";
 import { BaseHandle } from "@/components/reactFlow/base-handle";
 import { NodeStatusIndicator } from "@/components/reactFlow/node-status-indicator";
-
-import { AgentDialog, AgentFormValues, AVAILABLE_AGENT_MODELS } from "./dailog";
+import { AgentDialog, AgentFormValues } from "./dailog";
 import { useNodeStatus } from "@/features/executions/hooks/useNodeStatus";
 import { AGENT_CHANNEL_NAME } from "@/inngest/channels/agent";
 import { fetchAgentRealtimeToken } from "./actions";
@@ -16,17 +14,18 @@ type AgentNodeData = {
     prompt?: string;
     credentialId?: string;
     variableName?: string;
-    model?: (typeof AVAILABLE_AGENT_MODELS)[number];
+    model?: string;
+    provider?: string;
+    maxSteps?: number;
 };
 
 type AgentNodeType = Node<AgentNodeData>;
 
 export const AgentNode = memo((props: NodeProps<AgentNodeType>) => {
-
     const { id, data } = props;
 
     const description = data?.prompt
-        ? (data.model || AVAILABLE_AGENT_MODELS[0]).toUpperCase()
+        ? (data.model ?? "No model").toUpperCase()
         : "Not Configured";
 
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -36,7 +35,7 @@ export const AgentNode = memo((props: NodeProps<AgentNodeType>) => {
         nodeId: id,
         channel: AGENT_CHANNEL_NAME,
         topic: "status",
-        refreshToken: fetchAgentRealtimeToken
+        refreshToken: fetchAgentRealtimeToken,
     });
 
     const handleDelete = () => {
@@ -50,11 +49,20 @@ export const AgentNode = memo((props: NodeProps<AgentNodeType>) => {
         setNodes((nodes) =>
             nodes.map((node) =>
                 node.id === id
-                    ? { ...node, data: { ...node.data, ...values } }
+                    ? {
+                        ...node,
+                        data: {
+                            ...node.data,
+                            variableName: values.variableName,
+                            provider: values.provider,
+                            model: values.model,
+                            credentialId: values.credentialId,
+                            prompt: values.prompt,
+                        },
+                    }
                     : node
             )
         );
-
         setDialogOpen(false);
     };
 
@@ -68,37 +76,27 @@ export const AgentNode = memo((props: NodeProps<AgentNodeType>) => {
                 onDelete={handleDelete}
             >
                 <NodeStatusIndicator status={nodeStatus} variant="border">
-
                     <BaseNode status={nodeStatus} onDoubleClick={() => setDialogOpen(true)}>
                         <BaseNodeContent>
-
-                            {/* ICON */}
                             <Bot className="size-4 text-dark dark:text-white" />
-
-                            {/* DEFAULT INPUT */}
                             <BaseHandle
-                                id={"target-1"}
+                                id="target-1"
                                 type="target"
                                 position={Position.Left}
                             />
-
-                            {/* TOOLS */}
                             <BaseHandle
                                 id="tools"
                                 type="target"
                                 position={Position.Bottom}
-                                className="bg-purple-500! "
+                                className="bg-purple-500!"
                             />
-
                             <BaseHandle
-                                id={"source-1"}
+                                id="source-1"
                                 type="source"
                                 position={Position.Right}
                             />
-
                         </BaseNodeContent>
                     </BaseNode>
-
                 </NodeStatusIndicator>
             </WorkflowNode>
 
@@ -106,7 +104,13 @@ export const AgentNode = memo((props: NodeProps<AgentNodeType>) => {
                 open={dialogOpen}
                 onOpenChange={setDialogOpen}
                 onSubmit={handleSubmit}
-                defaultValues={data}
+                defaultValues={{
+                    variableName: data.variableName,
+                    provider: data.provider,
+                    model: data.model,
+                    credentialId: data.credentialId,
+                    prompt: data.prompt,
+                }}
             />
         </>
     );

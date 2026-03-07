@@ -1,11 +1,18 @@
 import { NodeType } from "@/generated/prisma/enums";
 
+type JSONSchemaPropertyType = "string" | "number" | "boolean" | "object" | "array" | "null";
+
+type JSONSchemaProperty = {
+    type: JSONSchemaPropertyType;
+    description?: string;
+};
+
 export type AgentToolDefinition = {
     name: string;
     description: string;
     schema: {
         type: "object";
-        properties: Record<string, { type: string; description: string }>;
+        properties: Record<string, JSONSchemaProperty>;
         required: string[];
     };
     mapArgs: (llmArgs: any, nodeConfig: any) => any;
@@ -59,16 +66,13 @@ export const AGENT_TOOLS: Partial<Record<NodeType, AgentToolDefinition>> = {
             },
             required: ["url", "method"],
         },
-        mapArgs: (llmArgs, nodeConfig) => {
-            const merged = {
-                ...nodeConfig,
-                endpoint: llmArgs.url,
-                method: llmArgs.method,
-                body: llmArgs.body || nodeConfig.body,
-                variableName: "agent_tool_output",
-            };
-            return merged;
-        }
+        mapArgs: (llmArgs, nodeConfig) => ({
+            ...nodeConfig,
+            endpoint: llmArgs.url,
+            method: llmArgs.method,
+            body: llmArgs.body || nodeConfig.body,
+            variableName: "agent_tool_output",
+        })
     },
 
     [NodeType.POSTGRESS_TOOL]: {
