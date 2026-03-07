@@ -27,7 +27,7 @@ export const WebhookTriggerNode = memo((props: NodeProps) => {
                 {...props}
                 icon={WebhookIcon}
                 name="Webhook Trigger"
-                description="Trigger workflow when an HTTP request hits this endpoint"
+                // description="Trigger workflow when an HTTP request hits this endpoint"
                 status={nodeStatus}
                 onSetting={handleOpenSettings}
                 onDoubleClick={handleOpenSettings}
