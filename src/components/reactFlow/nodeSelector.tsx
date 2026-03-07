@@ -52,25 +52,25 @@ export const triggerNodes: NodeTypeOption[] = [
     {
         type: NodeType.WEBHOOK_TRIGGER,
         label: "Webhook Trigger",
-        description: "Trigger when request is made to webhook",
+        description: "Start the workflow when an HTTP request hits the webhook URL",
         icon: WebhookIcon,
     },
     {
         type: NodeType.GOOGLE_FORM_TRIGGER,
         label: "Google Form",
-        description: "Trigger when a Google Form is submitted",
+        description: "Trigger the workflow when a Google Form receives a new response",
         icon: "/googleform.svg",
     },
     {
         type: NodeType.STRIPE_TRIGGER,
         label: "Stripe",
-        description: "Trigger on Stripe events like payments",
+        description: "Trigger the workflow on Stripe events like payments or subscriptions",
         icon: "/stripe.svg",
     },
     {
         type: NodeType.POLAR_TRIGGER,
         label: "Polar",
-        description: "Trigger on Polar events",
+        description: "Trigger the workflow on Polar commerce events",
         icon: {
             src: "/polar.svg",
             darkSrc: "/polar-dark.svg"
@@ -79,13 +79,13 @@ export const triggerNodes: NodeTypeOption[] = [
     {
         type: NodeType.TELEGRAM_TRIGGER,
         label: "Telegram Trigger",
-        description: "Trigger on telegram events",
+        description: "Start the workflow when a Telegram bot receives a message or event",
         icon: "/telegram.svg",
     },
     {
         type: NodeType.SCHEDULE,
         label: "Schedule",
-        description: "Run the workflow automatically on a schedule",
+        description: "Run the workflow automatically at scheduled intervals",
         icon: {
             src: "/utils/schedule.svg",
             darkSrc: "/utils/schedule-dark.svg"
@@ -97,31 +97,31 @@ export const executionNodes: NodeTypeOption[] = [
     {
         type: NodeType.HTTP_REQUEST,
         label: "HTTP Request",
-        description: "Send HTTP requests to APIs",
+        description: "Send HTTP requests to external APIs or services",
         icon: GlobeIcon,
     },
     {
         type: NodeType.SEARCH,
         label: "Search",
-        description: "Search the web or indexed sources and return relevant results as structured data",
+        description: "Search the web and return relevant results as structured data",
         icon: SearchIcon,
     },
     {
         type: NodeType.SCRAPER,
         label: "Scraper",
-        description: "Extract content and metadata from web pages using selectors or AI-based parsing",
+        description: "Extract content, text, or metadata from web pages",
         icon: EyeIcon,
     },
     {
         type: NodeType.GEMINI,
         label: "Gemini",
-        description: "Generate text or structured output using Gemini",
+        description: "Generate text or structured output using Google Gemini models",
         icon: "/gemini.svg",
     },
     {
         type: NodeType.OPENROUTER,
         label: "OpenRouter",
-        description: "Call multiple LLM providers via OpenRouter",
+        description: "Access multiple AI models through the OpenRouter API",
         icon: {
             src: "/openrouter.svg",
             darkSrc: "/openrouter-dark.svg"
@@ -130,7 +130,7 @@ export const executionNodes: NodeTypeOption[] = [
     {
         type: NodeType.OPENAI,
         label: "OpenAI",
-        description: "Generate text or JSON using OpenAI models",
+        description: "Generate text, code, or JSON using OpenAI models",
         icon: {
             src: "/openai.svg",
             darkSrc: "/openai-dark.svg"
@@ -139,13 +139,13 @@ export const executionNodes: NodeTypeOption[] = [
     {
         type: NodeType.DEEPSEEK,
         label: "DeepSeek",
-        description: "Reasoning and code-focused LLM execution",
+        description: "Run reasoning and code generation using DeepSeek models",
         icon: "/deepseek.svg",
     },
     {
         type: NodeType.ANTHROPIC,
         label: "Anthropic",
-        description: "Generate responses using Claude models",
+        description: "Generate responses using Anthropic Claude models",
         icon: "/anthropic.svg",
     },
     {
@@ -160,19 +160,19 @@ export const executionNodes: NodeTypeOption[] = [
     {
         type: NodeType.DISCORD,
         label: "Discord",
-        description: "Send messages or notifications to Discord",
+        description: "Send messages or notifications to a Discord channel",
         icon: "/discord.svg",
     },
     {
         type: NodeType.SLACK,
         label: "Slack",
-        description: "Send messages or alerts to Slack",
+        description: "Send messages or alerts to Slack channels",
         icon: "/slack.svg",
     },
     {
         type: NodeType.TELEGRAM,
         label: "Telegram",
-        description: "Send messages or alerts to Telegram",
+        description: "Send messages or notifications through Telegram bots",
         icon: "/telegram.svg",
     },
     {
@@ -187,40 +187,34 @@ export const executionNodes: NodeTypeOption[] = [
     {
         type: NodeType.POSTGRESS,
         label: "Postgres",
-        description: "Read or write data in a Postgres database",
+        description: "Read, insert, update, or delete data in a Postgres database",
         icon: "/postgress.svg",
     },
     {
         type: NodeType.GOOGLESHEETS,
         label: "Google Sheets",
-        description: "Read or write rows in Google Sheets",
+        description: "Read or write spreadsheet data in Google Sheets",
         icon: "/sheets.svg",
     },
     {
         type: NodeType.S3,
         label: "AWS S3",
-        description: "Upload files to Amazon S3",
+        description: "Upload or manage files in Amazon S3 storage",
         icon: "/aws.svg",
     },
     {
         type: NodeType.R2,
         label: "Cloudflare R2",
-        description: "Upload files to Cloudflare R2",
+        description: "Upload or manage files in Cloudflare R2 storage",
         icon: "/cloudflare.svg",
     },
 ];
 
 export const utilNodes: NodeTypeOption[] = [
     {
-        type: NodeType.AGENT,
-        label: "Agent",
-        description: "Branch execution based on a condition",
-        icon: Bot,
-    },
-    {
         type: NodeType.IFELSE,
         label: "If / Else",
-        description: "Branch execution based on a condition",
+        description: "Branch workflow execution based on a condition",
         icon: {
             src: "/utils/ifelse.svg",
             darkSrc: "/utils/ifelse-dark.svg"
@@ -229,7 +223,7 @@ export const utilNodes: NodeTypeOption[] = [
     {
         type: NodeType.DELAY,
         label: "Delay",
-        description: "Pause workflow execution for a duration",
+        description: "Pause the workflow for a specified duration",
         icon: {
             src: "/utils/delay.svg",
             darkSrc: "/utils/delay-dark.svg"
@@ -238,19 +232,19 @@ export const utilNodes: NodeTypeOption[] = [
     {
         type: NodeType.CODE,
         label: "Code",
-        description: "Run custom JavaScript logic",
+        description: "Run custom JavaScript code inside the workflow",
         icon: CodeIcon,
     },
     {
         type: NodeType.TEMPLATE,
         label: "Template",
-        description: "Render text using Handlebars templates",
+        description: "Generate text using Handlebars templates",
         icon: FileText,
     },
     {
         type: NodeType.JSON_PARSE,
         label: "JSON Parse",
-        description: "Parse a JSON string into structured data",
+        description: "Convert a JSON string into structured data",
         icon: {
             src: "/utils/json.svg",
             darkSrc: "/utils/json-dark.svg"
@@ -259,13 +253,13 @@ export const utilNodes: NodeTypeOption[] = [
     {
         type: NodeType.FILE,
         label: "File",
-        description: "Normalize files from URL, base64, or metadata",
+        description: "Process files from URLs, base64 strings, or metadata",
         icon: FileIcon,
     },
     {
         type: NodeType.DOCUMENT_READER,
         label: "Document Reader",
-        description: "Read Documents from URL",
+        description: "Fetch and extract text content from documents via URL",
         icon: "/utils/document.svg",
     },
 ];
@@ -274,31 +268,31 @@ export const agentNodes: NodeTypeOption[] = [
     {
         type: NodeType.AGENT,
         label: "Agent",
-        description: "AI agent that can reason and use tools to complete tasks",
+        description: "AI agent that can reason, plan, and use tools to complete tasks",
         icon: Bot,
     },
     {
         type: NodeType.HTTP_REQUEST_TOOL,
         label: "HTTP Request Tool",
-        description: "Send HTTP requests to APIs",
+        description: "Allow the agent to send HTTP requests to APIs",
         icon: GlobeIcon,
     },
     {
         type: NodeType.SEARCH_TOOL,
-        label: "Web Search",
-        description: "Search the internet for current events, news, or factual information",
+        label: "Web Search Tool",
+        description: "Allow the agent to search the internet for information",
         icon: SearchIcon,
     },
     {
         type: NodeType.SCRAPER_TOOL,
         label: "Scraper Tool",
-        description: "Extract content and metadata from web pages using selectors or AI-based parsing",
+        description: "Allow the agent to extract data from web pages",
         icon: EyeIcon,
     },
     {
         type: NodeType.GOOGLESHEETS_TOOL,
         label: "Google Sheets Tool",
-        description: "Read or write rows in Google Sheets",
+        description: "Allow the agent to read and write data in Google Sheets",
         icon: "/sheets.svg",
     },
 ];
