@@ -51,7 +51,8 @@ const TRIGGER_NODE_TYPES: NodeType[] = [
     NodeType.STRIPE_TRIGGER,
     NodeType.POLAR_TRIGGER,
     NodeType.SCHEDULE,
-    NodeType.TELEGRAM_TRIGGER
+    NodeType.TELEGRAM_TRIGGER,
+    NodeType.WEBHOOK_TRIGGER
 ];
 
 const BRANCH_CONDITIONS = ["true", "false"];

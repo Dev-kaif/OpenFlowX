@@ -41,15 +41,16 @@ export const WebhookTriggerDialog = ({ open, onOpenChange, nodeId }: Props) => {
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-h-[85vh] overflow-y-auto">
+            <DialogContent className="max-h-[85vh] max-w-sm overflow-x-hidden overflow-y-auto sm:max-w-xl">
                 <DialogHeader>
                     <DialogTitle>Webhook Trigger Configuration</DialogTitle>
                     <DialogDescription>
-                        Send an HTTP request to this URL to trigger the workflow.
+                        Use this webhook URL to trigger the workflow from any
+                        external service, script, or application.
                     </DialogDescription>
                 </DialogHeader>
 
-                <div className="space-y-4">
+                <div className="space-y-5">
 
                     {/* Webhook URL */}
                     <div className="space-y-2">
@@ -60,7 +61,7 @@ export const WebhookTriggerDialog = ({ open, onOpenChange, nodeId }: Props) => {
                                 id="webhook-url"
                                 value={webhookUrl}
                                 readOnly
-                                className="font-mono text-xs"
+                                className="font-mono text-xs break-all"
                             />
 
                             <Button
@@ -74,53 +75,61 @@ export const WebhookTriggerDialog = ({ open, onOpenChange, nodeId }: Props) => {
                         </div>
                     </div>
 
-                    {/* Example Request */}
+                    {/* Instructions */}
                     <div className="rounded-lg bg-muted p-3 text-xs">
-                        <p className="font-medium mb-2">Example Request</p>
+                        <ol className="space-y-1 list-decimal list-inside text-muted-foreground">
+                            <li>Copy the webhook URL above</li>
+                            <li>Send an HTTP request to that URL</li>
+                            <li>The request payload becomes available inside the workflow</li>
+                            <li>You can reference the data using template variables</li>
+                        </ol>
+                    </div>
 
-                        <code className="block bg-background p-2 rounded font-mono text-xs">
-                            {`curl -X POST ${webhookUrl} \\
+                    {/* Example Request */}
+                    <div className="rounded-lg bg-muted p-3 text-xs space-y-2">
+                        <p className="font-medium">Example Request</p>
+
+                        <code className="block bg-background p-2 rounded font-mono text-xs overflow-x-auto">
+                            {`curl -X POST "${webhookUrl}" \\
 -H "Content-Type: application/json" \\
 -d '{"message":"Hello OpenFlowX"}'`}
                         </code>
                     </div>
 
                     {/* Available Variables */}
-                    <div className="rounded-lg bg-muted p-3 space-y-2">
-
+                    <div className="rounded-lg bg-muted p-3 space-y-3">
                         <h4 className="text-sm font-medium">
                             Available Variables
                         </h4>
 
-                        <div className="grid grid-cols-[1fr_auto] gap-x-3 gap-y-2 text-xs text-muted-foreground">
+                        <div className="grid sm:grid-cols-[1fr_auto] gap-x-3 gap-y-2 text-xs text-muted-foreground">
 
                             <code className="bg-background px-1.5 py-0.5 rounded text-foreground">
-                                {"{{webhook.body}}"}
+                                {"{{webhook.body.message}}"}
                             </code>
-                            <span>Request body</span>
-
-                            <code className="bg-background px-1.5 py-0.5 rounded text-foreground">
-                                {"{{webhook.headers}}"}
-                            </code>
-                            <span>Request headers</span>
-
-                            <code className="bg-background px-1.5 py-0.5 rounded text-foreground">
-                                {"{{webhook.query}}"}
-                            </code>
-                            <span>Query parameters</span>
+                            <span>Access a specific field from request body</span>
 
                             <code className="bg-background px-1.5 py-0.5 rounded text-foreground">
                                 {"{{json webhook.body}}"}
                             </code>
-                            <span>Full body as JSON</span>
+                            <span>Get the full body as formatted JSON</span>
+
+                            <code className="bg-background px-1.5 py-0.5 rounded text-foreground">
+                                {"{{webhook.headers.authorization}}"}
+                            </code>
+                            <span>Access request headers</span>
+
+                            <code className="bg-background px-1.5 py-0.5 rounded text-foreground">
+                                {"{{webhook.query.userId}}"}
+                            </code>
+                            <span>Access query parameters</span>
 
                             <code className="bg-background px-1.5 py-0.5 rounded text-foreground">
                                 {"{{json webhook}}"}
                             </code>
-                            <span>Complete webhook payload</span>
+                            <span>Full webhook payload</span>
 
                         </div>
-
                     </div>
 
                 </div>
