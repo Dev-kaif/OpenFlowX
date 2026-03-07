@@ -6,14 +6,13 @@ import { Integrations } from "./components/Integrations";
 import { HowItWorks } from "./components/HowItWorks";
 import { UseCases } from "./components/UseCases";
 import { Community } from "./components/Community";
-import { FinalCTA } from "./components/FinalCTA";
 import { Footer } from "./components/Footer";
 
 const LandingPage = () => {
     return (
-        <div className="landing min-h-screen bg-background">
+        <div className="landing min-h-screen bg-background w-full">
             <Header />
-            <main>
+            <main className="w-full">
                 <Hero />
                 <ProductPreview />
                 <Features />

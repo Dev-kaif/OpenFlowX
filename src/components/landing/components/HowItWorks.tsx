@@ -27,7 +27,7 @@ const steps = [
 export const HowItWorks = () => {
   return (
     <section className="py-24 bg-muted/30">
-      <div className="container">
+      <div className="w-full max-w-7xl mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
             How OpenFlowX Works

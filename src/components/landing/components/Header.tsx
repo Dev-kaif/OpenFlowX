@@ -26,12 +26,20 @@ export const Header = () => {
     setMounted(true);
   }, []);
 
-  // Scroll lock for mobile menu
+  // In Header, change the scroll lock effect to:
   useEffect(() => {
-    if (open) document.body.style.overflow = "hidden";
-    else document.body.style.overflow = "";
+    if (open) {
+      const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
+      document.body.style.overflow = "hidden";
+      document.body.style.paddingRight = `${scrollBarWidth}px`;
+    } else {
+      document.body.style.overflow = "";
+      document.body.style.paddingRight = "0px";
+    }
+
     return () => {
       document.body.style.overflow = "";
+      document.body.style.paddingRight = "0px";
     };
   }, [open]);
 
@@ -61,7 +69,7 @@ export const Header = () => {
         className="fixed top-0 inset-x-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50"
       >
         {/* HEADER BAR */}
-        <div className="container relative flex h-16 items-center justify-between px-4 md:px-10">
+        <div className="w-full max-w-7xl mx-auto px-4 relative flex h-16 items-center justify-between px-4 md:px-10">
           <a onClick={(e) => window.scrollTo({ top: 0, behavior: 'smooth' })}>
             <div className="flex items-center gap-3">
               <Image

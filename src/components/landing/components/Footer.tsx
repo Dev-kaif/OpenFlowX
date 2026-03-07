@@ -11,7 +11,7 @@ export const Footer = () => {
       {/* Soft fade from content */}
       <div className="absolute inset-x-0 -top-24 h-24 bg-linear-to-t from-background to-transparent pointer-events-none" />
 
-      <div className="container px-10 py-14">
+      <div className="w-full max-w-7xl mx-auto px-14 py-14">
         {/* Top row */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-8">
           {/* Brand block */}

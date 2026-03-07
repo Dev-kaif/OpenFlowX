@@ -1,4 +1,4 @@
-import { executionNodes, triggerNodes, utilNodes } from "@/components/reactFlow/nodeSelector";
+import { executionNodes, triggerNodes, utilNodes, agentNodes } from "@/components/reactFlow/nodeSelector";
 import { NodeIconRenderer } from "@/lib/icon";
 
 const landingIntegrationGroups = [
@@ -8,16 +8,19 @@ const landingIntegrationGroups = [
   },
   {
     title: "LLMs & Execution",
-    nodes: executionNodes.filter(n =>
-      [
-        "OPENAI",
-        "ANTHROPIC",
-        "GEMINI",
-        "DEEPSEEK",
-        "XAI",
-        "OPENROUTER",
-      ].includes(n.type)
-    ),
+    nodes: [
+      ...agentNodes.filter(n => n.type === "AGENT"),
+      ...executionNodes.filter(n =>
+        [
+          "OPENAI",
+          "ANTHROPIC",
+          "GEMINI",
+          "DEEPSEEK",
+          "XAI",
+          "OPENROUTER",
+        ].includes(n.type)
+      )
+    ],
   },
   {
     title: "Logic",
@@ -45,7 +48,7 @@ const landingIntegrationGroups = [
 export const Integrations = () => {
   return (
     <section id="integrations" className="py-24">
-      <div className="container">
+      <div className="w-full max-w-7xl mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
             Supported Nodes & Integrations

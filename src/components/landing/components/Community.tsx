@@ -23,7 +23,7 @@ const highlights = [
 export const Community = () => {
   return (
     <section id="community" className="py-24">
-      <div className="container">
+      <div className="w-full max-w-7xl mx-auto px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
             Open Source & Community

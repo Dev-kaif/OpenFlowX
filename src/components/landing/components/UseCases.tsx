@@ -26,7 +26,7 @@ const useCases = [
 export const UseCases = () => {
   return (
     <section id="use-cases" className="py-24 bg-muted/30">
-      <div className="container">
+      <div className="w-full max-w-7xl mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
             Real-World Use Cases
